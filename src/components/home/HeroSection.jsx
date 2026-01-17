@@ -59,7 +59,7 @@ export default function HeroSection({ featuredEvent }) {
                 
                 {featuredEvent && (
                     <motion.div
-                        className="flex flex-wrap items-center justify-center gap-4 text-stone-400 mb-10"
+                        className="flex flex-wrap items-center justify-center gap-4 text-stone-200 mb-10"
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
                         transition={{ duration: 0.8, delay: 0.3 }}
