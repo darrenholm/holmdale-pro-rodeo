@@ -204,7 +204,7 @@ export default function BuyTickets() {
                                         <div className="flex flex-wrap gap-4 text-sm text-stone-300">
                                             <div className="flex items-center gap-2">
                                                 <Calendar className="w-4 h-4 text-amber-500" />
-                                                {format(new Date(event?.date), 'EEEE, MMMM d, yyyy')}
+                                                {event?.id === '696b7bdc81676e7ff80617a1' ? 'July 31 - August 2, 2026' : format(new Date(event?.date), 'EEEE, MMMM d, yyyy')}
                                             </div>
                                             <div className="flex items-center gap-2">
                                                 <Clock className="w-4 h-4 text-amber-500" />
