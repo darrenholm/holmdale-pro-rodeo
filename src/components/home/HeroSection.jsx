@@ -26,14 +26,14 @@ export default function HeroSection({ featuredEvent }) {
             {/* Content */}
             <div className="relative z-10 text-center px-6 max-w-5xl mx-auto">
                 <motion.div
-          initial={{ opacity: 0, scale: 0.9 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.8 }}
-          className="mb-8">
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.8 }}
+                className="mb-8 text-left">
                     <img 
                         src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/696b7ab40d412f960295a323/a90833e02_LogoBevel.png"
                         alt="Holmdale Pro Rodeo"
-                        className="w-full max-w-[250px]"
+                        className="max-w-[250px]"
                     />
                 </motion.div>
                 
