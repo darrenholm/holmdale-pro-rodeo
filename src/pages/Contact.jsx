@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
-import { MapPin, Phone, Mail, Clock, Send, CheckCircle, Loader2 } from 'lucide-react';
+import { MapPin, Phone, Mail, Send, CheckCircle, Loader2 } from 'lucide-react';
 
 const contactInfo = [
     {
@@ -22,11 +22,6 @@ const contactInfo = [
         icon: Mail,
         title: 'Email',
         details: ['info@holmdalerodeo.com', 'tickets@holmdalerodeo.com']
-    },
-    {
-        icon: Clock,
-        title: 'Box Office Hours',
-        details: ['Mon - Fri: 9am - 6pm', 'Sat: 10am - 4pm']
     }
 ];
 
