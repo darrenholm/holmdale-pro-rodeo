@@ -56,7 +56,7 @@ export default function About() {
             animate={{ opacity: 1, y: 0 }}>
 
                         A Legacy of
-                        <span className="text-transparent bg-clip-text bg-gradient-to-r from-green-400 to-orange-500"> Western Excellence</span>
+                        <span className="text-green-500"> Western Excellence</span>
                     </motion.h1>
                     <motion.p className="text-xl text-stone-300 leading-relaxed"
 
