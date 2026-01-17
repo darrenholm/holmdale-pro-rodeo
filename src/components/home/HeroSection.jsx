@@ -26,9 +26,21 @@ export default function HeroSection({ featuredEvent }) {
             {/* Content */}
             <div className="ml-1 px-48 text-center relative z-10 max-w-7xl">
                 <motion.div
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.8 }}
+                className="mb-8 text-left">
+                    <img 
+                        src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/696b7ab40d412f960295a323/a90833e02_LogoBevel.png"
+                        alt="Holmdale Pro Rodeo"
+                        className="max-w-[250px]"
+                    />
+                </motion.div>
+                
+                <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8 }} className="pl-3">
+          transition={{ duration: 0.8, delay: 0.2 }} className="pl-3">
 
                     <span className="inline-block px-4 py-2 bg-green-600/20 border border-green-500/30 rounded-full text-green-400 text-sm font-medium tracking-wider uppercase mb-6">
                         Experience the Thrill
