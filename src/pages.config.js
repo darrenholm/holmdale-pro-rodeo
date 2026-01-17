@@ -5,6 +5,7 @@ import CheckoutSuccess from './pages/CheckoutSuccess';
 import Contact from './pages/Contact';
 import Events from './pages/Events';
 import Home from './pages/Home';
+import Shop from './pages/Shop';
 import __Layout from './Layout.jsx';
 
 
@@ -16,6 +17,7 @@ export const PAGES = {
     "Contact": Contact,
     "Events": Events,
     "Home": Home,
+    "Shop": Shop,
 }
 
 export const pagesConfig = {
