@@ -23,14 +23,6 @@ const ticketTypes = [
         color: 'border-green-500/50 bg-green-500/10'
     },
     {
-        id: 'premium',
-        name: 'Premium Seating',
-        description: 'Prime viewing positions with extra legroom and cup holders',
-        priceKey: 'premium_price',
-        availableKey: 'premium_available',
-        color: 'border-blue-500/50 bg-blue-500/10'
-    },
-    {
         id: 'vip',
         name: 'VIP Box',
         description: 'Private box seating with complimentary refreshments and meet & greet',
