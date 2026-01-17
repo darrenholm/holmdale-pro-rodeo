@@ -66,7 +66,7 @@ export default function HeroSection({ featuredEvent }) {
                     >
                         <div className="flex items-center gap-2">
                             <Calendar className="w-5 h-5 text-amber-500" />
-                            <span>{format(new Date(featuredEvent.date), 'MMMM d, yyyy')}</span>
+                            <span>July 31 - August 2, 2026</span>
                         </div>
                         <span className="hidden sm:inline">•</span>
                         <div className="flex items-center gap-2">
