@@ -16,7 +16,7 @@ export default function HeroSection({ featuredEvent }) {
                     backgroundImage: `url('https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/696b7ab40d412f960295a323/ed30acab0__92A6935-AlvinstonRodeo2023-Sunday-2.jpg')`
                 }}
             >
-                <div className="absolute inset-0 bg-black/60" />
+                <div className="absolute inset-0 bg-black/30" />
             </div>
             
             {/* Decorative Elements */}
