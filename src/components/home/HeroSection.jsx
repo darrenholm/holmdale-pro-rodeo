@@ -21,15 +21,15 @@ export default function HeroSection({ featuredEvent }) {
             
             {/* Logo */}
             <motion.div
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ duration: 0.8 }}
-                className="absolute top-8 left-8 z-20">
-                <img 
-                    src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/696b7ab40d412f960295a323/a90833e02_LogoBevel.png"
-                    alt="Holmdale Pro Rodeo"
-                    className="max-w-[200px]"
-                />
+        initial={{ opacity: 0, scale: 0.9 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ duration: 0.8 }}
+        className="absolute top-8 left-8 z-20">
+                <img
+          src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/696b7ab40d412f960295a323/a90833e02_LogoBevel.png"
+          alt="Holmdale Pro Rodeo"
+          className="max-w-[200px]" />
+
             </motion.div>
             
             {/* Decorative Elements */}
@@ -84,7 +84,7 @@ export default function HeroSection({ featuredEvent }) {
                         <span className="hidden sm:inline">•</span>
                         <div className="flex items-center gap-2">
                             <MapPin className="w-5 h-5 text-green-500" />
-                            <span className="bg-slate-950 text-[#ffffff] font-bold rounded-[10px]">588 Sideroad 10 S., Walkerton, ON</span>
+                            <span className="bg-slate-950 text-[#ffffff] px-4 py-1 font-bold rounded-[10px]">588 Sideroad 10 S., Walkerton, ON</span>
                         </div>
                     </motion.div>
         }
