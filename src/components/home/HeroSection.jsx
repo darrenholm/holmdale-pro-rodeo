@@ -19,6 +19,19 @@ export default function HeroSection({ featuredEvent }) {
                 <div className="absolute inset-0 bg-black/60" />
             </div>
             
+            {/* Logo */}
+            <motion.div
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.8 }}
+                className="absolute top-8 left-8 z-20">
+                <img 
+                    src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/696b7ab40d412f960295a323/a90833e02_LogoBevel.png"
+                    alt="Holmdale Pro Rodeo"
+                    className="max-w-[200px]"
+                />
+            </motion.div>
+            
             {/* Decorative Elements */}
             <div className="absolute top-20 left-10 w-32 h-32 border border-green-500/20 rotate-45 hidden lg:block" />
             <div className="absolute bottom-40 right-20 w-24 h-24 border border-green-500/20 rotate-12 hidden lg:block" />
