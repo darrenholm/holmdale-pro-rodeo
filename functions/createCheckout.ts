@@ -3,9 +3,7 @@ import { createClientFromRequest } from 'npm:@base44/sdk@0.8.6';
 const stripe = await import('npm:stripe@16.4.0').then(m => new m.default(Deno.env.get('STRIPE_SECRET_KEY')));
 
 const priceMap = {
-  'general': 'price_1SqdwuDWfF5K6kuQg7lQmT6P',
-  'premium': 'price_1SqdwuDWfF5K6kuQoAtfUv4T',
-  'vip': 'price_1SqdwuDWfF5K6kuQFzW5pdbt'
+  'general': 'price_1SqhoxDWfF5K6kuQrtzvUPuv'
 };
 
 Deno.serve(async (req) => {
