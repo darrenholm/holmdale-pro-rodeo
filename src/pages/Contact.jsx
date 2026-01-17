@@ -53,7 +53,19 @@ export default function Contact() {
     };
     
     return (
-        <div className="min-h-screen bg-stone-950 pt-24 pb-20 px-6">
+        <div className="min-h-screen bg-stone-950 pt-24 pb-20 px-6 relative">
+            {/* Logo */}
+            <motion.div
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.8 }}
+                className="absolute top-8 left-8 z-20">
+                <img 
+                    src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/696b7ab40d412f960295a323/a90833e02_LogoBevel.png"
+                    alt="Holmdale Pro Rodeo"
+                    className="max-w-[200px]"
+                />
+            </motion.div>
             <div className="max-w-6xl mx-auto">
                 {/* Header */}
                 <div className="text-center mb-16">
