@@ -56,13 +56,13 @@ export default function About() {
             animate={{ opacity: 1, y: 0 }}>
 
                         A Legacy of
-                        <span className="text-emerald-600"> Farming  Excellence</span>
+                        <span className="bg-gradient-to-r text-emerald-600 opacity-100 from-green-400 to-orange-500"> Farming  Excellence</span>
                     </motion.h1>
                     <motion.p className="text-xl text-stone-300 leading-relaxed"
 
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={{ delay: 0.2 }}>Holmdale Farms has been continuously operated by the Holm Family since 1874. Through 6 generations, the farm has changed from a 100 acres mixed farming operation to more specialized farming in dairy and cash crops. 
+          transition={{ delay: 0.2 }}>Holmdale Farms has been continuously operated by the Holm Family since 1874. Through 6 generations, the farm has changed from a 100 acres mixed farming operation to more specialized farming in dairy and cash crops along with a well known foundation quarter horse breeding program.
 Holm Potato Farms grows approimately 800 acres potatoes annually, focussed on the seed potato market annually providing seed to other potato growers across Canada and the United States. In addition table potatos and other cash crops are raised.
 
 
