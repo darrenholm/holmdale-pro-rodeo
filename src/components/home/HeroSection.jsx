@@ -33,7 +33,7 @@ export default function HeroSection({ featuredEvent }) {
                     <img 
                         src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/696b7ab40d412f960295a323/a90833e02_LogoBevel.png"
                         alt="Holmdale Pro Rodeo"
-                        className="w-full max-w-xs mx-auto"
+                        className="w-full max-w-[250px] mx-auto"
                     />
                 </motion.div>
                 
