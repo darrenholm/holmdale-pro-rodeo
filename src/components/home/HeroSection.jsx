@@ -13,7 +13,7 @@ export default function HeroSection({ featuredEvent }) {
             <div 
                 className="absolute inset-0 bg-cover bg-center bg-no-repeat"
                 style={{
-                    backgroundImage: `url('https://images.unsplash.com/photo-1516466723877-e4ec1d736c8a?w=1920&q=80')`
+                    backgroundImage: `url('https://images.unsplash.com/photo-1570042225831-d98fa7577f1e?w=1920&q=80')`
                 }}
             >
                 <div className="absolute inset-0 bg-black/60" />
