@@ -39,7 +39,7 @@ export default function About() {
             backgroundImage: `url('https://images.unsplash.com/photo-1494947665470-20322015e3a8?w=1920&q=80')`
           }}>
 
-                    <div className="absolute inset-0 bg-gradient-to-b from-stone-950/90 via-stone-950/80 to-stone-950" />
+                    <div className="absolute inset-0 bg-stone-950/60" />
                 </div>
                 
                 <div className="relative z-10 max-w-4xl mx-auto text-center">
@@ -56,7 +56,7 @@ export default function About() {
             animate={{ opacity: 1, y: 0 }}>
 
                         A Legacy of
-                        <span className="bg-gradient-to-r text-emerald-600 opacity-100 from-green-400 to-orange-500"> Western Excellence</span>
+                        <span className="text-transparent bg-clip-text bg-gradient-to-r from-green-400 to-orange-500"> Western Excellence</span>
                     </motion.h1>
                     <motion.p className="text-xl text-stone-300 leading-relaxed"
 
