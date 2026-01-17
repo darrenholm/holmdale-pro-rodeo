@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Calendar, Clock, MapPin, Ticket, Users, CheckCircle, ArrowLeft, Minus, Plus, Loader2 } from 'lucide-react';
+import { Calendar, Clock, MapPin, Ticket, Users, CheckCircle, ArrowLeft, Minus, Plus, Loader2, AlertCircle } from 'lucide-react';
 import { format } from 'date-fns';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
@@ -54,6 +54,7 @@ export default function BuyTickets() {
     });
     const [orderComplete, setOrderComplete] = useState(false);
     const [confirmationCode, setConfirmationCode] = useState('');
+    const [isInIframe, setIsInIframe] = useState(window.self !== window.top);
     
     const { data: event, isLoading } = useQuery({
         queryKey: ['event', eventId],
@@ -64,13 +65,20 @@ export default function BuyTickets() {
         enabled: !!eventId
     });
     
+    const createCheckout = useMutation({
+        mutationFn: async (checkoutData) => {
+            const response = await base44.functions.invoke('createCheckout', checkoutData);
+            return response.data;
+        }
+    });
+
     const createOrder = useMutation({
         mutationFn: async (orderData) => {
             const code = `WW-${Date.now().toString(36).toUpperCase()}`;
             const order = await base44.entities.TicketOrder.create({
                 ...orderData,
                 confirmation_code: code,
-                status: 'confirmed'
+                status: 'pending'
             });
             return { order, code };
         },
@@ -86,17 +94,46 @@ export default function BuyTickets() {
     const ticketAvailable = event?.[selectedTicketType?.availableKey] || 0;
     const totalPrice = ticketPrice * quantity;
     
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        createOrder.mutate({
-            event_id: eventId,
-            customer_name: customerInfo.name,
-            customer_email: customerInfo.email,
-            customer_phone: customerInfo.phone,
-            ticket_type: selectedType,
-            quantity: quantity,
-            total_price: totalPrice
-        });
+        
+        if (isInIframe) {
+            alert('Checkout is only available from the published app. Please open this in a new window.');
+            return;
+        }
+
+        try {
+            const checkoutData = {
+                ticketType: selectedType,
+                quantity: quantity,
+                eventId: eventId,
+                customerEmail: customerInfo.email,
+                customerName: customerInfo.name,
+                customerPhone: customerInfo.phone
+            };
+
+            // Create order record first
+            const code = `WW-${Date.now().toString(36).toUpperCase()}`;
+            await base44.entities.TicketOrder.create({
+                event_id: eventId,
+                customer_name: customerInfo.name,
+                customer_email: customerInfo.email,
+                customer_phone: customerInfo.phone,
+                ticket_type: selectedType,
+                quantity: quantity,
+                total_price: totalPrice,
+                confirmation_code: code,
+                status: 'pending'
+            });
+
+            // Then redirect to Stripe checkout
+            const result = await createCheckout.mutateAsync(checkoutData);
+            if (result.url) {
+                window.location.href = result.url;
+            }
+        } catch (error) {
+            console.error('Checkout error:', error);
+        }
     };
     
     if (!eventId) {
@@ -186,6 +223,12 @@ export default function BuyTickets() {
                         </div>
                         <Skeleton className="h-96 rounded-xl" />
                     </div>
+                ) : isInIframe ? (
+                    <Card className="bg-stone-900 border-stone-800 p-12 text-center max-w-md mx-auto">
+                        <AlertCircle className="w-16 h-16 text-amber-500 mx-auto mb-4" />
+                        <h3 className="text-xl font-semibold text-white mb-2">Checkout Not Available</h3>
+                        <p className="text-stone-400 mb-6">Checkout is only available from the published app. Please open this link in a new window to continue.</p>
+                    </Card>
                 ) : (
                     <div className="grid lg:grid-cols-3 gap-8">
                         {/* Main Content */}
@@ -345,13 +388,13 @@ export default function BuyTickets() {
                                         
                                         <Button 
                                             type="submit"
-                                            disabled={createOrder.isPending || ticketAvailable === 0}
+                                            disabled={createCheckout.isPending || ticketAvailable === 0}
                                             className="w-full bg-green-500 hover:bg-green-600 text-stone-900 font-semibold py-6 text-lg"
                                         >
-                                            {createOrder.isPending ? (
+                                            {createCheckout.isPending ? (
                                                 <>
                                                     <Loader2 className="w-5 h-5 mr-2 animate-spin" />
-                                                    Processing...
+                                                    Redirecting to Checkout...
                                                 </>
                                             ) : (
                                                 <>
