@@ -44,7 +44,7 @@ export default function About() {
                 
                 <div className="relative z-10 max-w-4xl mx-auto text-center">
                     <motion.span 
-                        className="inline-block text-amber-500 text-sm font-semibold tracking-wider uppercase mb-4"
+                        className="inline-block text-green-500 text-sm font-semibold tracking-wider uppercase mb-4"
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
                     >
@@ -56,7 +56,7 @@ export default function About() {
                         animate={{ opacity: 1, y: 0 }}
                     >
                         A Legacy of
-                        <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-400 to-orange-500"> Western Excellence</span>
+                        <span className="text-transparent bg-clip-text bg-gradient-to-r from-green-400 to-orange-500"> Western Excellence</span>
                     </motion.h1>
                     <motion.p 
                         className="text-xl text-stone-300 leading-relaxed"
@@ -84,8 +84,8 @@ export default function About() {
                                 viewport={{ once: true }}
                                 transition={{ delay: index * 0.1 }}
                             >
-                                <div className="w-14 h-14 mx-auto mb-4 rounded-xl bg-amber-500/20 flex items-center justify-center">
-                                    <stat.icon className="w-7 h-7 text-amber-500" />
+                                <div className="w-14 h-14 mx-auto mb-4 rounded-xl bg-green-500/20 flex items-center justify-center">
+                                    <stat.icon className="w-7 h-7 text-green-500" />
                                 </div>
                                 <p className="text-4xl font-bold text-white mb-1">{stat.value}</p>
                                 <p className="text-stone-400">{stat.label}</p>
@@ -104,7 +104,7 @@ export default function About() {
                             whileInView={{ opacity: 1, x: 0 }}
                             viewport={{ once: true }}
                         >
-                            <span className="text-amber-500 text-sm font-semibold tracking-wider uppercase mb-4 block">
+                            <span className="text-green-500 text-sm font-semibold tracking-wider uppercase mb-4 block">
                                 The Beginning
                             </span>
                             <h2 className="text-3xl md:text-4xl font-bold text-white mb-6">
@@ -169,13 +169,13 @@ export default function About() {
             <section className="py-24 px-6 bg-stone-900">
                 <div className="max-w-6xl mx-auto">
                     <div className="text-center mb-16">
-                        <span className="text-amber-500 text-sm font-semibold tracking-wider uppercase mb-4 block">
+                        <span className="text-green-500 text-sm font-semibold tracking-wider uppercase mb-4 block">
                             What We Stand For
                         </span>
                         <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
                             Our Core Values
                         </h2>
-                        <div className="w-24 h-1 bg-gradient-to-r from-amber-500 to-orange-500 mx-auto" />
+                        <div className="w-24 h-1 bg-gradient-to-r from-green-500 to-orange-500 mx-auto" />
                     </div>
                     
                     <div className="grid md:grid-cols-3 gap-8">
@@ -187,9 +187,9 @@ export default function About() {
                                 viewport={{ once: true }}
                                 transition={{ delay: index * 0.1 }}
                             >
-                                <Card className="bg-stone-800 border-stone-700 p-8 h-full text-center hover:border-amber-500/30 transition-all duration-300">
-                                    <div className="w-16 h-16 mx-auto mb-6 rounded-xl bg-amber-500/20 flex items-center justify-center">
-                                        <value.icon className="w-8 h-8 text-amber-500" />
+                                <Card className="bg-stone-800 border-stone-700 p-8 h-full text-center hover:border-green-500/30 transition-all duration-300">
+                                    <div className="w-16 h-16 mx-auto mb-6 rounded-xl bg-green-500/20 flex items-center justify-center">
+                                        <value.icon className="w-8 h-8 text-green-500" />
                                     </div>
                                     <h3 className="text-xl font-bold text-white mb-3">{value.title}</h3>
                                     <p className="text-stone-400">{value.description}</p>

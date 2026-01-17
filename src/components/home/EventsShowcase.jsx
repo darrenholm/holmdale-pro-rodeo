@@ -17,7 +17,7 @@ export default function EventsShowcase({ events }) {
                 {/* Header */}
                 <div className="text-center mb-16">
                     <motion.span 
-                        className="inline-block text-amber-500 text-sm font-semibold tracking-wider uppercase mb-4"
+                        className="inline-block text-green-500 text-sm font-semibold tracking-wider uppercase mb-4"
                         initial={{ opacity: 0 }}
                         whileInView={{ opacity: 1 }}
                         viewport={{ once: true }}
@@ -33,7 +33,7 @@ export default function EventsShowcase({ events }) {
                         Upcoming Events
                     </motion.h2>
                     <motion.div 
-                        className="w-24 h-1 bg-gradient-to-r from-amber-500 to-orange-500 mx-auto"
+                        className="w-24 h-1 bg-gradient-to-r from-green-500 to-orange-500 mx-auto"
                         initial={{ width: 0 }}
                         whileInView={{ width: 96 }}
                         viewport={{ once: true }}
@@ -51,7 +51,7 @@ export default function EventsShowcase({ events }) {
                             viewport={{ once: true }}
                             transition={{ duration: 0.5, delay: index * 0.1 }}
                         >
-                            <Card className="bg-stone-900 border-stone-800 overflow-hidden group hover:border-amber-500/30 transition-all duration-500">
+                            <Card className="bg-stone-900 border-stone-800 overflow-hidden group hover:border-green-500/30 transition-all duration-500">
                                 {/* Image */}
                                 <div className="relative h-52 overflow-hidden">
                                     <img 
@@ -61,7 +61,7 @@ export default function EventsShowcase({ events }) {
                                     />
                                     <div className="absolute inset-0 bg-gradient-to-t from-stone-900 via-transparent to-transparent" />
                                     {event.is_featured && (
-                                        <Badge className="absolute top-4 right-4 bg-amber-500 text-stone-900 font-semibold">
+                                        <Badge className="absolute top-4 right-4 bg-green-500 text-stone-900 font-semibold">
                                             Featured
                                         </Badge>
                                     )}
@@ -69,21 +69,21 @@ export default function EventsShowcase({ events }) {
                                 
                                 {/* Content */}
                                 <div className="p-6">
-                                    <h3 className="text-xl font-bold text-white mb-3 group-hover:text-amber-400 transition-colors">
+                                    <h3 className="text-xl font-bold text-white mb-3 group-hover:text-green-400 transition-colors">
                                         {event.title}
                                     </h3>
                                     
                                     <div className="space-y-2 mb-4">
                                         <div className="flex items-center gap-2 text-stone-400 text-sm">
-                                            <Calendar className="w-4 h-4 text-amber-500" />
+                                            <Calendar className="w-4 h-4 text-green-500" />
                                             <span>{event.id === '696b7bdc81676e7ff80617a1' ? 'July 31 - August 2, 2026' : format(new Date(event.date), 'EEEE, MMMM d, yyyy')}</span>
                                         </div>
                                         <div className="flex items-center gap-2 text-stone-400 text-sm">
-                                            <Clock className="w-4 h-4 text-amber-500" />
+                                            <Clock className="w-4 h-4 text-green-500" />
                                             <span>{event.time}</span>
                                         </div>
                                         <div className="flex items-center gap-2 text-stone-400 text-sm">
-                                            <MapPin className="w-4 h-4 text-amber-500" />
+                                            <MapPin className="w-4 h-4 text-green-500" />
                                             <span>{event.venue || 'Main Arena'}</span>
                                         </div>
                                     </div>
@@ -91,12 +91,12 @@ export default function EventsShowcase({ events }) {
                                     <div className="flex items-center justify-between pt-4 border-t border-stone-800">
                                         <div>
                                             <span className="text-stone-500 text-sm">Starting at</span>
-                                            <p className="text-amber-400 font-bold text-xl">
+                                            <p className="text-green-400 font-bold text-xl">
                                                 ${event.general_price || 25}
                                             </p>
                                         </div>
                                         <Link to={`${createPageUrl('BuyTickets')}?eventId=${event.id}`}>
-                                            <Button className="bg-amber-500 hover:bg-amber-600 text-stone-900 font-semibold group/btn">
+                                            <Button className="bg-green-500 hover:bg-green-600 text-stone-900 font-semibold group/btn">
                                                 Buy Tickets
                                                 <ArrowRight className="w-4 h-4 ml-2 transition-transform group-hover/btn:translate-x-1" />
                                             </Button>
@@ -119,7 +119,7 @@ export default function EventsShowcase({ events }) {
                         <Button 
                             variant="outline" 
                             size="lg"
-                            className="border-amber-500/50 text-amber-400 hover:bg-amber-500/10 hover:text-amber-300"
+                            className="border-green-500/50 text-green-400 hover:bg-green-500/10 hover:text-green-300"
                         >
                             View All Events
                             <ArrowRight className="w-4 h-4 ml-2" />

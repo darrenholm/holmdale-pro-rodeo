@@ -23,7 +23,7 @@ export default function Events() {
                 {/* Header */}
                 <div className="text-center mb-16">
                     <motion.span 
-                        className="inline-block text-amber-500 text-sm font-semibold tracking-wider uppercase mb-4"
+                        className="inline-block text-green-500 text-sm font-semibold tracking-wider uppercase mb-4"
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
                     >
@@ -77,7 +77,7 @@ export default function Events() {
                                 animate={{ opacity: 1, y: 0 }}
                                 transition={{ duration: 0.5, delay: index * 0.1 }}
                             >
-                                <Card className="bg-stone-900 border-stone-800 overflow-hidden group hover:border-amber-500/30 transition-all duration-300">
+                                <Card className="bg-stone-900 border-stone-800 overflow-hidden group hover:border-green-500/30 transition-all duration-300">
                                     <div className="flex flex-col lg:flex-row">
                                         {/* Image */}
                                         <div className="relative lg:w-80 h-56 lg:h-auto overflow-hidden">
@@ -87,7 +87,7 @@ export default function Events() {
                                                 className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                                             />
                                             {event.is_featured && (
-                                                <Badge className="absolute top-4 left-4 bg-amber-500 text-stone-900 font-semibold">
+                                                <Badge className="absolute top-4 left-4 bg-green-500 text-stone-900 font-semibold">
                                                     Featured Event
                                                 </Badge>
                                             )}
@@ -97,7 +97,7 @@ export default function Events() {
                                         <div className="flex-1 p-6 lg:p-8">
                                             <div className="flex flex-col lg:flex-row lg:items-start justify-between gap-6">
                                                 <div className="flex-1">
-                                                    <h3 className="text-2xl font-bold text-white mb-4 group-hover:text-amber-400 transition-colors">
+                                                    <h3 className="text-2xl font-bold text-white mb-4 group-hover:text-green-400 transition-colors">
                                                         {event.title}
                                                     </h3>
                                                     
@@ -109,15 +109,15 @@ export default function Events() {
                                                     
                                                     <div className="flex flex-wrap gap-4 text-sm">
                                                         <div className="flex items-center gap-2 text-stone-300">
-                                                            <Calendar className="w-4 h-4 text-amber-500" />
+                                                            <Calendar className="w-4 h-4 text-green-500" />
                                                             <span>{event.id === '696b7bdc81676e7ff80617a1' ? 'July 31 - August 2, 2026' : format(new Date(event.date), 'EEEE, MMMM d, yyyy')}</span>
                                                         </div>
                                                         <div className="flex items-center gap-2 text-stone-300">
-                                                            <Clock className="w-4 h-4 text-amber-500" />
+                                                            <Clock className="w-4 h-4 text-green-500" />
                                                             <span>{event.time}</span>
                                                         </div>
                                                         <div className="flex items-center gap-2 text-stone-300">
-                                                            <MapPin className="w-4 h-4 text-amber-500" />
+                                                            <MapPin className="w-4 h-4 text-green-500" />
                                                             <span>{event.venue || 'Main Arena'}</span>
                                                         </div>
                                                     </div>
@@ -127,7 +127,7 @@ export default function Events() {
                                                 <div className="lg:text-right">
                                                     <div className="mb-4">
                                                         <span className="text-stone-500 text-sm block mb-1">Starting at</span>
-                                                        <span className="text-3xl font-bold text-amber-400">
+                                                        <span className="text-3xl font-bold text-green-400">
                                                             ${event.general_price || 25}
                                                         </span>
                                                     </div>
@@ -144,14 +144,14 @@ export default function Events() {
                                                             </Badge>
                                                         )}
                                                         {event.vip_available > 0 && (
-                                                            <Badge variant="outline" className="border-amber-500/50 text-amber-400">
+                                                            <Badge variant="outline" className="border-green-500/50 text-green-400">
                                                                 VIP Available
                                                             </Badge>
                                                         )}
                                                     </div>
                                                     
                                                     <Link to={`${createPageUrl('BuyTickets')}?eventId=${event.id}`}>
-                                                        <Button className="bg-amber-500 hover:bg-amber-600 text-stone-900 font-semibold w-full lg:w-auto group/btn">
+                                                        <Button className="bg-green-500 hover:bg-green-600 text-stone-900 font-semibold w-full lg:w-auto group/btn">
                                                             Buy Tickets
                                                             <ArrowRight className="w-4 h-4 ml-2 transition-transform group-hover/btn:translate-x-1" />
                                                         </Button>

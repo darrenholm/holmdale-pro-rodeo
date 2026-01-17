@@ -46,7 +46,7 @@ export default function Navbar() {
                         {/* Logo */}
                         <Link to={createPageUrl('Home')} className="flex items-center gap-2">
                             <span className="text-2xl font-bold text-white">
-                                <span className="text-amber-500">Holmdale</span> Pro Rodeo
+                                <span className="text-green-500">Holmdale</span> Pro Rodeo
                             </span>
                         </Link>
                         
@@ -58,8 +58,8 @@ export default function Navbar() {
                                     to={createPageUrl(link.page)}
                                     className={`text-sm font-medium transition-colors ${
                                         isActivePage(link.page)
-                                            ? 'text-amber-400'
-                                            : 'text-stone-300 hover:text-amber-400'
+                                            ? 'text-green-400'
+                                            : 'text-stone-300 hover:text-green-400'
                                     }`}
                                 >
                                     {link.name}
@@ -70,7 +70,7 @@ export default function Navbar() {
                         {/* CTA Button */}
                         <div className="hidden md:block">
                             <Link to={createPageUrl('Events')}>
-                                <Button className="bg-amber-500 hover:bg-amber-600 text-stone-900 font-semibold">
+                                <Button className="bg-green-500 hover:bg-green-600 text-stone-900 font-semibold">
                                     <Ticket className="w-4 h-4 mr-2" />
                                     Get Tickets
                                 </Button>
@@ -106,7 +106,7 @@ export default function Navbar() {
                                     onClick={() => setIsMobileMenuOpen(false)}
                                     className={`text-2xl font-semibold ${
                                         isActivePage(link.page)
-                                            ? 'text-amber-400'
+                                            ? 'text-green-400'
                                             : 'text-white'
                                     }`}
                                 >
@@ -117,7 +117,7 @@ export default function Navbar() {
                                 to={createPageUrl('Events')}
                                 onClick={() => setIsMobileMenuOpen(false)}
                             >
-                                <Button className="w-full bg-amber-500 hover:bg-amber-600 text-stone-900 font-semibold py-6 text-lg mt-4">
+                                <Button className="w-full bg-green-500 hover:bg-green-600 text-stone-900 font-semibold py-6 text-lg mt-4">
                                     <Ticket className="w-5 h-5 mr-2" />
                                     Get Tickets
                                 </Button>

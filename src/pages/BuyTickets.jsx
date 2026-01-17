@@ -36,7 +36,7 @@ const ticketTypes = [
         description: 'Private box seating with complimentary refreshments and meet & greet',
         priceKey: 'vip_price',
         availableKey: 'vip_available',
-        color: 'border-amber-500/50 bg-amber-500/10'
+        color: 'border-green-500/50 bg-green-500/10'
     }
 ];
 
@@ -107,7 +107,7 @@ export default function BuyTickets() {
                     <h3 className="text-xl font-semibold text-white mb-2">No Event Selected</h3>
                     <p className="text-stone-400 mb-6">Please select an event to purchase tickets.</p>
                     <Link to={createPageUrl('Events')}>
-                        <Button className="bg-amber-500 hover:bg-amber-600 text-stone-900">
+                        <Button className="bg-green-500 hover:bg-green-600 text-stone-900">
                             Browse Events
                         </Button>
                     </Link>
@@ -133,7 +133,7 @@ export default function BuyTickets() {
                         
                         <div className="bg-stone-800 rounded-xl p-6 mb-6">
                             <p className="text-stone-400 text-sm mb-2">Confirmation Code</p>
-                            <p className="text-3xl font-bold text-amber-400 font-mono">{confirmationCode}</p>
+                            <p className="text-3xl font-bold text-green-400 font-mono">{confirmationCode}</p>
                         </div>
                         
                         <div className="text-left bg-stone-800/50 rounded-xl p-4 mb-6 space-y-2">
@@ -147,7 +147,7 @@ export default function BuyTickets() {
                             </div>
                             <div className="flex justify-between">
                                 <span className="text-stone-400">Total</span>
-                                <span className="text-amber-400 font-bold">${totalPrice.toFixed(2)}</span>
+                                <span className="text-green-400 font-bold">${totalPrice.toFixed(2)}</span>
                             </div>
                         </div>
                         
@@ -156,7 +156,7 @@ export default function BuyTickets() {
                         </p>
                         
                         <Link to={createPageUrl('Events')}>
-                            <Button className="w-full bg-amber-500 hover:bg-amber-600 text-stone-900">
+                            <Button className="w-full bg-green-500 hover:bg-green-600 text-stone-900">
                                 Browse More Events
                             </Button>
                         </Link>
@@ -172,7 +172,7 @@ export default function BuyTickets() {
                 {/* Back Button */}
                 <Link 
                     to={createPageUrl('Events')}
-                    className="inline-flex items-center gap-2 text-stone-400 hover:text-amber-400 transition-colors mb-8"
+                    className="inline-flex items-center gap-2 text-stone-400 hover:text-green-400 transition-colors mb-8"
                 >
                     <ArrowLeft className="w-4 h-4" />
                     Back to Events
@@ -203,15 +203,15 @@ export default function BuyTickets() {
                                         <h1 className="text-3xl font-bold text-white mb-2">{event?.title}</h1>
                                         <div className="flex flex-wrap gap-4 text-sm text-stone-300">
                                             <div className="flex items-center gap-2">
-                                                <Calendar className="w-4 h-4 text-amber-500" />
+                                                <Calendar className="w-4 h-4 text-green-500" />
                                                 {event?.id === '696b7bdc81676e7ff80617a1' ? 'July 31 - August 2, 2026' : format(new Date(event?.date), 'EEEE, MMMM d, yyyy')}
                                             </div>
                                             <div className="flex items-center gap-2">
-                                                <Clock className="w-4 h-4 text-amber-500" />
+                                                <Clock className="w-4 h-4 text-green-500" />
                                                 {event?.time}
                                             </div>
                                             <div className="flex items-center gap-2">
-                                                <MapPin className="w-4 h-4 text-amber-500" />
+                                                <MapPin className="w-4 h-4 text-green-500" />
                                                 {event?.venue || 'Main Arena'}
                                             </div>
                                         </div>
@@ -223,7 +223,7 @@ export default function BuyTickets() {
                             <Card className="bg-stone-900 border-stone-800">
                                 <CardHeader>
                                     <CardTitle className="text-white flex items-center gap-2">
-                                        <Ticket className="w-5 h-5 text-amber-500" />
+                                        <Ticket className="w-5 h-5 text-green-500" />
                                         Select Ticket Type
                                     </CardTitle>
                                 </CardHeader>
@@ -241,7 +241,7 @@ export default function BuyTickets() {
                                                 disabled={!isAvailable}
                                                 className={`w-full p-4 rounded-xl border-2 text-left transition-all ${
                                                     isSelected 
-                                                        ? 'border-amber-500 bg-amber-500/10' 
+                                                        ? 'border-green-500 bg-green-500/10' 
                                                         : isAvailable 
                                                             ? 'border-stone-700 bg-stone-800/50 hover:border-stone-600' 
                                                             : 'border-stone-800 bg-stone-800/30 opacity-50 cursor-not-allowed'
@@ -259,7 +259,7 @@ export default function BuyTickets() {
                                                         </Badge>
                                                     </div>
                                                     <div className="text-right">
-                                                        <p className="text-2xl font-bold text-amber-400">${price}</p>
+                                                        <p className="text-2xl font-bold text-green-400">${price}</p>
                                                         <p className="text-stone-500 text-sm">per ticket</p>
                                                     </div>
                                                 </div>
@@ -273,7 +273,7 @@ export default function BuyTickets() {
                             <Card className="bg-stone-900 border-stone-800">
                                 <CardHeader>
                                     <CardTitle className="text-white flex items-center gap-2">
-                                        <Users className="w-5 h-5 text-amber-500" />
+                                        <Users className="w-5 h-5 text-green-500" />
                                         Ticket Details
                                     </CardTitle>
                                 </CardHeader>
@@ -346,7 +346,7 @@ export default function BuyTickets() {
                                         <Button 
                                             type="submit"
                                             disabled={createOrder.isPending || ticketAvailable === 0}
-                                            className="w-full bg-amber-500 hover:bg-amber-600 text-stone-900 font-semibold py-6 text-lg"
+                                            className="w-full bg-green-500 hover:bg-green-600 text-stone-900 font-semibold py-6 text-lg"
                                         >
                                             {createOrder.isPending ? (
                                                 <>
@@ -382,7 +382,7 @@ export default function BuyTickets() {
                                     <div className="border-t border-stone-800 pt-4">
                                         <div className="flex justify-between text-lg font-bold">
                                             <span className="text-white">Total</span>
-                                            <span className="text-amber-400">${totalPrice.toFixed(2)}</span>
+                                            <span className="text-green-400">${totalPrice.toFixed(2)}</span>
                                         </div>
                                     </div>
                                     

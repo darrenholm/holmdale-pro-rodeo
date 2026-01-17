@@ -58,7 +58,7 @@ export default function Contact() {
                 {/* Header */}
                 <div className="text-center mb-16">
                     <motion.span 
-                        className="inline-block text-amber-500 text-sm font-semibold tracking-wider uppercase mb-4"
+                        className="inline-block text-green-500 text-sm font-semibold tracking-wider uppercase mb-4"
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
                     >
@@ -92,11 +92,11 @@ export default function Contact() {
                                 animate={{ opacity: 1, x: 0 }}
                                 transition={{ delay: index * 0.1 }}
                             >
-                                <Card className="bg-stone-900 border-stone-800 hover:border-amber-500/30 transition-all duration-300">
+                                <Card className="bg-stone-900 border-stone-800 hover:border-green-500/30 transition-all duration-300">
                                     <CardContent className="p-6">
                                         <div className="flex items-start gap-4">
-                                            <div className="w-12 h-12 rounded-xl bg-amber-500/20 flex items-center justify-center flex-shrink-0">
-                                                <info.icon className="w-6 h-6 text-amber-500" />
+                                            <div className="w-12 h-12 rounded-xl bg-green-500/20 flex items-center justify-center flex-shrink-0">
+                                                <info.icon className="w-6 h-6 text-green-500" />
                                             </div>
                                             <div>
                                                 <h3 className="text-white font-semibold mb-2">{info.title}</h3>
@@ -137,7 +137,7 @@ export default function Contact() {
                                         <Button 
                                             onClick={() => setIsSubmitted(false)}
                                             variant="outline"
-                                            className="border-amber-500/50 text-amber-400 hover:bg-amber-500/10"
+                                            className="border-green-500/50 text-green-400 hover:bg-green-500/10"
                                         >
                                             Send Another Message
                                         </Button>
@@ -151,7 +151,7 @@ export default function Contact() {
                                                     id="name"
                                                     value={formData.name}
                                                     onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                                                    className="mt-2 bg-stone-800 border-stone-700 text-white focus:border-amber-500"
+                                                    className="mt-2 bg-stone-800 border-stone-700 text-white focus:border-green-500"
                                                     placeholder="John Doe"
                                                     required
                                                 />
@@ -163,7 +163,7 @@ export default function Contact() {
                                                     type="email"
                                                     value={formData.email}
                                                     onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                                                    className="mt-2 bg-stone-800 border-stone-700 text-white focus:border-amber-500"
+                                                    className="mt-2 bg-stone-800 border-stone-700 text-white focus:border-green-500"
                                                     placeholder="john@example.com"
                                                     required
                                                 />
@@ -176,7 +176,7 @@ export default function Contact() {
                                                 id="subject"
                                                 value={formData.subject}
                                                 onChange={(e) => setFormData({ ...formData, subject: e.target.value })}
-                                                className="mt-2 bg-stone-800 border-stone-700 text-white focus:border-amber-500"
+                                                className="mt-2 bg-stone-800 border-stone-700 text-white focus:border-green-500"
                                                 placeholder="How can we help?"
                                                 required
                                             />
@@ -188,7 +188,7 @@ export default function Contact() {
                                                 id="message"
                                                 value={formData.message}
                                                 onChange={(e) => setFormData({ ...formData, message: e.target.value })}
-                                                className="mt-2 bg-stone-800 border-stone-700 text-white focus:border-amber-500 h-36"
+                                                className="mt-2 bg-stone-800 border-stone-700 text-white focus:border-green-500 h-36"
                                                 placeholder="Tell us more about your inquiry..."
                                                 required
                                             />
@@ -197,7 +197,7 @@ export default function Contact() {
                                         <Button 
                                             type="submit"
                                             disabled={isSubmitting}
-                                            className="w-full bg-amber-500 hover:bg-amber-600 text-stone-900 font-semibold py-6 text-lg"
+                                            className="w-full bg-green-500 hover:bg-green-600 text-stone-900 font-semibold py-6 text-lg"
                                         >
                                             {isSubmitting ? (
                                                 <>
@@ -228,7 +228,7 @@ export default function Contact() {
                     <Card className="bg-stone-900 border-stone-800 overflow-hidden">
                         <div className="h-80 bg-stone-800 flex items-center justify-center">
                             <div className="text-center">
-                                <MapPin className="w-12 h-12 text-amber-500 mx-auto mb-4" />
+                                <MapPin className="w-12 h-12 text-green-500 mx-auto mb-4" />
                                 <p className="text-stone-400">Interactive map coming soon</p>
                                 <p className="text-stone-500 text-sm mt-2">588 Sideroad 10 S., Walkerton, ON</p>
                             </div>

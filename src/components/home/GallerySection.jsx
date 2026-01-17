@@ -35,7 +35,7 @@ export default function GallerySection() {
                 {/* Header */}
                 <div className="text-center mb-16">
                     <motion.span 
-                        className="inline-block text-amber-500 text-sm font-semibold tracking-wider uppercase mb-4"
+                        className="inline-block text-green-500 text-sm font-semibold tracking-wider uppercase mb-4"
                         initial={{ opacity: 0 }}
                         whileInView={{ opacity: 1 }}
                         viewport={{ once: true }}
@@ -51,7 +51,7 @@ export default function GallerySection() {
                         Gallery
                     </motion.h2>
                     <motion.div 
-                        className="w-24 h-1 bg-gradient-to-r from-amber-500 to-orange-500 mx-auto"
+                        className="w-24 h-1 bg-gradient-to-r from-green-500 to-orange-500 mx-auto"
                         initial={{ width: 0 }}
                         whileInView={{ width: 96 }}
                         viewport={{ once: true }}
