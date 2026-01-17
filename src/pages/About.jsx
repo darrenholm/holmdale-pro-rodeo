@@ -111,12 +111,12 @@ Holm Potato Farms grows approimately 800 acres potatoes annually, focussed on th
                                 From Humble Roots to Championship Glory
                             </h2>
                             <div className="space-y-4 text-stone-300 leading-relaxed">
-                                <p>
-                                    What started as a small county fair event in 1998 has grown into one of the 
-                                    most anticipated rodeo championships in the region. Our founders, passionate 
-                                    ranchers and rodeo enthusiasts, dreamed of creating an event that would 
-                                    celebrate the true spirit of the American West.
-                                </p>
+                                <p className="">What started in 2024 being the first Rodeo held in Bruce County in many years to celebrate the 150th anniversary of our family farm. It has grown to be one of the most anticipated rodeos in the region. Our founders, passionate farmers and rodeo enthusiasts, dreamed of creating an event that would celebrate the true spirit of the early days of life on the farm.
+
+
+
+
+                </p>
                                 <p>
                                     Today, we host thousands of fans each year, featuring world-class competitors 
                                     in bull riding, barrel racing, bronc riding, and team roping. Our commitment 
