@@ -37,7 +37,7 @@ Deno.serve(async (req) => {
         }
       ],
       mode: 'payment',
-      success_url: `${Deno.env.get('BASE44_APP_URL')}/checkout-success?sessionId={CHECKOUT_SESSION_ID}`,
+      success_url: `${Deno.env.get('BASE44_APP_URL')}/checkout-success?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${Deno.env.get('BASE44_APP_URL')}/checkout-cancel`,
       customer_email: customerEmail,
       metadata: {
@@ -49,6 +49,7 @@ Deno.serve(async (req) => {
       }
     });
 
+    console.log('Stripe session created:', session.id, 'URL:', session.url);
     return Response.json({ 
       sessionId: session.id,
       url: session.url
