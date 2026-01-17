@@ -138,26 +138,26 @@ Holm Potato Farms grows approimately 800 acres potatoes annually, focussed on th
 
                             <div className="space-y-4">
                                 <img
-                  src="https://images.unsplash.com/photo-1570042225831-d98fa7577f1e?w=400&q=80"
-                  alt="Rodeo action"
-                  className="w-full h-48 object-cover rounded-xl" />
+                            src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/696b7ab40d412f960295a323/7ab4b7466_Planter2.jpg"
+                            alt="Farm image"
+                            className="w-full h-48 object-cover rounded-xl" />
 
                                 <img
-                  src="https://images.unsplash.com/photo-1553284965-83fd3e82fa5a?w=400&q=80"
-                  alt="Horses"
-                  className="w-full h-64 object-cover rounded-xl" />
+                            src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/696b7ab40d412f960295a323/7ab4b7466_Planter2.jpg"
+                            alt="Farm image"
+                            className="w-full h-64 object-cover rounded-xl" />
 
-                            </div>
-                            <div className="space-y-4 pt-8">
+                             </div>
+                             <div className="space-y-4 pt-8">
                                 <img
-                  src="https://images.unsplash.com/photo-1508193638397-1c4234db14d8?w=400&q=80"
-                  alt="Western sunset"
-                  className="w-full h-64 object-cover rounded-xl" />
+                            src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/696b7ab40d412f960295a323/7ab4b7466_Planter2.jpg"
+                            alt="Farm image"
+                            className="w-full h-64 object-cover rounded-xl" />
 
                                 <img
-                  src="https://images.unsplash.com/photo-1494947665470-20322015e3a8?w=400&q=80"
-                  alt="Western spirit"
-                  className="w-full h-48 object-cover rounded-xl" />
+                            src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/696b7ab40d412f960295a323/7ab4b7466_Planter2.jpg"
+                            alt="Farm image"
+                            className="w-full h-48 object-cover rounded-xl" />
 
                             </div>
                         </motion.div>
