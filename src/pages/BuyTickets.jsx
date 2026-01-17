@@ -50,7 +50,6 @@ export default function BuyTickets() {
     const [customerInfo, setCustomerInfo] = useState({
         name: '',
         email: '',
-        phone: '',
         postal_code: ''
     });
     const [orderComplete, setOrderComplete] = useState(false);
@@ -372,17 +371,6 @@ export default function BuyTickets() {
                                                     className="mt-2 bg-stone-800 border-stone-700 text-white"
                                                     placeholder="john@example.com"
                                                     required
-                                                />
-                                            </div>
-                                            <div>
-                                                <Label htmlFor="phone" className="text-stone-300">Phone Number</Label>
-                                                <Input
-                                                    id="phone"
-                                                    type="tel"
-                                                    value={customerInfo.phone}
-                                                    onChange={(e) => setCustomerInfo({ ...customerInfo, phone: e.target.value })}
-                                                    className="mt-2 bg-stone-800 border-stone-700 text-white"
-                                                    placeholder="(555) 123-4567"
                                                 />
                                             </div>
                                             <div>
