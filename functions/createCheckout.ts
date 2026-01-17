@@ -40,6 +40,7 @@ Deno.serve(async (req) => {
       success_url: `${Deno.env.get('BASE44_APP_URL')}/checkout-success?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${Deno.env.get('BASE44_APP_URL')}/checkout-cancel`,
       customer_email: customerEmail,
+      automatic_tax: { enabled: true },
       metadata: {
         base44_app_id: Deno.env.get('BASE44_APP_ID'),
         event_id: eventId,
