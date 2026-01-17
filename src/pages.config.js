@@ -3,6 +3,8 @@ import BuyTickets from './pages/BuyTickets';
 import Contact from './pages/Contact';
 import Events from './pages/Events';
 import Home from './pages/Home';
+import CheckoutSuccess from './pages/CheckoutSuccess';
+import CheckoutCancel from './pages/CheckoutCancel';
 import __Layout from './Layout.jsx';
 
 
@@ -12,6 +14,8 @@ export const PAGES = {
     "Contact": Contact,
     "Events": Events,
     "Home": Home,
+    "CheckoutSuccess": CheckoutSuccess,
+    "CheckoutCancel": CheckoutCancel,
 }
 
 export const pagesConfig = {

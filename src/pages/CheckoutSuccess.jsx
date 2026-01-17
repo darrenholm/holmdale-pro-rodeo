@@ -1,0 +1,51 @@
+import React, { useEffect } from 'react';
+import { motion } from 'framer-motion';
+import { Card } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { CheckCircle } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { createPageUrl } from '@/utils';
+
+export default function CheckoutSuccess() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const sessionId = urlParams.get('sessionId');
+
+    return (
+        <div className="min-h-screen bg-stone-950 pt-24 pb-20 px-6 flex items-center justify-center">
+            <motion.div
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                className="max-w-lg w-full"
+            >
+                <Card className="bg-stone-900 border-stone-800 p-8 text-center">
+                    <div className="w-20 h-20 rounded-full bg-green-500/20 flex items-center justify-center mx-auto mb-6">
+                        <CheckCircle className="w-10 h-10 text-green-500" />
+                    </div>
+                    <h2 className="text-3xl font-bold text-white mb-2">Payment Successful!</h2>
+                    <p className="text-stone-400 mb-6">Thank you for your purchase. Your tickets have been confirmed and a confirmation email has been sent.</p>
+                    
+                    <div className="bg-stone-800 rounded-xl p-6 mb-6">
+                        <p className="text-stone-400 text-sm mb-2">Session ID</p>
+                        <p className="text-sm font-mono text-green-400 break-all">{sessionId}</p>
+                    </div>
+                    
+                    <p className="text-stone-500 text-sm mb-6">
+                        Your ticket information will be available in your email. Make sure to bring your confirmation code to the event.
+                    </p>
+                    
+                    <Link to={createPageUrl('Events')}>
+                        <Button className="w-full bg-green-500 hover:bg-green-600 text-stone-900 font-semibold py-6">
+                            Browse More Events
+                        </Button>
+                    </Link>
+                    
+                    <Link to={createPageUrl('Home')}>
+                        <Button variant="outline" className="w-full mt-3 border-stone-600 text-stone-300 hover:bg-stone-800">
+                            Back to Home
+                        </Button>
+                    </Link>
+                </Card>
+            </motion.div>
+        </div>
+    );
+}
