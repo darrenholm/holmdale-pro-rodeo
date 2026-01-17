@@ -4,9 +4,9 @@ import { Card } from "@/components/ui/card";
 import { Trophy, Users, Calendar, Star, Award, Heart } from 'lucide-react';
 
 const stats = [
-{ icon: Calendar, value: '25+', label: 'Years of Excellence' },
-{ icon: Users, value: '500K+', label: 'Fans Entertained' },
-{ icon: Trophy, value: '150+', label: 'Champion Riders' },
+{ icon: Calendar, value: '150+', label: 'Years of Farming' },
+{ icon: Users, value: '10,000+', label: 'Fans Entertained' },
+{ icon: Trophy, value: '50+', label: 'Champion Riders' },
 { icon: Star, value: '4.9', label: 'Average Rating' }];
 
 
