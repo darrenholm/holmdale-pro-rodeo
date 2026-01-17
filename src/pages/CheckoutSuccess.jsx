@@ -8,7 +8,7 @@ import { createPageUrl } from '@/utils';
 
 export default function CheckoutSuccess() {
     const urlParams = new URLSearchParams(window.location.search);
-    const sessionId = urlParams.get('sessionId');
+    const sessionId = urlParams.get('session_id');
 
     return (
         <div className="min-h-screen bg-stone-950 pt-24 pb-20 px-6 flex items-center justify-center">
