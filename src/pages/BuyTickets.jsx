@@ -50,7 +50,8 @@ export default function BuyTickets() {
     const [customerInfo, setCustomerInfo] = useState({
         name: '',
         email: '',
-        phone: ''
+        phone: '',
+        postal_code: ''
     });
     const [orderComplete, setOrderComplete] = useState(false);
     const [confirmationCode, setConfirmationCode] = useState('');
@@ -373,7 +374,7 @@ export default function BuyTickets() {
                                                     required
                                                 />
                                             </div>
-                                            <div className="md:col-span-2">
+                                            <div>
                                                 <Label htmlFor="phone" className="text-stone-300">Phone Number</Label>
                                                 <Input
                                                     id="phone"
@@ -382,6 +383,16 @@ export default function BuyTickets() {
                                                     onChange={(e) => setCustomerInfo({ ...customerInfo, phone: e.target.value })}
                                                     className="mt-2 bg-stone-800 border-stone-700 text-white"
                                                     placeholder="(555) 123-4567"
+                                                />
+                                            </div>
+                                            <div>
+                                                <Label htmlFor="postal_code" className="text-stone-300">Postal Code</Label>
+                                                <Input
+                                                    id="postal_code"
+                                                    value={customerInfo.postal_code}
+                                                    onChange={(e) => setCustomerInfo({ ...customerInfo, postal_code: e.target.value })}
+                                                    className="mt-2 bg-stone-800 border-stone-700 text-white"
+                                                    placeholder="A1A 1A1"
                                                 />
                                             </div>
                                         </div>
