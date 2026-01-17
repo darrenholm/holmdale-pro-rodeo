@@ -4,70 +4,70 @@ import { Card } from "@/components/ui/card";
 import { Trophy, Users, Calendar, Star, Award, Heart } from 'lucide-react';
 
 const stats = [
-    { icon: Calendar, value: '25+', label: 'Years of Excellence' },
-    { icon: Users, value: '500K+', label: 'Fans Entertained' },
-    { icon: Trophy, value: '150+', label: 'Champion Riders' },
-    { icon: Star, value: '4.9', label: 'Average Rating' }
-];
+{ icon: Calendar, value: '25+', label: 'Years of Excellence' },
+{ icon: Users, value: '500K+', label: 'Fans Entertained' },
+{ icon: Trophy, value: '150+', label: 'Champion Riders' },
+{ icon: Star, value: '4.9', label: 'Average Rating' }];
+
 
 const values = [
-    {
-        icon: Award,
-        title: 'Excellence',
-        description: 'We strive for the highest standards in every event, from safety to entertainment.'
-    },
-    {
-        icon: Heart,
-        title: 'Passion',
-        description: 'Our love for Western heritage and rodeo culture drives everything we do.'
-    },
-    {
-        icon: Users,
-        title: 'Community',
-        description: 'Building connections and creating memories that bring people together.'
-    }
-];
+{
+  icon: Award,
+  title: 'Excellence',
+  description: 'We strive for the highest standards in every event, from safety to entertainment.'
+},
+{
+  icon: Heart,
+  title: 'Passion',
+  description: 'Our love for Western heritage and rodeo culture drives everything we do.'
+},
+{
+  icon: Users,
+  title: 'Community',
+  description: 'Building connections and creating memories that bring people together.'
+}];
+
 
 export default function About() {
-    return (
-        <div className="min-h-screen bg-stone-950">
+  return (
+    <div className="min-h-screen bg-stone-950">
             {/* Hero Section */}
             <section className="relative pt-32 pb-20 px-6">
-                <div 
-                    className="absolute inset-0 bg-cover bg-center"
-                    style={{
-                        backgroundImage: `url('https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/696b7ab40d412f960295a323/ed30acab0__92A6935-AlvinstonRodeo2023-Sunday-2.jpg')`
-                    }}
-                >
-                    <div className="absolute inset-0 bg-gradient-to-b from-stone-950/40 via-stone-950/30 to-stone-950/80" />
+                <div
+          className="absolute inset-0 bg-cover bg-center"
+          style={{
+            backgroundImage: `url('https://images.unsplash.com/photo-1494947665470-20322015e3a8?w=1920&q=80')`
+          }}>
+
+                    <div className="absolute inset-0 bg-gradient-to-b from-stone-950/90 via-stone-950/80 to-stone-950" />
                 </div>
                 
                 <div className="relative z-10 max-w-4xl mx-auto text-center">
-                    <motion.span 
-                        className="inline-block text-green-500 text-sm font-semibold tracking-wider uppercase mb-4"
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                    >
+                    <motion.span
+            className="inline-block text-green-500 text-sm font-semibold tracking-wider uppercase mb-4"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}>
+
                         Our Story
                     </motion.span>
-                    <motion.h1 
-                        className="text-4xl md:text-6xl font-bold text-white mb-6"
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                    >
+                    <motion.h1
+            className="text-4xl md:text-6xl font-bold text-white mb-6"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}>
+
                         A Legacy of
                         <span className="text-transparent bg-clip-text bg-gradient-to-r from-green-400 to-orange-500"> Western Excellence</span>
                     </motion.h1>
-                    <motion.p 
-                        className="text-xl text-stone-300 leading-relaxed"
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        transition={{ delay: 0.2 }}
-                    >
-                        For over two decades, Holmdale Pro Rodeo has been the premier destination 
-                        for authentic Western entertainment, bringing together the finest riders, 
-                        dedicated fans, and unforgettable moments.
-                    </motion.p>
+                    <motion.p className="text-xl text-stone-300 leading-relaxed"
+
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.2 }}>Holmdale Farms has been continuously operated by the Holm Family since 1874. Through 6 generations, the farm has changed from a 100 acres mixed farming operation to more specialized farming in dairy and cash crops. 
+Holm Potato Farms grows approimately 800 acres potatoes annually, focussed on the seed potato market annually providing seed to other potato growers across Canada and the United States. In addition table potatos and other cash crops are raised.
+
+
+
+          </motion.p>
                 </div>
             </section>
             
@@ -75,22 +75,22 @@ export default function About() {
             <section className="py-16 px-6 bg-stone-900">
                 <div className="max-w-6xl mx-auto">
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
-                        {stats.map((stat, index) => (
-                            <motion.div
-                                key={stat.label}
-                                className="text-center"
-                                initial={{ opacity: 0, y: 20 }}
-                                whileInView={{ opacity: 1, y: 0 }}
-                                viewport={{ once: true }}
-                                transition={{ delay: index * 0.1 }}
-                            >
+                        {stats.map((stat, index) =>
+            <motion.div
+              key={stat.label}
+              className="text-center"
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: index * 0.1 }}>
+
                                 <div className="w-14 h-14 mx-auto mb-4 rounded-xl bg-green-500/20 flex items-center justify-center">
                                     <stat.icon className="w-7 h-7 text-green-500" />
                                 </div>
                                 <p className="text-4xl font-bold text-white mb-1">{stat.value}</p>
                                 <p className="text-stone-400">{stat.label}</p>
                             </motion.div>
-                        ))}
+            )}
                     </div>
                 </div>
             </section>
@@ -100,10 +100,10 @@ export default function About() {
                 <div className="max-w-6xl mx-auto">
                     <div className="grid lg:grid-cols-2 gap-12 items-center">
                         <motion.div
-                            initial={{ opacity: 0, x: -30 }}
-                            whileInView={{ opacity: 1, x: 0 }}
-                            viewport={{ once: true }}
-                        >
+              initial={{ opacity: 0, x: -30 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}>
+
                             <span className="text-green-500 text-sm font-semibold tracking-wider uppercase mb-4 block">
                                 The Beginning
                             </span>
@@ -131,34 +131,34 @@ export default function About() {
                         </motion.div>
                         
                         <motion.div
-                            className="grid grid-cols-2 gap-4"
-                            initial={{ opacity: 0, x: 30 }}
-                            whileInView={{ opacity: 1, x: 0 }}
-                            viewport={{ once: true }}
-                        >
+              className="grid grid-cols-2 gap-4"
+              initial={{ opacity: 0, x: 30 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}>
+
                             <div className="space-y-4">
-                                <img 
-                                    src="https://images.unsplash.com/photo-1570042225831-d98fa7577f1e?w=400&q=80"
-                                    alt="Rodeo action"
-                                    className="w-full h-48 object-cover rounded-xl"
-                                />
-                                <img 
-                                    src="https://images.unsplash.com/photo-1553284965-83fd3e82fa5a?w=400&q=80"
-                                    alt="Horses"
-                                    className="w-full h-64 object-cover rounded-xl"
-                                />
+                                <img
+                  src="https://images.unsplash.com/photo-1570042225831-d98fa7577f1e?w=400&q=80"
+                  alt="Rodeo action"
+                  className="w-full h-48 object-cover rounded-xl" />
+
+                                <img
+                  src="https://images.unsplash.com/photo-1553284965-83fd3e82fa5a?w=400&q=80"
+                  alt="Horses"
+                  className="w-full h-64 object-cover rounded-xl" />
+
                             </div>
                             <div className="space-y-4 pt-8">
-                                <img 
-                                    src="https://images.unsplash.com/photo-1508193638397-1c4234db14d8?w=400&q=80"
-                                    alt="Western sunset"
-                                    className="w-full h-64 object-cover rounded-xl"
-                                />
-                                <img 
-                                    src="https://images.unsplash.com/photo-1494947665470-20322015e3a8?w=400&q=80"
-                                    alt="Western spirit"
-                                    className="w-full h-48 object-cover rounded-xl"
-                                />
+                                <img
+                  src="https://images.unsplash.com/photo-1508193638397-1c4234db14d8?w=400&q=80"
+                  alt="Western sunset"
+                  className="w-full h-64 object-cover rounded-xl" />
+
+                                <img
+                  src="https://images.unsplash.com/photo-1494947665470-20322015e3a8?w=400&q=80"
+                  alt="Western spirit"
+                  className="w-full h-48 object-cover rounded-xl" />
+
                             </div>
                         </motion.div>
                     </div>
@@ -179,14 +179,14 @@ export default function About() {
                     </div>
                     
                     <div className="grid md:grid-cols-3 gap-8">
-                        {values.map((value, index) => (
-                            <motion.div
-                                key={value.title}
-                                initial={{ opacity: 0, y: 30 }}
-                                whileInView={{ opacity: 1, y: 0 }}
-                                viewport={{ once: true }}
-                                transition={{ delay: index * 0.1 }}
-                            >
+                        {values.map((value, index) =>
+            <motion.div
+              key={value.title}
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: index * 0.1 }}>
+
                                 <Card className="bg-stone-800 border-stone-700 p-8 h-full text-center hover:border-green-500/30 transition-all duration-300">
                                     <div className="w-16 h-16 mx-auto mb-6 rounded-xl bg-green-500/20 flex items-center justify-center">
                                         <value.icon className="w-8 h-8 text-green-500" />
@@ -195,10 +195,10 @@ export default function About() {
                                     <p className="text-stone-400">{value.description}</p>
                                 </Card>
                             </motion.div>
-                        ))}
+            )}
                     </div>
                 </div>
             </section>
-        </div>
-    );
+        </div>);
+
 }
