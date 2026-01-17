@@ -11,7 +11,7 @@ const contactInfo = [
     {
         icon: MapPin,
         title: 'Address',
-        details: ['123 Rodeo Drive', 'Western City, TX 75001']
+        details: ['588 Sideroad 10 S.', 'Walkerton, ON']
     },
     {
         icon: Phone,
@@ -230,7 +230,7 @@ export default function Contact() {
                             <div className="text-center">
                                 <MapPin className="w-12 h-12 text-amber-500 mx-auto mb-4" />
                                 <p className="text-stone-400">Interactive map coming soon</p>
-                                <p className="text-stone-500 text-sm mt-2">123 Rodeo Drive, Western City, TX 75001</p>
+                                <p className="text-stone-500 text-sm mt-2">588 Sideroad 10 S., Walkerton, ON</p>
                             </div>
                         </div>
                     </Card>
