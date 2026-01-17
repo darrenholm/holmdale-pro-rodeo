@@ -101,7 +101,7 @@ export default function Contact() {
                                             <div>
                                                 <h3 className="text-white font-semibold mb-2">{info.title}</h3>
                                                 {info.details.map((detail, i) => (
-                                                    <p key={i} className="text-stone-400 text-sm">{detail}</p>
+                                                    <p key={i} className="text-white text-sm">{detail}</p>
                                                 ))}
                                             </div>
                                         </div>
