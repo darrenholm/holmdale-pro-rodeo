@@ -16,7 +16,7 @@ export default function HeroSection({ featuredEvent }) {
                     backgroundImage: `url('https://images.unsplash.com/photo-1516466723877-e4ec1d736c8a?w=1920&q=80')`
                 }}
             >
-                <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/50 to-stone-950" />
+                <div className="absolute inset-0 bg-black/60" />
             </div>
             
             {/* Decorative Elements */}
@@ -42,7 +42,7 @@ export default function HeroSection({ featuredEvent }) {
                     transition={{ duration: 0.8, delay: 0.1 }}
                 >
                     <span className="block">Holmdale</span>
-                    <span className="text-transparent bg-clip-text bg-gradient-to-r from-green-400 via-green-500 to-orange-500">
+                    <span className="text-green-500">
                         Pro Rodeo
                     </span>
                 </motion.h1>
@@ -85,7 +85,7 @@ export default function HeroSection({ featuredEvent }) {
                     <Link to={createPageUrl('Events')}>
                         <Button 
                             size="lg" 
-                            className="bg-gradient-to-r from-green-500 to-orange-600 hover:from-green-600 hover:to-orange-700 text-white px-8 py-6 text-lg font-semibold shadow-lg shadow-green-500/25 transition-all duration-300 hover:shadow-green-500/40 hover:scale-105"
+                            className="bg-green-600 hover:bg-green-700 text-white px-8 py-6 text-lg font-semibold shadow-lg shadow-green-500/25 transition-all duration-300 hover:shadow-green-500/40 hover:scale-105"
                         >
                             Get Your Tickets
                         </Button>
