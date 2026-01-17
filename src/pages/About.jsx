@@ -64,7 +64,7 @@ export default function About() {
                         animate={{ opacity: 1 }}
                         transition={{ delay: 0.2 }}
                     >
-                        For over two decades, Wild West Championship Rodeo has been the premier destination 
+                        For over two decades, Holmdale Pro Rodeo has been the premier destination 
                         for authentic Western entertainment, bringing together the finest riders, 
                         dedicated fans, and unforgettable moments.
                     </motion.p>

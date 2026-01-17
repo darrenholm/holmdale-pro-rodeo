@@ -46,7 +46,7 @@ export default function Navbar() {
                         {/* Logo */}
                         <Link to={createPageUrl('Home')} className="flex items-center gap-2">
                             <span className="text-2xl font-bold text-white">
-                                <span className="text-amber-500">Wild West</span> Rodeo
+                                <span className="text-amber-500">Holmdale</span> Pro Rodeo
                             </span>
                         </Link>
                         

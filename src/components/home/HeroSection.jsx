@@ -41,9 +41,9 @@ export default function HeroSection({ featuredEvent }) {
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.8, delay: 0.1 }}
                 >
-                    <span className="block">Wild West</span>
+                    <span className="block">Holmdale</span>
                     <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-400 via-amber-500 to-orange-500">
-                        Championship Rodeo
+                        Pro Rodeo
                     </span>
                 </motion.h1>
                 

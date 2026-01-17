@@ -21,7 +21,7 @@ const contactInfo = [
     {
         icon: Mail,
         title: 'Email',
-        details: ['info@wildwestrodeo.com', 'tickets@wildwestrodeo.com']
+        details: ['info@holmdalerodeo.com', 'tickets@holmdalerodeo.com']
     },
     {
         icon: Clock,

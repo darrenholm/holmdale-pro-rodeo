@@ -11,7 +11,7 @@ export default function Footer() {
                     {/* Brand */}
                     <div>
                         <h3 className="text-2xl font-bold text-white mb-4">
-                            <span className="text-amber-500">Wild West</span> Rodeo
+                            <span className="text-amber-500">Holmdale</span> Pro Rodeo
                         </h3>
                         <p className="text-stone-400 mb-6 leading-relaxed">
                             Experience the thrill of authentic Western rodeo entertainment. 
@@ -104,7 +104,7 @@ export default function Footer() {
                             </li>
                             <li className="flex items-center gap-3">
                                 <Mail className="w-5 h-5 text-amber-500" />
-                                <span className="text-stone-400">info@wildwestrodeo.com</span>
+                                <span className="text-stone-400">info@holmdalerodeo.com</span>
                             </li>
                         </ul>
                     </div>
@@ -113,7 +113,7 @@ export default function Footer() {
                 {/* Bottom Bar */}
                 <div className="mt-12 pt-8 border-t border-stone-800 flex flex-col md:flex-row justify-between items-center gap-4">
                     <p className="text-stone-500 text-sm">
-                        © 2024 Wild West Championship Rodeo. All rights reserved.
+                        © 2024 Holmdale Pro Rodeo. All rights reserved.
                     </p>
                     <div className="flex gap-6 text-sm">
                         <a href="#" className="text-stone-500 hover:text-amber-400 transition-colors">
