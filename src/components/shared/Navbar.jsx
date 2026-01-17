@@ -45,11 +45,6 @@ export default function Navbar() {
                     <div className="flex items-center justify-between">
                         {/* Logo */}
                         <Link to={createPageUrl('Home')} className="flex items-center gap-2">
-                            <img 
-                                src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/696b7ab40d412f960295a323/a90833e02_LogoBevel.png"
-                                alt="Holmdale Pro Rodeo"
-                                className="h-12"
-                            />
                         </Link>
                         
                         {/* Desktop Navigation */}
