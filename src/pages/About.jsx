@@ -36,7 +36,7 @@ export default function About() {
                 <div 
                     className="absolute inset-0 bg-cover bg-center"
                     style={{
-                        backgroundImage: `url('https://images.unsplash.com/photo-1494947665470-20322015e3a8?w=1920&q=80')`
+                        backgroundImage: `url('https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/696b7ab40d412f960295a323/ed30acab0__92A6935-AlvinstonRodeo2023-Sunday-2.jpg')`
                     }}
                 >
                     <div className="absolute inset-0 bg-gradient-to-b from-stone-950/90 via-stone-950/80 to-stone-950" />

@@ -1,17 +1,17 @@
-import Home from './pages/Home';
-import Events from './pages/Events';
-import BuyTickets from './pages/BuyTickets';
 import About from './pages/About';
+import BuyTickets from './pages/BuyTickets';
 import Contact from './pages/Contact';
+import Events from './pages/Events';
+import Home from './pages/Home';
 import __Layout from './Layout.jsx';
 
 
 export const PAGES = {
-    "Home": Home,
-    "Events": Events,
-    "BuyTickets": BuyTickets,
     "About": About,
+    "BuyTickets": BuyTickets,
     "Contact": Contact,
+    "Events": Events,
+    "Home": Home,
 }
 
 export const pagesConfig = {
