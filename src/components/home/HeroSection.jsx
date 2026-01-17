@@ -13,7 +13,7 @@ export default function HeroSection({ featuredEvent }) {
             <div 
                 className="absolute inset-0 bg-cover bg-center bg-no-repeat"
                 style={{
-                    backgroundImage: `url('https://images.unsplash.com/photo-1609342122563-a43ac8917a3a?w=1920&q=80')`
+                    backgroundImage: `url('https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/696b7ab40d412f960295a323/ed30acab0__92A6935-AlvinstonRodeo2023-Sunday-2.jpg')`
                 }}
             >
                 <div className="absolute inset-0 bg-black/60" />
