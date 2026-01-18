@@ -26,6 +26,12 @@ export default function Shop() {
   const handleCheckout = async () => {
     if (cartItems.length === 0) return;
 
+    const isInIframe = window.self !== window.top;
+    if (isInIframe) {
+      alert('Checkout is only available from the published app. Please open this in a new window.');
+      return;
+    }
+
     setIsCheckingOut(true);
     try {
       const response = await base44.functions.invoke('createMerchandiseCheckout', {
@@ -38,10 +44,12 @@ export default function Shop() {
 
       if (response.data?.url) {
         window.location.href = response.data.url;
+      } else if (response.data?.error) {
+        alert(response.data.error);
       }
     } catch (error) {
       console.error('Checkout error:', error);
-      alert('Checkout failed. Please try again.');
+      alert(error.response?.data?.error || 'Checkout failed. Please try again.');
     } finally {
       setIsCheckingOut(false);
     }
