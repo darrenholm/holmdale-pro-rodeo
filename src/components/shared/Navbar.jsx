@@ -48,22 +48,7 @@ export default function Navbar() {
                         <Link to={createPageUrl('Home')} className="flex items-center gap-2">
                         </Link>
                         
-                        {/* Desktop Navigation */}
-                        <div className="bg-green-500 text-slate-50 mb-16 hidden md:flex items-center gap-8">
-                            {navLinks.map((link) =>
-              <Link
-                key={link.page}
-                to={createPageUrl(link.page)}
-                className={`text-sm font-medium transition-colors ${
-                isActivePage(link.page) ?
-                'text-green-400' :
-                'text-stone-300 hover:text-green-400'}`
-                }>
-
-                                    {link.name}
-                                </Link>
-              )}
-                        </div>
+                        {/* Desktop Navigation - Moved to Sidebar */}
                         
                         {/* CTA Button */}
                         <div className="hidden md:block">
