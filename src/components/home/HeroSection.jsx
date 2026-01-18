@@ -37,7 +37,7 @@ export default function HeroSection({ featuredEvent }) {
             <div className="absolute bottom-40 right-20 w-24 h-24 border border-green-500/20 rotate-12 hidden lg:block" />
             
             {/* Content */}
-            <div className="mx-auto px-48 text-center relative z-10 max-w-7xl">
+            <div className="px-48 text-center relative z-10 max-w-7xl">
                 <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
