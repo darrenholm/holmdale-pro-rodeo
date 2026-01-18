@@ -7,12 +7,13 @@ import SponsorTicker from './components/SponsorTicker';
 export default function Layout({ children }) {
     return (
         <div className="min-h-screen bg-stone-950">
-            <Navbar />
-            <SponsorTicker />
-            <main>
-                {children}
-            </main>
-            <Footer />
-        </div>
+                    <Navbar />
+                    <Sidebar />
+                    <main className="md:ml-64">
+                        <SponsorTicker />
+                        {children}
+                    </main>
+                    <Footer />
+                </div>
     );
 }
