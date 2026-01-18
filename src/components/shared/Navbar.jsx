@@ -43,7 +43,7 @@ export default function Navbar() {
         transition={{ duration: 0.5 }}>
 
                 <div className="max-w-7xl mx-auto px-6 py-4">
-                    <div className="pb-2 flex items-center justify-between">
+                    <div className="mt-2 pb-2 flex items-center justify-between">
                         {/* Logo */}
                         <Link to={createPageUrl('Home')} className="flex items-center gap-2">
                         </Link>
