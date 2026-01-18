@@ -33,12 +33,12 @@ export default function EventsShowcase({ events }) {
                         Upcoming Events
                     </motion.h2>
                     <motion.div 
-                        className="w-24 h-1 bg-gradient-to-r from-green-500 to-orange-500 mx-auto"
-                        initial={{ width: 0 }}
-                        whileInView={{ width: 96 }}
-                        viewport={{ once: true }}
-                        transition={{ duration: 0.6 }}
-                    />
+                         className="w-24 h-1 bg-green-500 mx-auto"
+                         initial={{ width: 0 }}
+                         whileInView={{ width: 96 }}
+                         viewport={{ once: true }}
+                         transition={{ duration: 0.6 }}
+                     />
                 </div>
                 
                 {/* Events Grid */}
