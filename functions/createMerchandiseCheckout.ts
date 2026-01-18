@@ -1,6 +1,6 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.6';
 
-const stripe = await import('npm:stripe@17.13.0').then(m => new m.default(Deno.env.get('STRIPE_SECRET_KEY')));
+const stripe = await import('npm:stripe@17.4.0').then(m => new m.default(Deno.env.get('STRIPE_SECRET_KEY')));
 
 Deno.serve(async (req) => {
   try {
