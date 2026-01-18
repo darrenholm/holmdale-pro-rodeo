@@ -3,15 +3,7 @@ import { motion } from 'framer-motion';
 
 const sponsors = [
   { name: 'Matcrete', logo: 'https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/696b7ab40d412f960295a323/efd619f55_Matcretelogo.png' },
-  { name: 'John Ernewein Limited', logo: 'https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/696b7ab40d412f960295a323/f11da2363_ErneweinLogo2.jpg' },
-  { name: 'Wrangler', logo: 'https://images.unsplash.com/photo-1602810318383-e386cc2a3ccf?w=200&h=100&fit=crop' },
-  { name: 'Justin Boots', logo: 'https://images.unsplash.com/photo-1543163521-1bf539c55dd2?w=200&h=100&fit=crop' },
-  { name: 'Cinch Jeans', logo: 'https://images.unsplash.com/photo-1509631179647-0177331693ae?w=200&h=100&fit=crop' },
-  { name: 'Montana Silversmiths', logo: 'https://images.unsplash.com/photo-1611652022419-a9419f74343d?w=200&h=100&fit=crop' },
-  { name: 'Resistol Hats', logo: 'https://images.unsplash.com/photo-1529958030586-3aae4ca485ff?w=200&h=100&fit=crop' },
-  { name: 'Ariat', logo: 'https://images.unsplash.com/photo-1551028719-00167b16eac5?w=200&h=100&fit=crop' },
-  { name: 'Purina Feed', logo: 'https://images.unsplash.com/photo-1500595046743-cd271d694d30?w=200&h=100&fit=crop' },
-  { name: 'Dodge Ram', logo: 'https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?w=200&h=100&fit=crop' }
+  { name: 'John Ernewein Limited', logo: 'https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/696b7ab40d412f960295a323/f11da2363_ErneweinLogo2.jpg' }
 ];
 
 export default function SponsorTicker() {
