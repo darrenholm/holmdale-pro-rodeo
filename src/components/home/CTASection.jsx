@@ -43,7 +43,7 @@ export default function CTASection() {
                     
                     <p className="text-xl text-stone-300 mb-10 max-w-2xl mx-auto leading-relaxed">
                         Secure your tickets now and be part of the most exciting rodeo event of the year. 
-                        Premium seats are selling fast!
+                        Seats are selling fast!
                     </p>
                     
                     <Link to={createPageUrl('Events')}>
