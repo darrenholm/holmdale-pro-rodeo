@@ -76,9 +76,9 @@ export default function Navbar() {
                         </div>
                         
                         {/* Mobile Menu Button */}
-                        <button
-              className="md:hidden text-white p-2"
-              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}>
+                        <button className="bg-green-500 text-white p-2 md:hidden"
+
+            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}>
 
                             {isMobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
                         </button>
