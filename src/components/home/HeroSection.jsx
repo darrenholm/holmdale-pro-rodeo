@@ -21,13 +21,13 @@ export default function HeroSection({ featuredEvent }) {
             
             {/* Logo */}
             <motion.div
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.8 }} className="absolute top-6 left-6 z-20 md:top-12 md:left-12">
+        initial={{ opacity: 0, scale: 0.9 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ duration: 0.8 }} className="mb-12 px-24 py-6 absolute top-8 left-10z-20">
 
                 <img
           src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/696b7ab40d412f960295a323/a90833e02_LogoBevel.png"
-          alt="Holmdale Pro Rodeo" className="max-w-[90px] md:max-w-[150px]" />
+          alt="Holmdale Pro Rodeo" className="mt-4 mr-4 mb-12 ml-8 pb-12 max-w-[100px] md:max-w-[150px]" />
 
 
             </motion.div>
@@ -41,11 +41,11 @@ export default function HeroSection({ featuredEvent }) {
                 <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8 }} className="absolute top-6 right-6 md:top-12 md:right-12">
+          transition={{ duration: 0.8 }} className="mr-1 pr-2 pl-3 flex justify-end md:justify-center">
 
-                    <span className="inline-block px-4 py-2 bg-green-600/20 border border-green-500/30 rounded-full text-green-400 text-sm font-medium tracking-wider uppercase">
-                        Experience the Thrill
-                    </span>
+                    <span className="bg-green-600/20 text-green-400 mr-24 ml-10 pb-2 pl-6 text-sm font-medium uppercase tracking-wider rounded-full inline-block border border-green-500/30">EXPERIENCE THE THRILL
+
+          </span>
                 </motion.div>
                 
                 <motion.h1
