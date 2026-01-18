@@ -23,7 +23,7 @@ const images = [
         title: 'Sunset Ride'
     },
     {
-        url: 'https://images.unsplash.com/photo-1551377558-8e8e0e9e44b1?w=600&q=80',
+        url: 'https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/696b7ab40d412f960295a323/d3ea8e108_PXL_20250804_010943127.jpg',
         title: 'Rodeo Night'
     }
 ];
