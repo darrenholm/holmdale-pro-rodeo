@@ -234,13 +234,7 @@ export default function Contact() {
                     viewport={{ once: true }}
                 >
                     <Card className="bg-stone-900 border-stone-800 overflow-hidden">
-                        <div className="h-80 bg-stone-800 flex items-center justify-center">
-                            <div className="text-center">
-                                <MapPin className="w-12 h-12 text-green-500 mx-auto mb-4" />
-                                <p className="text-stone-400">Interactive map coming soon</p>
-                                <p className="text-stone-500 text-sm mt-2">588 Sideroad 10 S., Walkerton, ON</p>
-                            </div>
-                        </div>
+                        <Map />
                     </Card>
                 </motion.div>
             </div>
