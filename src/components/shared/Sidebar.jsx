@@ -1,0 +1,60 @@
+import React from 'react';
+import { motion } from 'framer-motion';
+import { Link, useLocation } from 'react-router-dom';
+import { createPageUrl } from '@/utils';
+import { Ticket } from 'lucide-react';
+import { Button } from "@/components/ui/button";
+
+const navLinks = [
+  { name: 'Home', page: 'Home' },
+  { name: 'Events', page: 'Events' },
+  { name: 'Shop', page: 'Shop' },
+  { name: 'About', page: 'About' },
+  { name: 'Contact', page: 'Contact' }
+];
+
+export default function Sidebar() {
+  const location = useLocation();
+
+  const isActivePage = (pageName) => {
+    const currentPath = location.pathname;
+    const pagePath = createPageUrl(pageName);
+    return currentPath === pagePath;
+  };
+
+  return (
+    <motion.div
+      className="hidden md:fixed md:left-0 md:top-0 md:h-screen md:w-64 md:bg-green-500 md:flex md:flex-col md:pt-8 md:px-6 md:z-40 md:shadow-lg"
+      initial={{ x: -256 }}
+      animate={{ x: 0 }}
+      transition={{ duration: 0.3 }}>
+      
+      {/* Logo placeholder */}
+      <div className="mb-12 h-16"></div>
+      
+      {/* Navigation Links */}
+      <nav className="flex flex-col gap-2 flex-1">
+        {navLinks.map((link) => (
+          <Link
+            key={link.page}
+            to={createPageUrl(link.page)}
+            className={`px-4 py-3 rounded-lg text-base font-medium transition-all ${
+              isActivePage(link.page)
+                ? 'bg-green-600 text-white'
+                : 'text-stone-900 hover:bg-green-600 hover:text-white'
+            }`}>
+            {link.name}
+          </Link>
+        ))}
+      </nav>
+
+      {/* CTA Button */}
+      <Link to={createPageUrl('Events')} className="mb-8">
+        <Button className="w-full bg-stone-900 hover:bg-stone-800 text-green-500 font-semibold py-6">
+          <Ticket className="w-4 h-4 mr-2" />
+          Get Tickets
+        </Button>
+      </Link>
+    </motion.div>
+  );
+}
