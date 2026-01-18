@@ -27,7 +27,7 @@ export default function HeroSection({ featuredEvent }) {
         className="absolute top-8 left-8 z-20">
                 <img
           src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/696b7ab40d412f960295a323/a90833e02_LogoBevel.png"
-          alt="Holmdale Pro Rodeo" className="mr-4 mb-8 max-w-[60px] md:max-w-[150px]" />
+          alt="Holmdale Pro Rodeo" className="mr-4 mb-8 max-w-[100px] md:max-w-[150px]" />
 
 
             </motion.div>
