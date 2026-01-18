@@ -19,8 +19,8 @@ export default function Home() {
     
     return (
         <div className="min-h-screen bg-stone-950">
-            <HeroSection featuredEvent={featuredEvent} />
             <SponsorTicker />
+            <HeroSection featuredEvent={featuredEvent} />
             <EventsShowcase events={events} isLoading={isLoading} />
             <FeaturesSection />
             <GallerySection />
