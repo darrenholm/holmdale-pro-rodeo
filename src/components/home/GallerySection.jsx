@@ -15,7 +15,7 @@ const images = [
         title: 'Horse Racing'
     },
     {
-        url: 'https://images.unsplash.com/photo-1494947665470-20322015e3a8?w=600&q=80',
+        url: 'https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/696b7ab40d412f960295a323/13e0ef12b_PXL_20250801_214130202.jpg',
         title: 'Western Spirit'
     },
     {
