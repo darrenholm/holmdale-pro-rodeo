@@ -27,8 +27,8 @@ export default function HeroSection({ featuredEvent }) {
         className="absolute top-8 left-8 z-20">
                 <img
           src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/696b7ab40d412f960295a323/a90833e02_LogoBevel.png"
-          alt="Holmdale Pro Rodeo"
-          className="max-w-[60px] md:max-w-[150px]" />
+          alt="Holmdale Pro Rodeo" className="mr-4 mb-8 max-w-[60px] md:max-w-[150px]" />
+
 
             </motion.div>
             
@@ -54,10 +54,10 @@ export default function HeroSection({ featuredEvent }) {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.1 }}>
 
-                    <span className="my-20 block">Holmdale</span>
-                    <span className="text-green-500">
-                        Pro Rodeo
-                    </span>
+                    <span className="mt-20 block">Holmdale</span>
+                    <span className="text-green-500 mx-auto my-5">Pro Rodeo
+
+          </span>
                 </motion.h1>
                 
                 <motion.p className="bg-slate-950 text-[#ffffff] mb-10 mx-auto text-lg font-semibold leading-relaxed opacity-55 rounded-[20px] md:text-xl max-w-2xl"
