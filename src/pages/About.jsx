@@ -56,7 +56,7 @@ export default function About() {
             animate={{ opacity: 1, y: 0 }}>
 
                         A Legacy of
-                        <span className="text-emerald-600"> Farming  Excellence</span>
+                        <span className="text-green-500"> Farming Excellence</span>
                     </motion.h1>
                     <motion.p className="text-xl text-stone-300 leading-relaxed"
 
@@ -138,26 +138,26 @@ Holm Potato Farms grows approimately 800 acres potatoes annually, focussed on th
 
                             <div className="space-y-4">
                                 <img
-                            src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/696b7ab40d412f960295a323/7ab4b7466_Planter2.jpg"
-                            alt="Farm image"
-                            className="w-full h-48 object-cover rounded-xl" />
+                  src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/696b7ab40d412f960295a323/7ab4b7466_Planter2.jpg"
+                  alt="Farm image"
+                  className="w-full h-48 object-cover rounded-xl" />
 
                                 <img
-                                src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/696b7ab40d412f960295a323/d82a12661_Sprayer1.jpg"
-                                alt="Farm image"
-                                className="w-full h-64 object-cover rounded-xl" />
+                  src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/696b7ab40d412f960295a323/d82a12661_Sprayer1.jpg"
+                  alt="Farm image"
+                  className="w-full h-64 object-cover rounded-xl" />
 
                                 </div>
                              <div className="space-y-4 pt-8">
                                 <img
-                                src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/696b7ab40d412f960295a323/11dc58395_JohnDeere.jpg"
-                                alt="Farm image"
-                                className="w-full h-64 object-cover rounded-xl" />
+                  src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/696b7ab40d412f960295a323/11dc58395_JohnDeere.jpg"
+                  alt="Farm image"
+                  className="w-full h-64 object-cover rounded-xl" />
 
                                 <img
-                                src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/696b7ab40d412f960295a323/a80e32f3b_CowTrailerPhoto.jpg"
-                                alt="Farm image"
-                                className="w-full h-48 object-cover rounded-xl" />
+                  src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/696b7ab40d412f960295a323/a80e32f3b_CowTrailerPhoto.jpg"
+                  alt="Farm image"
+                  className="w-full h-48 object-cover rounded-xl" />
 
                                 </div>
                                 </motion.div>
