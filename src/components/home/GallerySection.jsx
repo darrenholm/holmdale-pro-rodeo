@@ -11,7 +11,7 @@ const images = [
         title: 'Arena Action'
     },
     {
-        url: 'https://images.unsplash.com/photo-1553284965-83fd3e82fa5a?w=600&q=80',
+        url: 'https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/696b7ab40d412f960295a323/d4e9e3158_PXL_20250803_012047586.jpg',
         title: 'Horse Racing'
     },
     {
