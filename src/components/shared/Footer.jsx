@@ -1,9 +1,18 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { MapPin, Phone, Mail, Facebook, Instagram, Twitter, Youtube } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
+import { base44 } from '@/api/base44Client';
 
 export default function Footer() {
+    const [upcomingEvents, setUpcomingEvents] = useState([]);
+
+    useEffect(() => {
+        base44.entities.Event.list('date', 3)
+            .then(setUpcomingEvents)
+            .catch(() => setUpcomingEvents([]));
+    }, []);
+
     return (
         <footer className="bg-stone-950 border-t border-stone-800">
             <div className="max-w-7xl mx-auto px-6 py-16">
