@@ -7,6 +7,7 @@ import EventsShowcase from '../components/home/EventsShowcase';
 import FeaturesSection from '../components/home/FeaturesSection';
 import GallerySection from '../components/home/GallerySection';
 import CTASection from '../components/home/CTASection';
+import SponsorTicker from '../components/SponsorTicker';
 
 export default function Home() {
     const { data: events = [], isLoading } = useQuery({
