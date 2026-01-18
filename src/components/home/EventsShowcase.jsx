@@ -90,9 +90,9 @@ export default function EventsShowcase({ events }) {
                                     
                                     <div className="flex items-center justify-between pt-4 border-t border-stone-800">
                                         <div>
-                                            <span className="text-stone-500 text-sm">Starting at</span>
+                                            <span className="text-stone-500 text-sm">{event.id === '696b7bdc81676e7ff80617a1' ? 'Entry Fee' : 'Starting at'}</span>
                                             <p className="text-green-400 font-bold text-xl">
-                                                ${event.general_price || 25}
+                                                ${event.id === '696b7bdc81676e7ff80617a1' ? '0' : (event.general_price || 25)}
                                             </p>
                                         </div>
                                         <Link to={`${createPageUrl('BuyTickets')}?eventId=${event.id}`}>
