@@ -22,13 +22,21 @@ export default function Events() {
             <div className="max-w-7xl mx-auto">
                 {/* Header */}
                 <div className="text-center mb-16">
+                    <motion.img
+                                src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/696b7ab40d412f960295a323/a90833e02_LogoBevel.png"
+                                alt="Holmdale Pro Rodeo"
+                                className="mb-6 max-w-[120px] md:max-w-[160px] mx-auto"
+                                initial={{ opacity: 0, scale: 0.9 }}
+                                animate={{ opacity: 1, scale: 1 }}
+                                transition={{ duration: 0.6 }}
+                            />
                     <motion.span 
-                        className="inline-block text-green-500 text-sm font-semibold tracking-wider uppercase mb-4"
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                    >
-                        Plan Your Visit
-                    </motion.span>
+                                className="inline-block text-green-500 text-sm font-semibold tracking-wider uppercase mb-4"
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: 1 }}
+                            >
+                                Plan Your Visit
+                            </motion.span>
                     <motion.h1 
                         className="text-4xl md:text-6xl font-bold text-white mb-4"
                         initial={{ opacity: 0, y: 20 }}
