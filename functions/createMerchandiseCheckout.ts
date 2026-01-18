@@ -36,6 +36,39 @@ Deno.serve(async (req) => {
       success_url: `${Deno.env.get('BASE44_APP_URL')}/checkout-success?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${Deno.env.get('BASE44_APP_URL')}/checkout-cancel`,
       automatic_tax: { enabled: true },
+      shipping_address_collection: {
+        allowed_countries: ['US', 'CA']
+      },
+      shipping_options: [
+        {
+          shipping_rate_data: {
+            type: 'fixed_amount',
+            fixed_amount: {
+              amount: 500,
+              currency: 'usd'
+            },
+            display_name: 'Standard Shipping',
+            delivery_estimate: {
+              minimum: { unit: 'business_day', value: 5 },
+              maximum: { unit: 'business_day', value: 10 }
+            }
+          }
+        },
+        {
+          shipping_rate_data: {
+            type: 'fixed_amount',
+            fixed_amount: {
+              amount: 1500,
+              currency: 'usd'
+            },
+            display_name: 'Express Shipping',
+            delivery_estimate: {
+              minimum: { unit: 'business_day', value: 2 },
+              maximum: { unit: 'business_day', value: 3 }
+            }
+          }
+        }
+      ],
       metadata: {
         base44_app_id: Deno.env.get('BASE44_APP_ID'),
         type: 'merchandise'
