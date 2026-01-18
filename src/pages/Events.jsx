@@ -25,7 +25,7 @@ export default function Events() {
                     <motion.img
                                 src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/696b7ab40d412f960295a323/a90833e02_LogoBevel.png"
                                 alt="Holmdale Pro Rodeo"
-                                className="mb-6 max-w-[120px] md:max-w-[160px] mx-auto"
+                                className="mb-6 max-w-[120px] md:max-w-[160px]"
                                 initial={{ opacity: 0, scale: 0.9 }}
                                 animate={{ opacity: 1, scale: 1 }}
                                 transition={{ duration: 0.6 }}
