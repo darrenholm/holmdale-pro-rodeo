@@ -19,7 +19,7 @@ const images = [
         title: 'Western Spirit'
     },
     {
-        url: 'https://images.unsplash.com/photo-1508193638397-1c4234db14d8?w=600&q=80',
+        url: 'https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/696b7ab40d412f960295a323/3739bc545_PXL_20250803_012117808LONG_EXPOSURE-01COVER.jpg',
         title: 'Sunset Ride'
     },
     {
