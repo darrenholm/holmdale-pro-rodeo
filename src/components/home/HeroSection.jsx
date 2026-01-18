@@ -41,9 +41,9 @@ export default function HeroSection({ featuredEvent }) {
                 <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8 }} className="mr-1 pr-2 pl-3 flex justify-end md:justify-center">
+          transition={{ duration: 0.8 }} className="absolute top-6 right-6 md:top-12 md:right-12">
 
-                    <span className="inline-block px-4 py-2 bg-green-600/20 border border-green-500/30 rounded-full text-green-400 text-sm font-medium tracking-wider uppercase mb-6">
+                    <span className="inline-block px-4 py-2 bg-green-600/20 border border-green-500/30 rounded-full text-green-400 text-sm font-medium tracking-wider uppercase">
                         Experience the Thrill
                     </span>
                 </motion.div>
