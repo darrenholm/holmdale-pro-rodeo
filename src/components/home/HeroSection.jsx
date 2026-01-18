@@ -27,7 +27,7 @@ export default function HeroSection({ featuredEvent }) {
 
                 <img
           src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/696b7ab40d412f960295a323/a90833e02_LogoBevel.png"
-          alt="Holmdale Pro Rodeo" className="pt-12 pb-3 max-w-[100px] md:max-w-[150px]" />
+          alt="Holmdale Pro Rodeo" className="pt-1 pb-1 max-w-[100px] md:max-w-[150px]" />
 
 
             </motion.div>
@@ -43,7 +43,7 @@ export default function HeroSection({ featuredEvent }) {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }} className="flex justify-end md:justify-center">
 
-                    <span className="bg-green-600/20 text-green-400 mr-1 mb-16 pt-2 pb-2 pl-6 text-sm font-medium text-center uppercase tracking-wider rounded-full inline-block border border-green-500/30 -mb-4">EXPERIENCE THE THRILL
+                    <span className="bg-green-600/20 text-green-400 mt-48 mb-1 pt-2 pl-2 text-sm font-medium text-center uppercase tracking-wider rounded-full inline-block border border-green-500/30 -mb-4">EXPERIENCE THE THRILL
 
           </span>
                 </motion.div>
@@ -54,7 +54,7 @@ export default function HeroSection({ featuredEvent }) {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.1 }}>
 
-                    <span className="mt-40 block">Holmdale</span>
+                    <span className="mt-16 block">Holmdale</span>
                     <span className="text-green-500 mx-auto my-5">Pro Rodeo
 
           </span>
