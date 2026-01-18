@@ -35,11 +35,11 @@ export default function CTASection() {
                     </div>
                     
                     <h2 className="text-4xl md:text-6xl font-bold text-white mb-6">
-                        Don't Miss the
-                        <span className="block text-transparent bg-clip-text bg-gradient-to-r from-green-400 to-orange-500">
-                            Ride of Your Life
-                        </span>
-                    </h2>
+                         Don't Miss the
+                         <span className="block text-green-400">
+                             Ride of Your Life
+                         </span>
+                     </h2>
                     
                     <p className="text-xl text-stone-300 mb-10 max-w-2xl mx-auto leading-relaxed">
                         Secure your tickets now and be part of the most exciting rodeo event of the year. 
