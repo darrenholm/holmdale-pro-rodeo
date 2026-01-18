@@ -2,6 +2,7 @@ import React from 'react';
 import { motion } from 'framer-motion';
 
 const sponsors = [
+  { name: 'Matcrete', logo: 'https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/696b7ab40d412f960295a323/efd619f55_Matcretelogo.png' },
   { name: 'Wrangler', logo: 'https://images.unsplash.com/photo-1602810318383-e386cc2a3ccf?w=200&h=100&fit=crop' },
   { name: 'Justin Boots', logo: 'https://images.unsplash.com/photo-1543163521-1bf539c55dd2?w=200&h=100&fit=crop' },
   { name: 'Cinch Jeans', logo: 'https://images.unsplash.com/photo-1509631179647-0177331693ae?w=200&h=100&fit=crop' },
