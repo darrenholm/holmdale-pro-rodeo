@@ -23,11 +23,11 @@ export default function HeroSection({ featuredEvent }) {
             <motion.div
         initial={{ opacity: 0, scale: 0.9 }}
         animate={{ opacity: 1, scale: 1 }}
-        transition={{ duration: 0.8 }} className="mb-12 px-24 py-6 absolute top-8 left-10z-20">
+        transition={{ duration: 0.8 }} className="mb-12 absolute top-8 left-1/2 -translate-x-1/2 z-20">
 
                 <img
           src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/696b7ab40d412f960295a323/a90833e02_LogoBevel.png"
-          alt="Holmdale Pro Rodeo" className="mr-4 mb-8 max-w-[100px] md:max-w-[150px]" />
+          alt="Holmdale Pro Rodeo" className="max-w-[100px] md:max-w-[150px]" />
 
 
             </motion.div>
