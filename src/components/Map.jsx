@@ -12,7 +12,7 @@ L.Icon.Default.mergeOptions({
 });
 
 export default function Map() {
-  const position = [43.9516, -80.7470]; // Walkerton, ON coordinates
+  const position = [44.1154, -81.1448]; // 588 Sideroad 10 S., Walkerton, ON
 
   return (
     <MapContainer 
