@@ -9,7 +9,7 @@ const sponsors = [
 
 export default function SponsorTicker() {
   return (
-    <div className="bg-white border-t border-stone-200 py-7 overflow-hidden">
+    <div className="bg-white border-t border-stone-200 py-8 overflow-hidden">
       <div className="mb-6 text-center">
         <h3 className="text-stone-600 text-sm font-semibold tracking-wider uppercase">
           Proud Partners & Sponsors
