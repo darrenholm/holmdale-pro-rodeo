@@ -46,8 +46,8 @@ export default function Navbar() {
                     <div className="flex items-center justify-between">
                         {/* Logo */}
                         <Link to={createPageUrl('Home')} className="flex items-center gap-2">
-                            <Award className="w-8 h-8 text-green-500" />
-                            <span className="text-xl font-bold text-white">Holmdale Pro Rodeo</span>
+                            <Award className="w-6 h-6 md:w-8 md:h-8 text-green-500" />
+                            <span className="text-base md:text-xl font-bold text-white">Holmdale Pro Rodeo</span>
                         </Link>
                         
                         {/* Desktop Navigation */}
