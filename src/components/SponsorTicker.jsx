@@ -22,7 +22,7 @@ export default function SponsorTicker() {
               x: {
                 repeat: Infinity,
                 repeatType: "loop",
-                duration: 30,
+                duration: 20,
                 ease: "linear"
               }
             }}
