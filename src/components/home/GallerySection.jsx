@@ -3,7 +3,7 @@ import { motion } from 'framer-motion';
 
 const images = [
     {
-        url: 'https://images.unsplash.com/photo-1570042225831-d98fa7577f1e?w=600&q=80',
+        url: 'https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/696b7ab40d412f960295a323/fcc1ac4b1__92A9412-AlvinstonRodeo2023-Sunday.jpg',
         title: 'Bull Riding'
     },
     {
