@@ -109,7 +109,7 @@ Holm Potato Farms grows approimately 800 acres potatoes annually, focussed on th
                                 The Beginning
                             </span>
                             <h2 className="text-3xl md:text-4xl font-bold text-white mb-6">
-                                From Humble Roots to Championship Glory
+                                From The Pioneer Days Until Today, Horses and Cattle are in Our Blood
                             </h2>
                             <div className="space-y-4 text-stone-300 leading-relaxed">
                                 <p className="">What started in 2024 being the first Rodeo held in Bruce County in many years to celebrate the 150th anniversary of our family farm. It has grown to be one of the most anticipated rodeos in the region. Our founders, passionate farmers and rodeo enthusiasts, dreamed of creating an event that would celebrate the true spirit of the early days of life on the farm.
