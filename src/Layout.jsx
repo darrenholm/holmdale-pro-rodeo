@@ -6,8 +6,8 @@ import SponsorTicker from './components/SponsorTicker';
 export default function Layout({ children }) {
     return (
         <div className="min-h-screen bg-stone-950">
-            <SponsorTicker />
             <Navbar />
+            <SponsorTicker />
             <main>
                 {children}
             </main>
