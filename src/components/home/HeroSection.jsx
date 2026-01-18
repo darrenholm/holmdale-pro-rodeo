@@ -54,7 +54,7 @@ export default function HeroSection({ featuredEvent }) {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.1 }}>
 
-                    <span className="block">Holmdale</span>
+                    <span className="my-4 block">Holmdale</span>
                     <span className="text-green-500">
                         Pro Rodeo
                     </span>
