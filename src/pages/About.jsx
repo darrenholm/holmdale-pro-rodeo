@@ -2,6 +2,7 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { Card } from "@/components/ui/card";
 import { Trophy, Users, Calendar, Star, Award, Heart } from 'lucide-react';
+import SponsorTicker from '../components/SponsorTicker';
 
 const stats = [
 { icon: Calendar, value: '150+', label: 'Years of Farming' },
@@ -199,6 +200,9 @@ Holm Potato Farms grows approimately 800 acres potatoes annually, focussed on th
                     </div>
                 </div>
             </section>
+
+            {/* Sponsor Ticker */}
+            <SponsorTicker />
         </div>);
 
 }
