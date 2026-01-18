@@ -2,14 +2,14 @@ import React from 'react';
 import { motion } from 'framer-motion';
 
 const sponsors = [
-  { name: 'Western Outfitters', logo: 'https://images.unsplash.com/photo-1599305445671-ac291c95aaa9?w=200&h=100&fit=crop' },
-  { name: 'Ranch Supply Co', logo: 'https://images.unsplash.com/photo-1560807707-8cc77767d783?w=200&h=100&fit=crop' },
-  { name: 'Cowboy Gear', logo: 'https://images.unsplash.com/photo-1516796181074-bf453fbfa3e6?w=200&h=100&fit=crop' },
-  { name: 'Prairie Feed', logo: 'https://images.unsplash.com/photo-1544947950-fa07a98d237f?w=200&h=100&fit=crop' },
-  { name: 'Livestock Pro', logo: 'https://images.unsplash.com/photo-1553531087-6bb33b3f6f82?w=200&h=100&fit=crop' },
-  { name: 'Rodeo Equipment', logo: 'https://images.unsplash.com/photo-1615729947596-a598e5de0ab3?w=200&h=100&fit=crop' },
-  { name: 'Farm & Ranch', logo: 'https://images.unsplash.com/photo-1523821741446-edb2b68bb7a0?w=200&h=100&fit=crop' },
-  { name: 'Western Bank', logo: 'https://images.unsplash.com/photo-1560179707-f14e90ef3623?w=200&h=100&fit=crop' }
+  { name: 'Wrangler', logo: 'https://images.unsplash.com/photo-1602810318383-e386cc2a3ccf?w=200&h=100&fit=crop' },
+  { name: 'Justin Boots', logo: 'https://images.unsplash.com/photo-1543163521-1bf539c55dd2?w=200&h=100&fit=crop' },
+  { name: 'Cinch Jeans', logo: 'https://images.unsplash.com/photo-1509631179647-0177331693ae?w=200&h=100&fit=crop' },
+  { name: 'Montana Silversmiths', logo: 'https://images.unsplash.com/photo-1611652022419-a9419f74343d?w=200&h=100&fit=crop' },
+  { name: 'Resistol Hats', logo: 'https://images.unsplash.com/photo-1529958030586-3aae4ca485ff?w=200&h=100&fit=crop' },
+  { name: 'Ariat', logo: 'https://images.unsplash.com/photo-1551028719-00167b16eac5?w=200&h=100&fit=crop' },
+  { name: 'Purina Feed', logo: 'https://images.unsplash.com/photo-1500595046743-cd271d694d30?w=200&h=100&fit=crop' },
+  { name: 'Dodge Ram', logo: 'https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?w=200&h=100&fit=crop' }
 ];
 
 export default function SponsorTicker() {
