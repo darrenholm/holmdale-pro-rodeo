@@ -48,7 +48,22 @@ export default function Navbar() {
                         <Link to={createPageUrl('Home')} className="flex items-center gap-2">
                         </Link>
                         
-                        {/* Desktop Navigation - Moved to Sidebar */}
+                        {/* Desktop Navigation */}
+                        <div className="bg-green-500 text-slate-50 mb-16 hidden md:flex items-center gap-8">
+                            {navLinks.map((link) =>
+              <Link
+                key={link.page}
+                to={createPageUrl(link.page)}
+                className={`text-sm font-medium transition-colors ${
+                isActivePage(link.page) ?
+                'text-green-400' :
+                'text-stone-300 hover:text-green-400'}`
+                }>
+
+                                    {link.name}
+                                </Link>
+              )}
+                        </div>
                         
                         {/* CTA Button */}
                         <div className="hidden md:block">
@@ -65,7 +80,7 @@ export default function Navbar() {
               className="md:hidden text-white p-2"
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}>
 
-                            {isMobileMenuOpen ? <X key="close" className="w-6 h-6" /> : <Menu key="menu" className="w-6 h-6" />}
+                            {isMobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
                         </button>
                     </div>
                 </div>
