@@ -71,28 +71,21 @@ export default function Footer() {
                     
                     {/* Events */}
                     <div>
-                        <h4 className="text-white font-semibold mb-6">Events</h4>
+                        <h4 className="text-white font-semibold mb-6">Upcoming Events</h4>
                         <ul className="space-y-3">
-                            <li>
-                                <a href="#" className="text-stone-400 hover:text-green-400 transition-colors">
-                                    Bull Riding
-                                </a>
-                            </li>
-                            <li>
-                                <a href="#" className="text-stone-400 hover:text-green-400 transition-colors">
-                                    Barrel Racing
-                                </a>
-                            </li>
-                            <li>
-                                <a href="#" className="text-stone-400 hover:text-green-400 transition-colors">
-                                    Bronc Riding
-                                </a>
-                            </li>
-                            <li>
-                                <a href="#" className="text-stone-400 hover:text-green-400 transition-colors">
-                                    Team Roping
-                                </a>
-                            </li>
+                            {upcomingEvents.length > 0 ? (
+                                upcomingEvents.map((event) => (
+                                    <li key={event.id}>
+                                        <Link to={`${createPageUrl('Events')}`} className="text-stone-400 hover:text-green-400 transition-colors text-sm">
+                                            {event.title}
+                                        </Link>
+                                    </li>
+                                ))
+                            ) : (
+                                <li>
+                                    <span className="text-stone-500 text-sm">Check back soon</span>
+                                </li>
+                            )}
                         </ul>
                     </div>
                     
