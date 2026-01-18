@@ -23,7 +23,7 @@ export default function HeroSection({ featuredEvent }) {
             <motion.div
         initial={{ opacity: 0, scale: 0.9 }}
         animate={{ opacity: 1, scale: 1 }}
-        transition={{ duration: 0.8 }} className="mb-12 px-24 py-6 absolute top-8 left-8 z-20">
+        transition={{ duration: 0.8 }} className="mb-12 px-24 py-6 absolute top-8 left-10z-20">
 
                 <img
           src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/696b7ab40d412f960295a323/a90833e02_LogoBevel.png"
