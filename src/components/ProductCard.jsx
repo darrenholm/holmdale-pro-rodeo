@@ -6,10 +6,16 @@ import { ShoppingCart } from 'lucide-react';
 
 export default function ProductCard({ product, onAddToCart }) {
   const [isAdding, setIsAdding] = useState(false);
+  const [selectedSize, setSelectedSize] = useState(product.sizes?.[0] || null);
+  const [selectedColor, setSelectedColor] = useState(product.colors?.[0] || null);
 
   const handleAddToCart = async () => {
     setIsAdding(true);
-    await onAddToCart(product);
+    await onAddToCart({
+      ...product,
+      selectedSize,
+      selectedColor
+    });
     setIsAdding(false);
   };
 
@@ -43,17 +49,43 @@ export default function ProductCard({ product, onAddToCart }) {
         <CardContent className="flex-1 flex flex-col justify-between">
           <p className="text-stone-400 text-sm mb-4">{product.description}</p>
           
+          {product.sizes?.length > 0 && (
+            <div className="mb-4">
+              <p className="text-stone-300 text-sm mb-2 font-medium">Select Size</p>
+              <div className="flex gap-2 flex-wrap">
+                {product.sizes.map((size) => (
+                  <button
+                    key={size}
+                    onClick={() => setSelectedSize(size)}
+                    className={`px-3 py-1.5 rounded-md border text-sm font-medium transition-all ${
+                      selectedSize === size
+                        ? 'bg-green-500 text-stone-900 border-green-500'
+                        : 'bg-stone-800 text-stone-300 border-stone-700 hover:border-green-500/50'
+                    }`}
+                  >
+                    {size}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+          
           {product.colors?.length > 0 && (
             <div className="mb-4">
-              <p className="text-stone-400 text-xs mb-2">Colors</p>
+              <p className="text-stone-300 text-sm mb-2 font-medium">Select Color</p>
               <div className="flex gap-2 flex-wrap">
                 {product.colors.map((color) => (
-                  <div
+                  <button
                     key={color}
-                    className="w-5 h-5 rounded-full border border-stone-600"
-                    style={{ backgroundColor: color.toLowerCase() }}
-                    title={color}
-                  />
+                    onClick={() => setSelectedColor(color)}
+                    className={`px-3 py-1.5 rounded-md border text-sm font-medium transition-all ${
+                      selectedColor === color
+                        ? 'bg-green-500 text-stone-900 border-green-500'
+                        : 'bg-stone-800 text-stone-300 border-stone-700 hover:border-green-500/50'
+                    }`}
+                  >
+                    {color}
+                  </button>
                 ))}
               </div>
             </div>

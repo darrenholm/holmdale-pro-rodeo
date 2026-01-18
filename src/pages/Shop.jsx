@@ -109,9 +109,18 @@ export default function Shop() {
                   {cartItems.length > 0 && (
                     <div className="space-y-2 max-h-64 overflow-y-auto mb-4 pb-4 border-b border-stone-700">
                       {cartItems.map((item, idx) => (
-                        <div key={idx} className="flex justify-between text-sm text-stone-400">
-                          <span>{item.name}</span>
-                          <span className="text-white">${item.price.toFixed(2)}</span>
+                        <div key={idx} className="text-sm">
+                          <div className="flex justify-between text-stone-400">
+                            <span>{item.name}</span>
+                            <span className="text-white">${item.price.toFixed(2)}</span>
+                          </div>
+                          {(item.selectedSize || item.selectedColor) && (
+                            <div className="text-xs text-stone-500 mt-0.5">
+                              {item.selectedSize && <span>Size: {item.selectedSize}</span>}
+                              {item.selectedSize && item.selectedColor && <span> • </span>}
+                              {item.selectedColor && <span>Color: {item.selectedColor}</span>}
+                            </div>
+                          )}
                         </div>
                       ))}
                     </div>
