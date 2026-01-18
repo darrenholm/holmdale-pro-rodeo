@@ -9,7 +9,7 @@ const sponsors = [
 
 export default function SponsorTicker() {
   return (
-    <div className="bg-white border-t border-stone-200 py-4 overflow-hidden">
+    <div className="bg-white border-t border-stone-200 py-9 overflow-hidden">
       <div className="mb-6 text-center">
         <h3 className="text-stone-600 text-sm font-semibold tracking-wider uppercase">
           Proud Partners & Sponsors
@@ -35,7 +35,7 @@ export default function SponsorTicker() {
             {[...sponsors, ...sponsors].map((sponsor, index) => (
               <div
                 key={index}
-                className="flex-shrink-0 w-28 h-5 bg-stone-50 rounded-lg flex items-center justify-center overflow-hidden transition-all"
+                className="flex-shrink-0 w-48 h-18 bg-stone-50 rounded-lg flex items-center justify-center overflow-hidden transition-all"
               >
                 <img
                   src={sponsor.logo}
