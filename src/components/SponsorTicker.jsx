@@ -7,7 +7,8 @@ const sponsors = [
         { name: 'Gay Lea', logo: 'https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/696b7ab40d412f960295a323/e6c521061_GayLea.jpg' },
         { name: 'Grand River Robotics', logo: 'https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/696b7ab40d412f960295a323/5314ab015_GrandRiverBlack.jpg' },
         { name: 'Walkerton Timber Mart', logo: 'https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/696b7ab40d412f960295a323/1aea1ee55_TimberMartLogo.jpg' },
-        { name: 'Walkerton Home Hardware', logo: 'https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/696b7ab40d412f960295a323/ec54e1895_WalkertonHomeHardwareLogo.jpg' }
+        { name: 'Walkerton Home Hardware', logo: 'https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/696b7ab40d412f960295a323/ec54e1895_WalkertonHomeHardwareLogo.jpg' },
+        { name: 'Sunbelt Rentals', logo: 'https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/696b7ab40d412f960295a323/193c752c2_Sunbeltlogo.jpg' }
       ];
 
 export default function SponsorTicker() {
