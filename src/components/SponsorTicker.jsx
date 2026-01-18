@@ -6,7 +6,8 @@ const sponsors = [
         { name: 'John Ernewein Limited', logo: 'https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/696b7ab40d412f960295a323/f11da2363_ErneweinLogo2.jpg' },
         { name: 'Gay Lea', logo: 'https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/696b7ab40d412f960295a323/e6c521061_GayLea.jpg' },
         { name: 'Grand River Robotics', logo: 'https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/696b7ab40d412f960295a323/5314ab015_GrandRiverBlack.jpg' },
-        { name: 'Walkerton Timber Mart', logo: 'https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/696b7ab40d412f960295a323/1aea1ee55_TimberMartLogo.jpg' }
+        { name: 'Walkerton Timber Mart', logo: 'https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/696b7ab40d412f960295a323/1aea1ee55_TimberMartLogo.jpg' },
+        { name: 'Walkerton Home Hardware', logo: 'https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/696b7ab40d412f960295a323/ec54e1895_WalkertonHomeHardwareLogo.jpg' }
       ];
 
 export default function SponsorTicker() {
