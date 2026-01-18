@@ -35,12 +35,12 @@ export default function SponsorTicker() {
             {[...sponsors, ...sponsors].map((sponsor, index) => (
               <div
                 key={index}
-                className="flex-shrink-0 w-48 h-24 bg-stone-50 rounded-lg flex items-center justify-center overflow-hidden grayscale hover:grayscale-0 transition-all"
+                className="flex-shrink-0 w-48 h-24 bg-stone-50 rounded-lg flex items-center justify-center overflow-hidden transition-all"
               >
                 <img
                   src={sponsor.logo}
                   alt={sponsor.name}
-                  className="w-full h-full object-cover opacity-70 hover:opacity-100 transition-opacity"
+                  className="w-full h-full object-cover transition-opacity"
                 />
               </div>
             ))}
