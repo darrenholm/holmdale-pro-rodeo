@@ -23,6 +23,7 @@ export default function Home() {
             <FeaturesSection />
             <GallerySection />
             <CTASection />
+            <SponsorTicker />
         </div>
     );
 }
