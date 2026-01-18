@@ -43,7 +43,7 @@ export default function HeroSection({ featuredEvent }) {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }} className="flex justify-end md:justify-center">
 
-                    <span className="bg-green-600/20 text-green-400 mr-1 pl-6 text-sm font-medium text-center uppercase tracking-wider rounded-full inline-block border border-green-500/30 -mb-4">EXPERIENCE THE THRILL
+                    <span className="bg-green-600/20 text-green-400 mr-1 mb-16 pt-2 pb-2 pl-6 text-sm font-medium text-center uppercase tracking-wider rounded-full inline-block border border-green-500/30 -mb-4">EXPERIENCE THE THRILL
 
           </span>
                 </motion.div>
