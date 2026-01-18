@@ -51,7 +51,7 @@ export default function GallerySection() {
                         Gallery
                     </motion.h2>
                     <motion.div 
-                        className="w-24 h-1 bg-gradient-to-r from-green-500 to-orange-500 mx-auto"
+                        className="w-24 h-1 bg-green-500 mx-auto"
                         initial={{ width: 0 }}
                         whileInView={{ width: 96 }}
                         viewport={{ once: true }}
