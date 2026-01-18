@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from "@/components/ui/button";
-import { Menu, X, Ticket, Award } from 'lucide-react';
+import { Menu, X, Ticket } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 
@@ -46,8 +46,6 @@ export default function Navbar() {
                     <div className="flex items-center justify-between">
                         {/* Logo */}
                         <Link to={createPageUrl('Home')} className="flex items-center gap-2">
-                            <Award className="w-6 h-6 md:w-8 md:h-8 text-green-500" />
-                            <span className="text-xl font-bold text-white">Holmdale Pro Rodeo</span>
                         </Link>
                         
                         {/* Desktop Navigation */}
