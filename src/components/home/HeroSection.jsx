@@ -41,7 +41,7 @@ export default function HeroSection({ featuredEvent }) {
                 <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8 }} className="pl-3">
+          transition={{ duration: 0.8 }} className="flex justify-end md:justify-center pl-3">
 
                     <span className="inline-block px-4 py-2 bg-green-600/20 border border-green-500/30 rounded-full text-green-400 text-sm font-medium tracking-wider uppercase mb-6">
                         Experience the Thrill
