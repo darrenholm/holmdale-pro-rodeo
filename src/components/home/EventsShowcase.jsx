@@ -95,12 +95,14 @@ export default function EventsShowcase({ events }) {
                                                 ${event.id === '696b7bdc81676e7ff80617a1' ? '0' : (event.general_price || 25)}
                                             </p>
                                         </div>
-                                        <Link to={`${createPageUrl('BuyTickets')}?eventId=${event.id}`}>
-                                            <Button className="bg-green-500 hover:bg-green-600 text-stone-900 font-semibold group/btn">
-                                                Buy Tickets
-                                                <ArrowRight className="w-4 h-4 ml-2 transition-transform group-hover/btn:translate-x-1" />
-                                            </Button>
-                                        </Link>
+                                        {event.id !== '696b7bdc81676e7ff80617a1' && (
+                                            <Link to={`${createPageUrl('BuyTickets')}?eventId=${event.id}`}>
+                                                <Button className="bg-green-500 hover:bg-green-600 text-stone-900 font-semibold group/btn">
+                                                    Buy Tickets
+                                                    <ArrowRight className="w-4 h-4 ml-2 transition-transform group-hover/btn:translate-x-1" />
+                                                </Button>
+                                            </Link>
+                                        )}
                                     </div>
                                 </div>
                             </Card>
