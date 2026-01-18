@@ -35,8 +35,7 @@ export default function Navbar() {
   return (
     <>
             <motion.nav
-        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-        isScrolled ? 'bg-stone-950/95 backdrop-blur-lg shadow-lg' : 'bg-transparent'}`
+        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 bg-green-500`
         }
         initial={{ y: -100 }}
         animate={{ y: 0 }}
@@ -54,10 +53,7 @@ export default function Navbar() {
               <Link
                 key={link.page}
                 to={createPageUrl(link.page)}
-                className={`text-sm font-medium transition-colors ${
-                isActivePage(link.page) ?
-                'text-green-400' :
-                'text-stone-300 hover:text-green-400'}`
+                className={`text-sm font-medium transition-colors text-white hover:text-stone-100`
                 }>
 
                                     {link.name}
@@ -68,7 +64,7 @@ export default function Navbar() {
                         {/* CTA Button */}
                         <div className="hidden md:block">
                             <Link to={createPageUrl('Events')}>
-                                <Button className="bg-green-500 hover:bg-green-600 text-stone-900 font-semibold">
+                                <Button className="bg-white hover:bg-stone-100 text-green-500 font-semibold">
                                     <Ticket className="w-4 h-4 mr-2" />
                                     Get Tickets
                                 </Button>
@@ -77,8 +73,8 @@ export default function Navbar() {
                         
                         {/* Mobile Menu Button */}
                         <button
-              className="md:hidden text-white p-2"
-              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}>
+                        className="md:hidden text-stone-900 p-2"
+                        onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}>
 
                             {isMobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
                         </button>
@@ -115,7 +111,7 @@ export default function Navbar() {
               to={createPageUrl('Events')}
               onClick={() => setIsMobileMenuOpen(false)}>
 
-                                <Button className="w-full bg-green-500 hover:bg-green-600 text-stone-900 font-semibold py-6 text-lg mt-4">
+                                <Button className="w-full bg-white hover:bg-stone-100 text-green-500 font-semibold py-6 text-lg mt-4">
                                     <Ticket className="w-5 h-5 mr-2" />
                                     Get Tickets
                                 </Button>
