@@ -46,6 +46,7 @@ export default function CheckoutSuccess() {
                             Back to Home
                         </Button>
                     </Link>
+                    </CardContent>
                 </Card>
             </div>
         </div>
