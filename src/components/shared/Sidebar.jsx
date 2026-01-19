@@ -41,7 +41,7 @@ export default function Sidebar() {
             className={`px-4 py-3 rounded-lg text-base font-medium transition-all ${
               isActivePage(link.page)
                 ? 'bg-green-600 text-white'
-                : 'text-stone-900 hover:bg-green-600 hover:text-white'
+                : 'text-white hover:bg-green-600 hover:text-white'
             }`}>
             {link.name}
           </Link>
