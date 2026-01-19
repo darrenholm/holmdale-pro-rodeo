@@ -51,24 +51,18 @@ export default function Shop() {
 
     setIsCheckingOut(true);
     try {
-      const response = await base44.functions.invoke('createMonarisCheckout', {
+      const response = await base44.functions.invoke('createMerchandiseCheckout', {
         items: cartItems.map(item => ({
           product_id: item.id,
-          product_name: item.name
+          quantity: 1
         })),
-        shipping_address: {
-          ...shippingAddress,
-          name: 'Customer',
-          email: 'customer@example.com'
-        }
+        shipping_address: shippingAddress
       });
 
-      if (response.data?.redirect_url) {
-        window.location.href = response.data.redirect_url;
-      } else if (response.data?.error) {
-        alert(response.data.error);
+      if (response.data?.url) {
+        window.location.href = response.data.url;
       } else {
-        alert('Payment processed successfully!');
+        alert('Failed to create checkout session');
       }
     } catch (error) {
       console.error('Checkout error:', error);
