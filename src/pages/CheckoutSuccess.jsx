@@ -1,5 +1,4 @@
-import React, { useEffect } from 'react';
-import { motion } from 'framer-motion';
+import React from 'react';
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { CheckCircle } from 'lucide-react';
@@ -12,11 +11,7 @@ export default function CheckoutSuccess() {
 
     return (
         <div className="min-h-screen bg-stone-950 pt-24 pb-20 px-6 flex items-center justify-center">
-            <motion.div
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                className="max-w-lg w-full"
-            >
+            <div className="max-w-lg w-full">
                 <Card className="bg-stone-900 border-stone-800 p-8 text-center">
                     <div className="w-20 h-20 rounded-full bg-green-500/20 flex items-center justify-center mx-auto mb-6">
                         <CheckCircle className="w-10 h-10 text-green-500" />
@@ -51,7 +46,7 @@ export default function CheckoutSuccess() {
                         </Button>
                     </Link>
                 </Card>
-            </motion.div>
+            </div>
         </div>
     );
 }
