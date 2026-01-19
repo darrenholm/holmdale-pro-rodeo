@@ -79,7 +79,7 @@ Deno.serve(async (req) => {
       ecommerceIndicator: 'ECOMMERCE'
     };
 
-    const merchantId = Deno.env.get('MONERIS_STORE_ID');
+    const merchantId = Deno.env.get('MONERIS_MERCHANT_ID');
     const monerisResponse = await fetch(`https://api.sb.moneris.io/merchants/${merchantId}/payments`, {
       method: 'POST',
       headers: {
