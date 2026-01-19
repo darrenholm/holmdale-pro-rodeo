@@ -63,10 +63,12 @@ export default function Shop() {
         }
       });
 
-      if (response.data?.url) {
-        window.location.href = response.data.url;
+      if (response.data?.redirect_url) {
+        window.location.href = response.data.redirect_url;
       } else if (response.data?.error) {
         alert(response.data.error);
+      } else {
+        alert('Payment processed successfully!');
       }
     } catch (error) {
       console.error('Checkout error:', error);
