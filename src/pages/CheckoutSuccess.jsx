@@ -10,7 +10,7 @@ export default function CheckoutSuccess() {
     const sessionId = urlParams.get('session_id');
 
     return (
-        <div className="min-h-screen bg-stone-950 pt-32 pb-20 px-6 flex items-center justify-center">
+        <div className="bg-stone-950 py-20 px-6 flex items-center justify-center" style={{ minHeight: 'calc(100vh - 200px)' }}>
             <div className="max-w-lg w-full">
                 <Card className="bg-stone-900 border-stone-800 p-8 text-center">
                     <div className="w-20 h-20 rounded-full bg-green-500/20 flex items-center justify-center mx-auto mb-6">
