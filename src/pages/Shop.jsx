@@ -51,13 +51,16 @@ export default function Shop() {
 
     setIsCheckingOut(true);
     try {
-      const response = await base44.functions.invoke('createMerchandiseCheckout', {
+      const response = await base44.functions.invoke('createMonarisCheckout', {
         items: cartItems.map(item => ({
           product_id: item.id,
-          product_name: item.name,
-          price_id: item.stripe_price_id
+          product_name: item.name
         })),
-        shipping_address: shippingAddress
+        shipping_address: {
+          ...shippingAddress,
+          name: 'Customer',
+          email: 'customer@example.com'
+        }
       });
 
       if (response.data?.url) {
