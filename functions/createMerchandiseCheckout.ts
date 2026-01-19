@@ -45,7 +45,7 @@ Deno.serve(async (req) => {
             type: 'fixed_amount',
             fixed_amount: {
               amount: 500,
-              currency: 'usd'
+              currency: 'cad'
             },
             display_name: 'Standard Shipping',
             delivery_estimate: {
@@ -59,7 +59,7 @@ Deno.serve(async (req) => {
             type: 'fixed_amount',
             fixed_amount: {
               amount: 1500,
-              currency: 'usd'
+              currency: 'cad'
             },
             display_name: 'Express Shipping',
             delivery_estimate: {
