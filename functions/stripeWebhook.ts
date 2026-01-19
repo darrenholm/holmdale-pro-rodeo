@@ -39,15 +39,39 @@ Deno.serve(async (req) => {
 
         console.log('Order created:', order.id);
 
-        // Prepare packages for shipping (assuming standard 1lb package per item)
-        const packages = [{
-          weight: 1,
-          weight_unit: 'lb',
-          length: 12,
-          width: 10,
-          height: 3,
-          dimension_unit: 'in'
-        }];
+        // Fetch product details for shipping
+        const productIds = session.metadata.product_ids?.split(',') || [];
+        const packages = [];
+        
+        for (const productId of productIds) {
+          try {
+            const product = await base44.asServiceRole.entities.Product.get(productId);
+            if (product) {
+              packages.push({
+                weight: product.weight || 1,
+                weight_unit: 'kg',
+                length: product.length || 30,
+                width: product.width || 20,
+                height: product.height || 5,
+                dimension_unit: 'cm'
+              });
+            }
+          } catch (err) {
+            console.error('Failed to fetch product:', productId, err);
+          }
+        }
+
+        // Use default if no packages
+        if (packages.length === 0) {
+          packages.push({
+            weight: 1,
+            weight_unit: 'kg',
+            length: 30,
+            width: 20,
+            height: 5,
+            dimension_unit: 'cm'
+          });
+        }
 
         // Create shipment via Shiptime
         try {
