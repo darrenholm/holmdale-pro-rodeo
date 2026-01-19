@@ -24,7 +24,7 @@ export default function Sidebar() {
 
   return (
     <motion.div
-      className="hidden md:fixed md:left-0 md:top-0 md:h-screen md:w-64 md:bg-black md:flex md:flex-col md:pt-8 md:px-6 md:z-40 md:shadow-lg"
+      className="hidden md:fixed md:left-0 md:top-0 md:h-screen md:w-3/4 md:bg-black md:flex md:flex-col md:pt-8 md:px-6 md:z-40 md:shadow-lg"
       initial={{ x: -256 }}
       animate={{ x: 0 }}
       transition={{ duration: 0.3 }}>

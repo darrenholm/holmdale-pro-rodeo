@@ -9,7 +9,7 @@ export default function Layout({ children }) {
         <div className="min-h-screen bg-stone-950">
                     <Navbar />
                     <Sidebar />
-                    <main className="md:ml-64">
+                    <main className="md:ml-[75%]">
                         <SponsorTicker />
                         {children}
                     </main>
