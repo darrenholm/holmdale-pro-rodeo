@@ -21,8 +21,8 @@ export default function CheckoutSuccess() {
                     <div className="w-20 h-20 rounded-full bg-green-500/20 flex items-center justify-center mx-auto mb-6">
                         <CheckCircle className="w-10 h-10 text-green-500" />
                     </div>
-                    <h2 className="text-3xl font-bold text-white mb-2">Payment Successful!</h2>
-                    <p className="text-stone-400 mb-6">Thank you for your purchase. Your tickets have been confirmed and a confirmation email has been sent.</p>
+                    <h2 className="text-3xl font-bold text-white mb-2">Order Confirmed!</h2>
+                    <p className="text-stone-400 mb-6">Thank you for your purchase. Your order has been confirmed and will be shipped soon.</p>
                     
                     <div className="bg-stone-800 rounded-xl p-6 mb-6">
                         <p className="text-stone-400 text-sm mb-2">Session ID</p>
@@ -30,12 +30,18 @@ export default function CheckoutSuccess() {
                     </div>
                     
                     <p className="text-stone-500 text-sm mb-6">
-                        Your ticket information will be available in your email. Make sure to bring your confirmation code to the event.
+                        You will receive a confirmation email with tracking information once your order ships.
                     </p>
                     
-                    <Link to={createPageUrl('Events')}>
+                    <Link to={createPageUrl('Shop')}>
                         <Button className="w-full bg-green-500 hover:bg-green-600 text-stone-900 font-semibold py-6">
-                            Browse More Events
+                            Continue Shopping
+                        </Button>
+                    </Link>
+                    
+                    <Link to={createPageUrl('TrackOrder')}>
+                        <Button variant="outline" className="w-full mt-3 border-stone-600 text-stone-300 hover:bg-stone-800">
+                            Track Your Order
                         </Button>
                     </Link>
                     
