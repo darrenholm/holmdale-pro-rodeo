@@ -6,6 +6,7 @@ import Contact from './pages/Contact';
 import Events from './pages/Events';
 import Home from './pages/Home';
 import Shop from './pages/Shop';
+import TrackOrder from './pages/TrackOrder';
 import __Layout from './Layout.jsx';
 
 
@@ -18,6 +19,7 @@ export const PAGES = {
     "Events": Events,
     "Home": Home,
     "Shop": Shop,
+    "TrackOrder": TrackOrder,
 }
 
 export const pagesConfig = {
