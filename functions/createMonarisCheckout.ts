@@ -36,50 +36,58 @@ Deno.serve(async (req) => {
 
     if (!tokenResponse.ok) {
       const errorData = await tokenResponse.text();
-      console.error('Moneris OAuth error:', errorData);
-      return Response.json({ error: 'Failed to authenticate with Moneris' }, { status: 500 });
+      console.error('Moneris OAuth error:', errorData, 'Status:', tokenResponse.status);
+      return Response.json({ 
+        error: 'Failed to authenticate with Moneris. Please check your Store ID and API Token.',
+        details: errorData
+      }, { status: 500 });
     }
 
     const { access_token } = await tokenResponse.json();
 
     // Create Moneris payment
     const orderId = `ORDER-${Date.now()}`;
+    const idempotencyKey = crypto.randomUUID();
+    
     const monerisPayload = {
-      order_id: orderId,
-      amount: total.toFixed(2),
-      currency: 'CAD',
-      card: {
-        number: '4242424242424242',
-        expiry_month: '12',
-        expiry_year: '25',
-        cvv: '123'
+      idempotencyKey: idempotencyKey,
+      orderId: orderId,
+      amount: {
+        amount: Math.round(total * 100).toString(),
+        currency: 'CAD'
       },
-      billing_address: {
-        email: shipping_address.email || 'customer@example.com',
-        first_name: (shipping_address.name || 'Customer').split(' ')[0],
-        last_name: (shipping_address.name || 'Customer').split(' ')[1] || '',
-        address_line_1: shipping_address.address_line_1 || '123 Main St',
-        city: shipping_address.city || 'Ottawa',
-        province: shipping_address.province || 'ON',
-        postal_code: shipping_address.postal_code || 'K1A0A1',
-        country: shipping_address.country || 'CA'
-      }
+      paymentMethod: {
+        paymentMethodSource: 'CARD',
+        card: {
+          cardNumber: '4242424242424242',
+          expiryMonth: '12',
+          expiryYear: '2028',
+          cardSecurityCode: '123'
+        },
+        storePaymentMethod: 'DO_NOT_STORE'
+      },
+      automaticCapture: 'true',
+      ecommerceIndicator: 'ECOMMERCE'
     };
 
-    const monerisResponse = await fetch(`https://api.sb.moneris.io/merchants/${Deno.env.get('MONERIS_STORE_ID')}/payments`, {
+    const merchantId = Deno.env.get('MONERIS_STORE_ID');
+    const monerisResponse = await fetch(`https://api.sb.moneris.io/merchants/${merchantId}/payments`, {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${access_token}`,
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
+        'Api-Version': '2024-09-17',
+        'X-Merchant-Id': merchantId
       },
       body: JSON.stringify(monerisPayload)
     });
 
     if (!monerisResponse.ok) {
       const errorData = await monerisResponse.text();
-      console.error('Moneris API error:', errorData);
+      console.error('Moneris payment error:', errorData, 'Status:', monerisResponse.status);
       return Response.json({ 
-        error: 'Failed to create payment session' 
+        error: 'Failed to process payment',
+        details: errorData
       }, { status: 500 });
     }
 
