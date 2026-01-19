@@ -9,6 +9,20 @@ export default function CheckoutSuccess() {
     const urlParams = new URLSearchParams(window.location.search);
     const sessionId = urlParams.get('session_id');
 
+    if (!sessionId) {
+        return (
+            <div className="bg-stone-950 pt-24 pb-20 px-6">
+                <div className="max-w-2xl mx-auto">
+                    <Card className="bg-stone-900 border-stone-800">
+                        <CardContent className="p-8 text-center">
+                            <p className="text-stone-400">Loading order confirmation...</p>
+                        </CardContent>
+                    </Card>
+                </div>
+            </div>
+        );
+    }
+
     return (
         <div className="bg-stone-950 pt-24 pb-20 px-6">
             <div className="max-w-2xl mx-auto">
