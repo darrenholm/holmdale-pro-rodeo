@@ -33,8 +33,8 @@ Deno.serve(async (req) => {
       payment_method_types: ['card'],
       line_items: lineItems,
       mode: 'payment',
-      success_url: `${Deno.env.get('BASE44_APP_URL')}/checkout-success?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${Deno.env.get('BASE44_APP_URL')}/checkout-cancel`,
+      success_url: `${Deno.env.get('BASE44_APP_URL')}/CheckoutSuccess?session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url: `${Deno.env.get('BASE44_APP_URL')}/CheckoutCancel`,
       automatic_tax: { enabled: true },
       shipping_address_collection: {
         allowed_countries: ['US', 'CA']
