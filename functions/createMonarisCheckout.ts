@@ -26,12 +26,21 @@ Deno.serve(async (req) => {
     const total = subtotal + shipping;
 
     // Get Moneris OAuth token
+    const clientId = Deno.env.get('MONERIS_CLIENT_ID');
+    const clientSecret = Deno.env.get('MONERIS_CLIENT_SECRET');
+    
+    if (!clientId || !clientSecret) {
+      return Response.json({ 
+        error: 'Moneris credentials not configured. Please add MONERIS_CLIENT_ID, MONERIS_CLIENT_SECRET, and MONERIS_MERCHANT_ID in Dashboard > Settings > Environment Variables' 
+      }, { status: 500 });
+    }
+
     const tokenResponse = await fetch('https://api.sb.moneris.io/oauth2/token', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded'
       },
-      body: `grant_type=client_credentials&client_id=${Deno.env.get('MONERIS_STORE_ID')}&client_secret=${Deno.env.get('MONERIS_API_TOKEN')}&scope=payment.write`
+      body: `grant_type=client_credentials&client_id=${clientId}&client_secret=${clientSecret}&scope=payment.write`
     });
 
     if (!tokenResponse.ok) {
