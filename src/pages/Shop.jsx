@@ -5,11 +5,19 @@ import { useQuery } from '@tanstack/react-query';
 import ProductCard from '../components/ProductCard';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { ShoppingBag, Loader2 } from 'lucide-react';
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { ShoppingBag, Loader2, MapPin } from 'lucide-react';
 
 export default function Shop() {
   const [cartItems, setCartItems] = useState([]);
   const [isCheckingOut, setIsCheckingOut] = useState(false);
+  const [showAddressModal, setShowAddressModal] = useState(false);
+  const [shippingAddress, setShippingAddress] = useState({
+    postal_code: '',
+    country: 'CA'
+  });
 
   const { data: products, isLoading } = useQuery({
     queryKey: ['products'],
@@ -23,12 +31,21 @@ export default function Shop() {
 
   const cartTotal = cartItems.reduce((sum, item) => sum + item.price, 0);
 
-  const handleCheckout = async () => {
+  const handleProceedToCheckout = () => {
     if (cartItems.length === 0) return;
 
     const isInIframe = window.self !== window.top;
     if (isInIframe) {
       alert('Checkout is only available from the published app. Please open this in a new window.');
+      return;
+    }
+
+    setShowAddressModal(true);
+  };
+
+  const handleCheckout = async () => {
+    if (!shippingAddress.postal_code) {
+      alert('Please enter your postal code');
       return;
     }
 
@@ -39,7 +56,8 @@ export default function Shop() {
           product_id: item.id,
           product_name: item.name,
           price_id: item.stripe_price_id
-        }))
+        })),
+        shipping_address: shippingAddress
       });
 
       if (response.data?.url) {
@@ -144,18 +162,11 @@ export default function Shop() {
                   </div>
 
                   <Button
-                    onClick={handleCheckout}
-                    disabled={cartItems.length === 0 || isCheckingOut}
+                    onClick={handleProceedToCheckout}
+                    disabled={cartItems.length === 0}
                     className="w-full bg-green-500 hover:bg-green-600 text-stone-900 font-semibold py-6 text-lg"
                   >
-                    {isCheckingOut ? (
-                      <>
-                        <Loader2 className="w-5 h-5 mr-2 animate-spin" />
-                        Processing...
-                      </>
-                    ) : (
-                      'Proceed to Checkout'
-                    )}
+                    Proceed to Checkout
                   </Button>
                   
                   {cartItems.length === 0 && (
@@ -168,6 +179,60 @@ export default function Shop() {
             </Card>
           </motion.div>
         </div>
+
+        {/* Address Modal */}
+        <Dialog open={showAddressModal} onOpenChange={setShowAddressModal}>
+          <DialogContent className="bg-stone-900 border-stone-800 text-white">
+            <DialogHeader>
+              <DialogTitle className="flex items-center gap-2">
+                <MapPin className="w-5 h-5 text-green-500" />
+                Shipping Address
+              </DialogTitle>
+            </DialogHeader>
+            <div className="space-y-4 mt-4">
+              <p className="text-stone-400 text-sm">
+                Enter your postal code to calculate accurate shipping rates
+              </p>
+              <div className="space-y-2">
+                <Label htmlFor="postal_code" className="text-stone-300">Postal Code</Label>
+                <Input
+                  id="postal_code"
+                  type="text"
+                  placeholder="e.g., K0A 1K0"
+                  value={shippingAddress.postal_code}
+                  onChange={(e) => setShippingAddress({...shippingAddress, postal_code: e.target.value.toUpperCase()})}
+                  className="bg-stone-800 border-stone-700 text-white"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="country" className="text-stone-300">Country</Label>
+                <select
+                  id="country"
+                  value={shippingAddress.country}
+                  onChange={(e) => setShippingAddress({...shippingAddress, country: e.target.value})}
+                  className="w-full h-10 px-3 rounded-md bg-stone-800 border border-stone-700 text-white"
+                >
+                  <option value="CA">Canada</option>
+                  <option value="US">United States</option>
+                </select>
+              </div>
+              <Button
+                onClick={handleCheckout}
+                disabled={isCheckingOut || !shippingAddress.postal_code}
+                className="w-full bg-green-500 hover:bg-green-600 text-stone-900 font-semibold py-6 text-lg mt-6"
+              >
+                {isCheckingOut ? (
+                  <>
+                    <Loader2 className="w-5 h-5 mr-2 animate-spin" />
+                    Processing...
+                  </>
+                ) : (
+                  'Continue to Payment'
+                )}
+              </Button>
+            </div>
+          </DialogContent>
+        </Dialog>
       </div>
     </div>
   );
