@@ -45,7 +45,7 @@ Deno.serve(async (req) => {
           type: 'fixed_amount',
           fixed_amount: {
             amount: 500,
-            currency: 'cad'
+            currency: 'usd'
           },
           display_name: 'Standard Shipping',
           delivery_estimate: {
@@ -80,7 +80,7 @@ Deno.serve(async (req) => {
               type: 'fixed_amount',
               fixed_amount: {
                 amount: Math.round(rate.price * 100),
-                currency: 'cad'
+                currency: 'usd'
               },
               display_name: rate.service_name || 'Shipping',
               delivery_estimate: rate.estimated_delivery ? {
