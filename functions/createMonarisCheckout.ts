@@ -101,7 +101,7 @@ Deno.serve(async (req) => {
 
     // Create order record
     await base44.asServiceRole.entities.Order.create({
-      monaris_transaction_id: monerisData.id || orderId,
+      monaris_transaction_id: orderId,
       customer_email: shipping_address.email || 'customer@example.com',
       customer_name: shipping_address.name || 'Customer',
       items: products.map(p => ({
@@ -111,14 +111,15 @@ Deno.serve(async (req) => {
       })),
       total_amount: total,
       shipping_address: shipping_address,
-      status: monerisData.status === 'approved' ? 'paid' : 'pending'
+      status: 'pending'
     });
 
+    const checkoutUrl = `https://gatewayt.moneris.com/chktv2/display/display.php?ticket=${monerisData.response.ticket}`;
+
     return Response.json({ 
-      success: true,
-      transaction_id: monerisData.id,
-      status: monerisData.status,
-      redirect_url: `${Deno.env.get('BASE44_APP_URL')}/CheckoutSuccess?transaction_id=${monerisData.id}`
+      url: checkoutUrl,
+      ticket: monerisData.response.ticket,
+      order_id: orderId
     });
 
   } catch (error) {
