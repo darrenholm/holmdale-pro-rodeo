@@ -43,7 +43,7 @@ Deno.serve(async (req) => {
       api_token: apiToken,
       checkout_id: checkoutId,
       txn_total: total.toFixed(2),
-      environment: 'test',
+      environment: 'qa',
       action: 'preload',
       order_no: orderId,
       cust_id: shipping_address.email || 'guest',
@@ -72,7 +72,7 @@ Deno.serve(async (req) => {
       }
     };
 
-    const monerisResponse = await fetch('https://gatewayt.moneris.com/chktv2/request/request.php', {
+    const monerisResponse = await fetch('https://esqa.moneris.com/chktv2/request/request.php', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
@@ -114,7 +114,7 @@ Deno.serve(async (req) => {
       status: 'pending'
     });
 
-    const checkoutUrl = `https://gatewayt.moneris.com/chktv2/display/display.php?ticket=${monerisData.response.ticket}`;
+    const checkoutUrl = `https://esqa.moneris.com/chktv2/display/display.php?ticket=${monerisData.response.ticket}`;
 
     return Response.json({ 
       url: checkoutUrl,
