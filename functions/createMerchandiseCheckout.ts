@@ -38,13 +38,13 @@ Deno.serve(async (req) => {
       });
     }
 
-    // Get shipping rates from Shiptime if address provided
-    let shippingOptions = [
+    // Static shipping options (Shiptime integration requires valid API credentials)
+    const shippingOptions = [
       {
         shipping_rate_data: {
           type: 'fixed_amount',
           fixed_amount: {
-            amount: 500,
+            amount: 1000,
             currency: 'cad'
           },
           display_name: 'Standard Shipping',
@@ -53,47 +53,22 @@ Deno.serve(async (req) => {
             maximum: { unit: 'business_day', value: 10 }
           }
         }
+      },
+      {
+        shipping_rate_data: {
+          type: 'fixed_amount',
+          fixed_amount: {
+            amount: 1500,
+            currency: 'cad'
+          },
+          display_name: 'Express Shipping',
+          delivery_estimate: {
+            minimum: { unit: 'business_day', value: 2 },
+            maximum: { unit: 'business_day', value: 3 }
+          }
+        }
       }
     ];
-
-    if (shipping_address?.postal_code) {
-      try {
-        // Calculate total package dimensions
-        const packages = products.map(p => ({
-          weight: p.weight || 0.5,
-          length: p.length || 30,
-          width: p.width || 20,
-          height: p.height || 5
-        }));
-
-        const ratesResponse = await base44.asServiceRole.functions.invoke('getShippingRates', {
-          destination: {
-            postal_code: shipping_address.postal_code,
-            country: shipping_address.country || 'CA'
-          },
-          packages
-        });
-
-        if (ratesResponse.data?.rates?.length > 0) {
-          shippingOptions = ratesResponse.data.rates.slice(0, 3).map(rate => ({
-            shipping_rate_data: {
-              type: 'fixed_amount',
-              fixed_amount: {
-                amount: Math.round(rate.price * 100),
-                currency: 'cad'
-              },
-              display_name: rate.service_name || 'Shipping',
-              delivery_estimate: rate.estimated_delivery ? {
-                minimum: { unit: 'business_day', value: rate.estimated_delivery },
-                maximum: { unit: 'business_day', value: rate.estimated_delivery + 2 }
-              } : undefined
-            }
-          }));
-        }
-      } catch (error) {
-        console.error('Failed to get Shiptime rates:', error);
-      }
-    }
 
     // Create Stripe checkout session
     const session = await stripe.checkout.sessions.create({
