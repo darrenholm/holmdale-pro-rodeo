@@ -43,7 +43,7 @@ export default function Shop() {
     setShowAddressModal(true);
   };
 
-  const handleCheckout = async () => {
+  const handleCheckout = async (paymentMethod = 'stripe') => {
     if (!shippingAddress.postal_code) {
       alert('Please enter your postal code');
       return;
@@ -51,7 +51,9 @@ export default function Shop() {
 
     setIsCheckingOut(true);
     try {
-      const response = await base44.functions.invoke('createMerchandiseCheckout', {
+      const functionName = paymentMethod === 'moneris' ? 'createMonarisCheckout' : 'createMerchandiseCheckout';
+      
+      const response = await base44.functions.invoke(functionName, {
         items: cartItems.map(item => ({
           product_id: item.id,
           quantity: 1
