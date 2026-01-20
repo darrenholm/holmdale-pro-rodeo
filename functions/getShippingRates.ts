@@ -16,7 +16,7 @@ Deno.serve(async (req) => {
     const authString = btoa(`${username}:${password}`);
 
     // Get shipping rates from Shiptime
-    const response = await fetch('https://api.shiptime.com/ship/rates', {
+    const response = await fetch('https://sandboxapi.shiptime.com/ship/rates', {
       method: 'POST',
       headers: {
         'Authorization': `Basic ${authString}`,
