@@ -16,7 +16,7 @@ Deno.serve(async (req) => {
     const authString = btoa(`${username}:${password}`);
 
     // Get shipping rates from Shiptime
-    const response = await fetch('https://api.shiptime.com/api/rates', {
+    const response = await fetch('https://api.shiptime.com/ship/rates', {
       method: 'POST',
       headers: {
         'Authorization': `Basic ${authString}`,
@@ -29,7 +29,7 @@ Deno.serve(async (req) => {
         },
         destination: {
           postal_code: destination.postal_code,
-          country: destination.country
+          country: destination.country || 'CA'
         },
         packages: packages
       })
