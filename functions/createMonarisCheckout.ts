@@ -43,7 +43,7 @@ Deno.serve(async (req) => {
       api_token: apiToken,
       checkout_id: checkoutId,
       txn_total: total.toFixed(2),
-      environment: 'qa',
+      environment: 'test',
       action: 'preload',
       order_no: orderId,
       cust_id: shipping_address.email || 'guest',
