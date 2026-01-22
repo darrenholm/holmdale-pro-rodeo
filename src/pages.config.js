@@ -8,6 +8,8 @@ import GateScan from './pages/GateScan';
 import Home from './pages/Home';
 import Shop from './pages/Shop';
 import TrackOrder from './pages/TrackOrder';
+import BuyBarCredits from './pages/BuyBarCredits';
+import BarRedemption from './pages/BarRedemption';
 import __Layout from './Layout.jsx';
 
 
@@ -22,6 +24,8 @@ export const PAGES = {
     "Home": Home,
     "Shop": Shop,
     "TrackOrder": TrackOrder,
+    "BuyBarCredits": BuyBarCredits,
+    "BarRedemption": BarRedemption,
 }
 
 export const pagesConfig = {
