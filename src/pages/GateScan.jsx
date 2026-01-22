@@ -210,52 +210,48 @@ export default function GateScan() {
           <p className="text-gray-400">Scan ticket QR codes for entry validation</p>
         </div>
 
-        {error && (
-          <Card className="bg-red-950 border-red-800 mb-4">
+        {error && !manualMode && (
+          <Card className="bg-orange-950 border-orange-800 mb-4">
             <CardContent className="p-6">
               <div className="flex items-start gap-3">
-                <AlertCircle className="w-6 h-6 text-red-500 flex-shrink-0 mt-1" />
+                <AlertCircle className="w-6 h-6 text-orange-500 flex-shrink-0 mt-1" />
                 <div>
-                  <h3 className="font-semibold text-red-100 mb-1">Camera Error</h3>
-                  <p className="text-red-300 text-sm">{error}</p>
-                  {window.self !== window.top && (
-                    <p className="text-red-400 text-xs mt-2">
-                      You're viewing this in preview mode. Open the published app directly to use the scanner.
-                    </p>
-                  )}
+                  <h3 className="font-semibold text-orange-100 mb-1">Camera Unavailable</h3>
+                  <p className="text-orange-300 text-sm">{error}</p>
                 </div>
               </div>
               <Button 
-                onClick={() => setError(null)}
-                className="w-full mt-4 bg-stone-800 hover:bg-stone-700"
+                onClick={handleManualEntry}
+                className="w-full mt-4 bg-green-600 hover:bg-green-700"
               >
-                Dismiss
+                <Keyboard className="w-4 h-4 mr-2" />
+                Use Manual Entry Instead
               </Button>
             </CardContent>
           </Card>
         )}
 
-        {!scanning && !result && !error && !manualMode && (
+        {!scanning && !result && !manualMode && (
           <Card className="bg-stone-900 border-stone-800">
             <CardContent className="p-12 text-center space-y-4">
-              <Camera className="w-16 h-16 text-green-500 mx-auto mb-4" />
-              <h2 className="text-xl font-semibold text-white mb-2">Ready to Scan</h2>
+              <Keyboard className="w-16 h-16 text-green-500 mx-auto mb-4" />
+              <h2 className="text-xl font-semibold text-white mb-2">Ticket Entry</h2>
               <p className="text-gray-400 mb-6">Choose your preferred method</p>
               <div className="space-y-3">
                 <Button 
-                  onClick={startScanning}
-                  className="w-full bg-green-600 hover:bg-green-700 text-white px-8 py-4 text-lg"
-                >
-                  <Camera className="w-5 h-5 mr-2" />
-                  Scan QR Code
-                </Button>
-                <Button 
                   onClick={handleManualEntry}
-                  variant="outline"
-                  className="w-full border-stone-700 text-white hover:bg-stone-800 px-8 py-4 text-lg"
+                  className="w-full bg-green-600 hover:bg-green-700 text-white px-8 py-4 text-lg"
                 >
                   <Keyboard className="w-5 h-5 mr-2" />
                   Enter Code Manually
+                </Button>
+                <Button 
+                  onClick={startScanning}
+                  variant="outline"
+                  className="w-full border-stone-700 text-white hover:bg-stone-800 px-8 py-4 text-lg"
+                >
+                  <Camera className="w-5 h-5 mr-2" />
+                  Try QR Scanner
                 </Button>
               </div>
             </CardContent>
