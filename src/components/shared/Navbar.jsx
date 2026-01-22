@@ -9,7 +9,6 @@ const navLinks = [
 { name: 'Home', page: 'Home' },
 { name: 'Events', page: 'Events' },
 { name: 'Shop', page: 'Shop' },
-{ name: 'Gate Scanner', page: 'GateScan' },
 { name: 'About', page: 'About' },
 { name: 'Contact', page: 'Contact' }];
 
