@@ -3,27 +3,42 @@ import { Html5QrcodeScanner } from 'html5-qrcode';
 import { base44 } from '@/api/base44Client';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { CheckCircle2, XCircle, Camera, AlertTriangle } from 'lucide-react';
+import { CheckCircle2, XCircle, Camera, AlertTriangle, AlertCircle } from 'lucide-react';
 
 export default function GateScan() {
   const [scanning, setScanning] = useState(false);
   const [result, setResult] = useState(null);
   const [scanner, setScanner] = useState(null);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     if (scanning && !scanner) {
-      const html5QrcodeScanner = new Html5QrcodeScanner(
-        "qr-reader",
-        { 
-          fps: 10, 
-          qrbox: { width: 250, height: 250 },
-          aspectRatio: 1.0
-        },
-        false
-      );
+      // Check if running in iframe
+      if (window.self !== window.top) {
+        setError('Camera access is blocked in preview mode. Please use the published app to scan tickets.');
+        setScanning(false);
+        return;
+      }
 
-      html5QrcodeScanner.render(onScanSuccess, onScanError);
-      setScanner(html5QrcodeScanner);
+      try {
+        const html5QrcodeScanner = new Html5QrcodeScanner(
+          "qr-reader",
+          { 
+            fps: 10, 
+            qrbox: { width: 250, height: 250 },
+            aspectRatio: 1.0,
+            rememberLastUsedCamera: true
+          },
+          false
+        );
+
+        html5QrcodeScanner.render(onScanSuccess, onScanError);
+        setScanner(html5QrcodeScanner);
+      } catch (err) {
+        console.error('Scanner initialization error:', err);
+        setError('Failed to initialize scanner: ' + err.message);
+        setScanning(false);
+      }
     }
 
     return () => {
@@ -112,14 +127,31 @@ export default function GateScan() {
     }
   };
 
-  const startScanning = () => {
+  const startScanning = async () => {
     setResult(null);
-    setScanning(true);
+    setError(null);
+    
+    // Check for camera permission
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+      stream.getTracks().forEach(track => track.stop());
+      setScanning(true);
+    } catch (err) {
+      console.error('Camera permission error:', err);
+      if (err.name === 'NotAllowedError') {
+        setError('Camera permission denied. Please allow camera access in your browser settings.');
+      } else if (err.name === 'NotFoundError') {
+        setError('No camera found on this device.');
+      } else {
+        setError('Camera access error: ' + err.message);
+      }
+    }
   };
 
   const resetScanner = () => {
     setResult(null);
     setScanning(false);
+    setError(null);
     if (scanner) {
       scanner.clear().catch(console.error);
       setScanner(null);
@@ -134,7 +166,32 @@ export default function GateScan() {
           <p className="text-gray-400">Scan ticket QR codes for entry validation</p>
         </div>
 
-        {!scanning && !result && (
+        {error && (
+          <Card className="bg-red-950 border-red-800 mb-4">
+            <CardContent className="p-6">
+              <div className="flex items-start gap-3">
+                <AlertCircle className="w-6 h-6 text-red-500 flex-shrink-0 mt-1" />
+                <div>
+                  <h3 className="font-semibold text-red-100 mb-1">Camera Error</h3>
+                  <p className="text-red-300 text-sm">{error}</p>
+                  {window.self !== window.top && (
+                    <p className="text-red-400 text-xs mt-2">
+                      You're viewing this in preview mode. Open the published app directly to use the scanner.
+                    </p>
+                  )}
+                </div>
+              </div>
+              <Button 
+                onClick={() => setError(null)}
+                className="w-full mt-4 bg-stone-800 hover:bg-stone-700"
+              >
+                Dismiss
+              </Button>
+            </CardContent>
+          </Card>
+        )}
+
+        {!scanning && !result && !error && (
           <Card className="bg-stone-900 border-stone-800">
             <CardContent className="p-12 text-center">
               <Camera className="w-16 h-16 text-green-500 mx-auto mb-4" />
