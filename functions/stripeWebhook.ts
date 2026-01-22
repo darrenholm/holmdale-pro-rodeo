@@ -104,6 +104,53 @@ Deno.serve(async (req) => {
           console.log('Ticket order confirmed and email sent:', order.confirmation_code);
         }
       }
+      // Handle bar credit orders
+      else if (session.metadata?.bar_credit_id) {
+        const barCreditId = session.metadata.bar_credit_id;
+        
+        // Update bar credit status to confirmed
+        await base44.asServiceRole.entities.BarCredit.update(barCreditId, {
+          status: 'confirmed'
+        });
+        
+        // Get bar credit details
+        const barCredit = await base44.asServiceRole.entities.BarCredit.get(barCreditId);
+        
+        // Send confirmation email
+        await base44.asServiceRole.integrations.Core.SendEmail({
+          to: barCredit.customer_email,
+          from_name: 'Holmdale Pro Rodeo',
+          subject: 'Your Bar Credits - Ready to Use',
+          body: `
+            <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+              <h1 style="color: #22c55e;">Bar Credits Confirmed!</h1>
+              <p>Hi ${barCredit.customer_name},</p>
+              <p>Your bar credits are ready to use!</p>
+              
+              <div style="background: #f5f5f5; padding: 20px; border-radius: 8px; margin: 20px 0; text-align: center;">
+                <h2 style="margin-top: 0;">Your Confirmation Code</h2>
+                <p style="font-family: monospace; font-size: 36px; color: #22c55e; font-weight: bold; letter-spacing: 2px;">
+                  ${barCredit.confirmation_code}
+                </p>
+                <p><strong>Credits:</strong> ${barCredit.quantity}</p>
+                <p><strong>Value:</strong> $${barCredit.total_price.toFixed(2)}</p>
+              </div>
+              
+              <div style="background: #fff3cd; padding: 15px; border-radius: 8px; margin: 20px 0;">
+                <p style="margin: 0; color: #856404;">
+                  <strong>How to use:</strong> Show this confirmation code at the bar to redeem your credits. 
+                  Each credit can be used individually.
+                </p>
+              </div>
+              
+              <p>Enjoy your drinks!</p>
+              <p><strong>Holmdale Pro Rodeo Team</strong></p>
+            </div>
+          `
+        });
+        
+        console.log('Bar credits confirmed:', barCredit.confirmation_code);
+      }
       // Only process merchandise orders
       else if (session.metadata?.type === 'merchandise') {
         // Create order record
