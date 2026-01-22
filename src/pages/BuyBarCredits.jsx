@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useMutation } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -19,6 +19,19 @@ export default function BuyBarCredits() {
   });
   const [orderComplete, setOrderComplete] = useState(false);
   const [confirmationCode, setConfirmationCode] = useState('');
+
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const success = urlParams.get('success');
+    const code = urlParams.get('code');
+    
+    if (success === 'true' && code) {
+      setOrderComplete(true);
+      setConfirmationCode(code);
+      // Clear URL params
+      window.history.replaceState({}, '', window.location.pathname);
+    }
+  }, []);
 
   const checkoutMutation = useMutation({
     mutationFn: async (data) => {
