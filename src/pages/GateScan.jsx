@@ -158,6 +158,21 @@ export default function GateScan() {
       // Get event details
       const event = await base44.entities.Event.get(ticket.event_id);
 
+      // Check if event is today
+      const today = new Date().toISOString().split('T')[0];
+      const eventDate = event.date;
+      
+      if (eventDate !== today) {
+        setResult({
+          success: false,
+          message: `Ticket not valid today - Event is on ${eventDate}`,
+          type: 'wrong_date',
+          ticket,
+          event
+        });
+        return;
+      }
+
       // Mark as scanned
       await base44.entities.TicketOrder.update(ticket.id, {
         scanned: true,
