@@ -115,6 +115,7 @@ Deno.serve(async (req) => {
         
         // Get bar credit details
         const barCredit = await base44.asServiceRole.entities.BarCredit.get(barCreditId);
+        console.log('Bar credit details:', barCredit);
         
         // Generate QR code with confirmation code
         const qrCodeDataUrl = await QRCode.toDataURL(barCredit.confirmation_code, {
@@ -125,9 +126,11 @@ Deno.serve(async (req) => {
             light: '#FFFFFF'
           }
         });
+        console.log('QR code generated for:', barCredit.confirmation_code);
         
         // Send confirmation email
-        await base44.asServiceRole.integrations.Core.SendEmail({
+        console.log('Sending email to:', barCredit.customer_email);
+        const emailResult = await base44.asServiceRole.integrations.Core.SendEmail({
           to: barCredit.customer_email,
           from_name: 'Holmdale Pro Rodeo',
           subject: 'Your Bar Credits - Ready to Use',
@@ -163,8 +166,9 @@ Deno.serve(async (req) => {
             </div>
           `
         });
+        console.log('Email sent successfully:', emailResult);
         
-        console.log('Bar credits confirmed:', barCredit.confirmation_code);
+        console.log('Bar credits confirmed and email sent:', barCredit.confirmation_code);
       }
       // Only process merchandise orders
       else if (session.metadata?.type === 'merchandise') {
