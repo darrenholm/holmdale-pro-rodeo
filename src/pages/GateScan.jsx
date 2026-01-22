@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { Html5QrcodeScanner } from 'html5-qrcode';
+import React, { useState, useEffect, useRef } from 'react';
+import jsQR from 'jsqr';
 import { base44 } from '@/api/base44Client';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -9,13 +9,29 @@ import { CheckCircle2, XCircle, Camera, AlertTriangle, AlertCircle, Keyboard } f
 export default function GateScan() {
   const [scanning, setScanning] = useState(false);
   const [result, setResult] = useState(null);
-  const [scanner, setScanner] = useState(null);
   const [error, setError] = useState(null);
   const [manualMode, setManualMode] = useState(false);
   const [manualCode, setManualCode] = useState('');
+  
+  const videoRef = useRef(null);
+  const canvasRef = useRef(null);
+  const streamRef = useRef(null);
+  const animationRef = useRef(null);
 
   useEffect(() => {
-    if (scanning && !scanner) {
+    if (scanning) {
+      startCamera();
+    } else {
+      stopCamera();
+    }
+
+    return () => {
+      stopCamera();
+    };
+  }, [scanning]);
+
+  const startCamera = async () => {
+    try {
       // Check if running in iframe
       if (window.self !== window.top) {
         setError('Camera blocked in preview. Open published app URL.');
@@ -23,58 +39,79 @@ export default function GateScan() {
         return;
       }
 
-      try {
-        const html5QrcodeScanner = new Html5QrcodeScanner(
-          "qr-reader",
-          { 
-            fps: 10, 
-            qrbox: 250,
-            aspectRatio: 1.0,
-            disableFlip: false,
-            rememberLastUsedCamera: true,
-            showTorchButtonIfSupported: true,
-            useBarCodeDetectorIfSupported: true,
-            experimentalFeatures: {
-              useBarCodeDetectorIfSupported: true
-            }
-          },
-          false
-        );
+      const stream = await navigator.mediaDevices.getUserMedia({
+        video: { 
+          facingMode: 'environment',
+          width: { ideal: 1280 },
+          height: { ideal: 720 }
+        }
+      });
 
-        html5QrcodeScanner.render(
-          (decodedText) => {
-            onScanSuccess(decodedText);
-          },
-          (errorMessage) => {
-            // Silently ignore scanning errors
-          }
-        );
-        setScanner(html5QrcodeScanner);
-      } catch (err) {
-        console.error('Scanner initialization error:', err);
-        setError('Camera initialization failed: ' + err.message);
-        setScanning(false);
+      streamRef.current = stream;
+      if (videoRef.current) {
+        videoRef.current.srcObject = stream;
+        videoRef.current.setAttribute('playsinline', true);
+        videoRef.current.play();
+        requestAnimationFrame(tick);
       }
-    }
-
-    return () => {
-      if (scanner) {
-        scanner.clear().catch(console.error);
+    } catch (err) {
+      console.error('Camera error:', err);
+      if (err.name === 'NotAllowedError') {
+        setError('Camera permission denied. Enable camera in browser settings.');
+      } else if (err.name === 'NotFoundError') {
+        setError('No camera found on device.');
+      } else {
+        setError('Camera error: ' + err.message);
       }
-    };
-  }, [scanning]);
-
-  const onScanSuccess = async (decodedText) => {
-    if (scanner) {
-      await scanner.clear();
-      setScanner(null);
+      setScanning(false);
     }
-    setScanning(false);
-    await validateTicket(decodedText);
   };
 
-  const onScanError = (error) => {
-    // Ignore scan errors (happens continuously while scanning)
+  const stopCamera = () => {
+    if (animationRef.current) {
+      cancelAnimationFrame(animationRef.current);
+    }
+    if (streamRef.current) {
+      streamRef.current.getTracks().forEach(track => track.stop());
+      streamRef.current = null;
+    }
+    if (videoRef.current) {
+      videoRef.current.srcObject = null;
+    }
+  };
+
+  const tick = () => {
+    if (!videoRef.current || !canvasRef.current || !scanning) {
+      return;
+    }
+
+    const video = videoRef.current;
+    const canvas = canvasRef.current;
+    const context = canvas.getContext('2d');
+
+    if (video.readyState === video.HAVE_ENOUGH_DATA) {
+      canvas.height = video.videoHeight;
+      canvas.width = video.videoWidth;
+      context.drawImage(video, 0, 0, canvas.width, canvas.height);
+      
+      const imageData = context.getImageData(0, 0, canvas.width, canvas.height);
+      const code = jsQR(imageData.data, imageData.width, imageData.height, {
+        inversionAttempts: 'dontInvert',
+      });
+
+      if (code) {
+        onScanSuccess(code.data);
+        return;
+      }
+    }
+
+    animationRef.current = requestAnimationFrame(tick);
+  };
+
+  const onScanSuccess = async (decodedText) => {
+    stopCamera();
+    setScanning(false);
+    await validateTicket(decodedText);
   };
 
   const validateTicket = async (confirmationCode) => {
@@ -147,36 +184,7 @@ export default function GateScan() {
     setResult(null);
     setError(null);
     setManualMode(false);
-    
-    // Check HTTPS requirement
-    if (window.location.protocol !== 'https:' && window.location.hostname !== 'localhost') {
-      setError('Camera requires HTTPS connection. Please open the app using https://');
-      return;
-    }
-
-    // Check for camera support
-    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-      setError('Camera not supported. Update your browser or use Chrome/Safari.');
-      return;
-    }
-    
-    // Try camera access with minimal constraints
-    try {
-      const stream = await navigator.mediaDevices.getUserMedia({ 
-        video: { facingMode: "environment" }
-      });
-      stream.getTracks().forEach(track => track.stop());
-      setScanning(true);
-    } catch (err) {
-      console.error('Camera permission error:', err);
-      if (err.name === 'NotAllowedError' || err.name === 'PermissionDeniedError') {
-        setError('Camera permission denied. Go to browser settings and allow camera access for this site.');
-      } else if (err.name === 'NotFoundError') {
-        setError('No camera found on device.');
-      } else {
-        setError('Camera error: ' + err.message);
-      }
-    }
+    setScanning(true);
   };
 
   const handleManualEntry = () => {
@@ -199,10 +207,7 @@ export default function GateScan() {
     setError(null);
     setManualMode(false);
     setManualCode('');
-    if (scanner) {
-      scanner.clear().catch(console.error);
-      setScanner(null);
-    }
+    stopCamera();
   };
 
   return (
@@ -315,14 +320,25 @@ export default function GateScan() {
         {scanning && (
           <Card className="bg-stone-900 border-stone-800">
             <CardHeader>
-              <CardTitle className="text-white">Scanning...</CardTitle>
+              <CardTitle className="text-white">Point camera at QR code</CardTitle>
             </CardHeader>
-            <CardContent>
-              <div id="qr-reader" className="rounded-lg overflow-hidden"></div>
+            <CardContent className="space-y-4">
+              <div className="relative bg-black rounded-lg overflow-hidden">
+                <video 
+                  ref={videoRef}
+                  className="w-full h-auto"
+                  playsInline
+                  muted
+                />
+                <canvas ref={canvasRef} className="hidden" />
+                <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                  <div className="border-2 border-green-500 w-64 h-64 rounded-lg"></div>
+                </div>
+              </div>
               <Button 
                 onClick={resetScanner}
                 variant="outline"
-                className="w-full mt-4 border-stone-700 text-white hover:bg-stone-800"
+                className="w-full border-stone-700 text-white hover:bg-stone-800"
               >
                 Cancel
               </Button>
