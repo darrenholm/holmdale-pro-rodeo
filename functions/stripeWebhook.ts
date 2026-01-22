@@ -1,4 +1,5 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.6';
+import QRCode from 'npm:qrcode@1.5.3';
 
 const stripe = await import('npm:stripe@17.4.0').then(m => new m.default(Deno.env.get('STRIPE_SECRET_KEY')));
 
@@ -25,8 +26,86 @@ Deno.serve(async (req) => {
     if (event.type === 'checkout.session.completed') {
       const session = event.data.object;
       
+      // Handle ticket orders
+      if (session.metadata?.event_id) {
+        const eventId = session.metadata.event_id;
+        const customerName = session.metadata.customer_name || session.customer_details?.name;
+        const customerEmail = session.customer_details?.email;
+        
+        // Find the ticket order that was created before checkout
+        const orders = await base44.asServiceRole.entities.TicketOrder.filter({
+          event_id: eventId,
+          customer_email: customerEmail,
+          status: 'pending'
+        });
+        
+        if (orders.length > 0) {
+          const order = orders[0];
+          
+          // Update order status
+          await base44.asServiceRole.entities.TicketOrder.update(order.id, {
+            status: 'confirmed'
+          });
+          
+          // Generate QR code with confirmation code
+          const qrCodeDataUrl = await QRCode.toDataURL(order.confirmation_code, {
+            width: 400,
+            margin: 2,
+            color: {
+              dark: '#000000',
+              light: '#FFFFFF'
+            }
+          });
+          
+          // Get event details
+          const event = await base44.asServiceRole.entities.Event.get(eventId);
+          
+          // Send email with QR code
+          await base44.asServiceRole.integrations.Core.SendEmail({
+            to: customerEmail,
+            from_name: 'Holmdale Pro Rodeo',
+            subject: `Your Tickets - ${event.title}`,
+            body: `
+              <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+                <h1 style="color: #22c55e;">Tickets Confirmed!</h1>
+                <p>Hi ${customerName},</p>
+                <p>Thank you for purchasing tickets to <strong>${event.title}</strong>!</p>
+                
+                <div style="background: #f5f5f5; padding: 20px; border-radius: 8px; margin: 20px 0;">
+                  <h2 style="margin-top: 0;">Event Details</h2>
+                  <p><strong>Date:</strong> ${event.date}</p>
+                  <p><strong>Time:</strong> ${event.time}</p>
+                  <p><strong>Venue:</strong> ${event.venue || 'Main Arena'}</p>
+                </div>
+                
+                <div style="background: #f5f5f5; padding: 20px; border-radius: 8px; margin: 20px 0;">
+                  <h2 style="margin-top: 0;">Your Tickets</h2>
+                  <p><strong>Ticket Type:</strong> ${order.ticket_type === 'general' ? 'General Admission' : 'VIP Box'}</p>
+                  <p><strong>Quantity:</strong> ${order.quantity}</p>
+                  <p><strong>Confirmation Code:</strong> <span style="font-family: monospace; font-size: 18px; color: #22c55e;">${order.confirmation_code}</span></p>
+                </div>
+                
+                <div style="text-align: center; margin: 30px 0;">
+                  <p><strong>Show this QR code at the entrance:</strong></p>
+                  <img src="${qrCodeDataUrl}" alt="Ticket QR Code" style="max-width: 300px;" />
+                </div>
+                
+                <p style="color: #666; font-size: 14px;">
+                  Please present this QR code or your confirmation code at the entrance. 
+                  We look forward to seeing you at the event!
+                </p>
+                
+                <p>See you at the rodeo!</p>
+                <p><strong>Holmdale Pro Rodeo Team</strong></p>
+              </div>
+            `
+          });
+          
+          console.log('Ticket order confirmed and email sent:', order.confirmation_code);
+        }
+      }
       // Only process merchandise orders
-      if (session.metadata?.type === 'merchandise') {
+      else if (session.metadata?.type === 'merchandise') {
         // Create order record
         const order = await base44.asServiceRole.entities.Order.create({
           stripe_session_id: session.id,
