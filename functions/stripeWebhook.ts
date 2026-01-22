@@ -47,8 +47,8 @@ Deno.serve(async (req) => {
             status: 'confirmed'
           });
           
-          // Generate QR code with confirmation code
-          const qrCodeDataUrl = await QRCode.toDataURL(order.confirmation_code, {
+          // Generate QR code as buffer
+          const qrCodeBuffer = await QRCode.toBuffer(order.confirmation_code, {
             width: 400,
             margin: 2,
             color: {
@@ -56,6 +56,10 @@ Deno.serve(async (req) => {
               light: '#FFFFFF'
             }
           });
+          
+          // Upload QR code to get a URL
+          const qrFile = new File([qrCodeBuffer], `ticket-${order.confirmation_code}.png`, { type: 'image/png' });
+          const { file_url: qrCodeUrl } = await base44.asServiceRole.integrations.Core.UploadFile({ file: qrFile });
           
           // Get event details
           const event = await base44.asServiceRole.entities.Event.get(eventId);
@@ -87,7 +91,7 @@ Deno.serve(async (req) => {
                 
                 <div style="text-align: center; margin: 30px 0;">
                   <p><strong>Show this QR code at the entrance:</strong></p>
-                  <img src="${qrCodeDataUrl}" alt="Ticket QR Code" style="max-width: 300px;" />
+                  <img src="${qrCodeUrl}" alt="Ticket QR Code" style="max-width: 300px;" />
                 </div>
                 
                 <p style="color: #666; font-size: 14px;">
@@ -117,8 +121,8 @@ Deno.serve(async (req) => {
         const barCredit = await base44.asServiceRole.entities.BarCredit.get(barCreditId);
         console.log('Bar credit details:', barCredit);
         
-        // Generate QR code with confirmation code
-        const qrCodeDataUrl = await QRCode.toDataURL(barCredit.confirmation_code, {
+        // Generate QR code as buffer
+        const qrCodeBuffer = await QRCode.toBuffer(barCredit.confirmation_code, {
           width: 400,
           margin: 2,
           color: {
@@ -127,6 +131,11 @@ Deno.serve(async (req) => {
           }
         });
         console.log('QR code generated for:', barCredit.confirmation_code);
+        
+        // Upload QR code to get a URL
+        const qrFile = new File([qrCodeBuffer], `bar-credit-${barCredit.confirmation_code}.png`, { type: 'image/png' });
+        const { file_url: qrCodeUrl } = await base44.asServiceRole.integrations.Core.UploadFile({ file: qrFile });
+        console.log('QR code uploaded to:', qrCodeUrl);
         
         // Send confirmation email
         console.log('Sending email to:', barCredit.customer_email);
@@ -151,7 +160,7 @@ Deno.serve(async (req) => {
               
               <div style="text-align: center; margin: 30px 0;">
                 <p><strong>Show this QR code at the bar:</strong></p>
-                <img src="${qrCodeDataUrl}" alt="Bar Credit QR Code" style="max-width: 300px;" />
+                <img src="${qrCodeUrl}" alt="Bar Credit QR Code" style="max-width: 300px;" />
               </div>
               
               <div style="background: #fff3cd; padding: 15px; border-radius: 8px; margin: 20px 0;">
