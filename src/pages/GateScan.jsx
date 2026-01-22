@@ -18,7 +18,7 @@ export default function GateScan() {
     if (scanning && !scanner) {
       // Check if running in iframe
       if (window.self !== window.top) {
-        setError('Camera access is blocked in preview mode. Please use the published app to scan tickets.');
+        setError('Camera blocked in preview. Open published app URL.');
         setScanning(false);
         return;
       }
@@ -28,19 +28,23 @@ export default function GateScan() {
           "qr-reader",
           { 
             fps: 10, 
-            qrbox: { width: 250, height: 250 },
-            formatsToSupport: ['QR_CODE'],
-            videoConstraints: {
-              facingMode: { ideal: "environment" }
-            },
+            qrbox: 250,
+            aspectRatio: 1.0,
+            disableFlip: false,
             rememberLastUsedCamera: true,
-            showTorchButtonIfSupported: true
+            showTorchButtonIfSupported: true,
+            useBarCodeDetectorIfSupported: true,
+            experimentalFeatures: {
+              useBarCodeDetectorIfSupported: true
+            }
           },
           false
         );
 
         html5QrcodeScanner.render(
-          (decodedText) => onScanSuccess(decodedText),
+          (decodedText) => {
+            onScanSuccess(decodedText);
+          },
           (errorMessage) => {
             // Silently ignore scanning errors
           }
@@ -48,7 +52,7 @@ export default function GateScan() {
         setScanner(html5QrcodeScanner);
       } catch (err) {
         console.error('Scanner initialization error:', err);
-        setError('Camera error. Please try manual entry instead.');
+        setError('Camera initialization failed: ' + err.message);
         setScanning(false);
       }
     }
@@ -146,33 +150,32 @@ export default function GateScan() {
     
     // Check HTTPS requirement
     if (window.location.protocol !== 'https:' && window.location.hostname !== 'localhost') {
-      setError('Camera requires HTTPS. Please use manual entry.');
-      setManualMode(true);
+      setError('Camera requires HTTPS connection. Please open the app using https://');
       return;
     }
 
     // Check for camera support
     if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-      setError('Camera not supported on this browser. Please use manual entry.');
-      setManualMode(true);
+      setError('Camera not supported. Update your browser or use Chrome/Safari.');
       return;
     }
     
-    // Try camera access
+    // Try camera access with minimal constraints
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ 
-        video: { 
-          facingMode: "environment",
-          width: { ideal: 1280 },
-          height: { ideal: 720 }
-        } 
+        video: { facingMode: "environment" }
       });
       stream.getTracks().forEach(track => track.stop());
       setScanning(true);
     } catch (err) {
-      console.error('Camera error:', err);
-      setError('Camera not available. Using manual entry.');
-      setManualMode(true);
+      console.error('Camera permission error:', err);
+      if (err.name === 'NotAllowedError' || err.name === 'PermissionDeniedError') {
+        setError('Camera permission denied. Go to browser settings and allow camera access for this site.');
+      } else if (err.name === 'NotFoundError') {
+        setError('No camera found on device.');
+      } else {
+        setError('Camera error: ' + err.message);
+      }
     }
   };
 
@@ -210,48 +213,57 @@ export default function GateScan() {
           <p className="text-gray-400">Scan ticket QR codes for entry validation</p>
         </div>
 
-        {error && !manualMode && (
-          <Card className="bg-orange-950 border-orange-800 mb-4">
+        {error && !manualMode && !scanning && (
+          <Card className="bg-red-950 border-red-800 mb-4">
             <CardContent className="p-6">
               <div className="flex items-start gap-3">
-                <AlertCircle className="w-6 h-6 text-orange-500 flex-shrink-0 mt-1" />
-                <div>
-                  <h3 className="font-semibold text-orange-100 mb-1">Camera Unavailable</h3>
-                  <p className="text-orange-300 text-sm">{error}</p>
+                <AlertCircle className="w-6 h-6 text-red-400 flex-shrink-0 mt-1" />
+                <div className="flex-1">
+                  <h3 className="font-semibold text-red-100 mb-1">Camera Error</h3>
+                  <p className="text-red-300 text-sm">{error}</p>
                 </div>
               </div>
-              <Button 
-                onClick={handleManualEntry}
-                className="w-full mt-4 bg-green-600 hover:bg-green-700"
-              >
-                <Keyboard className="w-4 h-4 mr-2" />
-                Use Manual Entry Instead
-              </Button>
+              <div className="flex gap-2 mt-4">
+                <Button 
+                  onClick={() => setError(null)}
+                  variant="outline"
+                  className="flex-1 border-red-800 text-red-200 hover:bg-red-900"
+                >
+                  Try Again
+                </Button>
+                <Button 
+                  onClick={handleManualEntry}
+                  className="flex-1 bg-green-600 hover:bg-green-700"
+                >
+                  <Keyboard className="w-4 h-4 mr-2" />
+                  Manual Entry
+                </Button>
+              </div>
             </CardContent>
           </Card>
         )}
 
-        {!scanning && !result && !manualMode && (
+        {!scanning && !result && !manualMode && !error && (
           <Card className="bg-stone-900 border-stone-800">
             <CardContent className="p-12 text-center space-y-4">
-              <Keyboard className="w-16 h-16 text-green-500 mx-auto mb-4" />
-              <h2 className="text-xl font-semibold text-white mb-2">Ticket Entry</h2>
-              <p className="text-gray-400 mb-6">Choose your preferred method</p>
+              <Camera className="w-16 h-16 text-green-500 mx-auto mb-4" />
+              <h2 className="text-xl font-semibold text-white mb-2">Scan Ticket</h2>
+              <p className="text-gray-400 mb-6">Point camera at QR code</p>
               <div className="space-y-3">
                 <Button 
-                  onClick={handleManualEntry}
+                  onClick={startScanning}
                   className="w-full bg-green-600 hover:bg-green-700 text-white px-8 py-4 text-lg"
                 >
-                  <Keyboard className="w-5 h-5 mr-2" />
-                  Enter Code Manually
+                  <Camera className="w-5 h-5 mr-2" />
+                  Start Camera
                 </Button>
                 <Button 
-                  onClick={startScanning}
+                  onClick={handleManualEntry}
                   variant="outline"
                   className="w-full border-stone-700 text-white hover:bg-stone-800 px-8 py-4 text-lg"
                 >
-                  <Camera className="w-5 h-5 mr-2" />
-                  Try QR Scanner
+                  <Keyboard className="w-5 h-5 mr-2" />
+                  Manual Entry
                 </Button>
               </div>
             </CardContent>
