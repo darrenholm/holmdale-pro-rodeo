@@ -3,13 +3,16 @@ import { Html5QrcodeScanner } from 'html5-qrcode';
 import { base44 } from '@/api/base44Client';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { CheckCircle2, XCircle, Camera, AlertTriangle, AlertCircle } from 'lucide-react';
+import { Input } from '@/components/ui/input';
+import { CheckCircle2, XCircle, Camera, AlertTriangle, AlertCircle, Keyboard } from 'lucide-react';
 
 export default function GateScan() {
   const [scanning, setScanning] = useState(false);
   const [result, setResult] = useState(null);
   const [scanner, setScanner] = useState(null);
   const [error, setError] = useState(null);
+  const [manualMode, setManualMode] = useState(false);
+  const [manualCode, setManualCode] = useState('');
 
   useEffect(() => {
     if (scanning && !scanner) {
@@ -26,17 +29,26 @@ export default function GateScan() {
           { 
             fps: 10, 
             qrbox: { width: 250, height: 250 },
-            aspectRatio: 1.0,
-            rememberLastUsedCamera: true
+            formatsToSupport: ['QR_CODE'],
+            videoConstraints: {
+              facingMode: { ideal: "environment" }
+            },
+            rememberLastUsedCamera: true,
+            showTorchButtonIfSupported: true
           },
           false
         );
 
-        html5QrcodeScanner.render(onScanSuccess, onScanError);
+        html5QrcodeScanner.render(
+          (decodedText) => onScanSuccess(decodedText),
+          (errorMessage) => {
+            // Silently ignore scanning errors
+          }
+        );
         setScanner(html5QrcodeScanner);
       } catch (err) {
         console.error('Scanner initialization error:', err);
-        setError('Failed to initialize scanner: ' + err.message);
+        setError('Camera error. Please try manual entry instead.');
         setScanning(false);
       }
     }
@@ -130,21 +142,33 @@ export default function GateScan() {
   const startScanning = async () => {
     setResult(null);
     setError(null);
+    setManualMode(false);
     
     // Check for camera permission
     try {
-      const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+      const stream = await navigator.mediaDevices.getUserMedia({ 
+        video: { facingMode: "environment" } 
+      });
       stream.getTracks().forEach(track => track.stop());
       setScanning(true);
     } catch (err) {
       console.error('Camera permission error:', err);
-      if (err.name === 'NotAllowedError') {
-        setError('Camera permission denied. Please allow camera access in your browser settings.');
-      } else if (err.name === 'NotFoundError') {
-        setError('No camera found on this device.');
-      } else {
-        setError('Camera access error: ' + err.message);
-      }
+      setError('Camera not available. Please use manual entry.');
+      setManualMode(true);
+    }
+  };
+
+  const handleManualEntry = () => {
+    setManualMode(true);
+    setError(null);
+    setResult(null);
+  };
+
+  const submitManualCode = async (e) => {
+    e.preventDefault();
+    if (manualCode.trim()) {
+      await validateTicket(manualCode.trim());
+      setManualCode('');
     }
   };
 
@@ -152,6 +176,8 @@ export default function GateScan() {
     setResult(null);
     setScanning(false);
     setError(null);
+    setManualMode(false);
+    setManualCode('');
     if (scanner) {
       scanner.clear().catch(console.error);
       setScanner(null);
@@ -191,19 +217,71 @@ export default function GateScan() {
           </Card>
         )}
 
-        {!scanning && !result && !error && (
+        {!scanning && !result && !error && !manualMode && (
           <Card className="bg-stone-900 border-stone-800">
-            <CardContent className="p-12 text-center">
+            <CardContent className="p-12 text-center space-y-4">
               <Camera className="w-16 h-16 text-green-500 mx-auto mb-4" />
               <h2 className="text-xl font-semibold text-white mb-2">Ready to Scan</h2>
-              <p className="text-gray-400 mb-6">Click below to start scanning tickets</p>
-              <Button 
-                onClick={startScanning}
-                className="bg-green-600 hover:bg-green-700 text-white px-8 py-6 text-lg"
-              >
-                <Camera className="w-5 h-5 mr-2" />
-                Start Scanner
-              </Button>
+              <p className="text-gray-400 mb-6">Choose your preferred method</p>
+              <div className="space-y-3">
+                <Button 
+                  onClick={startScanning}
+                  className="w-full bg-green-600 hover:bg-green-700 text-white px-8 py-4 text-lg"
+                >
+                  <Camera className="w-5 h-5 mr-2" />
+                  Scan QR Code
+                </Button>
+                <Button 
+                  onClick={handleManualEntry}
+                  variant="outline"
+                  className="w-full border-stone-700 text-white hover:bg-stone-800 px-8 py-4 text-lg"
+                >
+                  <Keyboard className="w-5 h-5 mr-2" />
+                  Enter Code Manually
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
+        {manualMode && !result && (
+          <Card className="bg-stone-900 border-stone-800">
+            <CardHeader>
+              <CardTitle className="text-white">Manual Entry</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <form onSubmit={submitManualCode} className="space-y-4">
+                <div>
+                  <label className="text-sm text-gray-400 mb-2 block">
+                    Enter Confirmation Code
+                  </label>
+                  <Input
+                    type="text"
+                    value={manualCode}
+                    onChange={(e) => setManualCode(e.target.value)}
+                    placeholder="e.g., ABC123XYZ"
+                    className="bg-stone-800 border-stone-700 text-white text-lg p-6"
+                    autoFocus
+                  />
+                </div>
+                <div className="flex gap-3">
+                  <Button 
+                    type="submit"
+                    className="flex-1 bg-green-600 hover:bg-green-700 py-6"
+                    disabled={!manualCode.trim()}
+                  >
+                    Validate Ticket
+                  </Button>
+                  <Button 
+                    type="button"
+                    onClick={resetScanner}
+                    variant="outline"
+                    className="border-stone-700 text-white hover:bg-stone-800"
+                  >
+                    Cancel
+                  </Button>
+                </div>
+              </form>
             </CardContent>
           </Card>
         )}
