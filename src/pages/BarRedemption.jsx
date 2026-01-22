@@ -1,9 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
+import jsQR from 'jsqr';
 import { base44 } from '@/api/base44Client';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { CheckCircle2, XCircle, AlertCircle, CreditCard, Minus } from 'lucide-react';
+import { CheckCircle2, XCircle, AlertCircle, CreditCard, Minus, Camera, Keyboard } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 export default function BarRedemption() {
@@ -11,15 +12,137 @@ export default function BarRedemption() {
   const [credits, setCredits] = useState(null);
   const [result, setResult] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [scanning, setScanning] = useState(false);
+  const [scanError, setScanError] = useState(null);
+  const [manualMode, setManualMode] = useState(false);
+  
+  const videoRef = useRef(null);
+  const canvasRef = useRef(null);
+  const streamRef = useRef(null);
+  const animationRef = useRef(null);
+
+  useEffect(() => {
+    if (scanning) {
+      startCamera();
+    } else {
+      stopCamera();
+    }
+
+    return () => {
+      stopCamera();
+    };
+  }, [scanning]);
+
+  const startCamera = async () => {
+    try {
+      if (window.self !== window.top) {
+        setScanError('Camera blocked in preview. Open published app URL.');
+        setScanning(false);
+        return;
+      }
+
+      const stream = await navigator.mediaDevices.getUserMedia({
+        video: { 
+          facingMode: 'environment',
+          width: { ideal: 1280 },
+          height: { ideal: 720 }
+        }
+      });
+
+      streamRef.current = stream;
+      if (videoRef.current) {
+        videoRef.current.srcObject = stream;
+        videoRef.current.setAttribute('playsinline', true);
+        videoRef.current.play();
+        requestAnimationFrame(tick);
+      }
+    } catch (err) {
+      console.error('Camera error:', err);
+      if (err.name === 'NotAllowedError') {
+        setScanError('Camera permission denied. Enable camera in browser settings.');
+      } else if (err.name === 'NotFoundError') {
+        setScanError('No camera found on device.');
+      } else {
+        setScanError('Camera error: ' + err.message);
+      }
+      setScanning(false);
+    }
+  };
+
+  const stopCamera = () => {
+    if (animationRef.current) {
+      cancelAnimationFrame(animationRef.current);
+    }
+    if (streamRef.current) {
+      streamRef.current.getTracks().forEach(track => track.stop());
+      streamRef.current = null;
+    }
+    if (videoRef.current) {
+      videoRef.current.srcObject = null;
+    }
+  };
+
+  const tick = () => {
+    if (!videoRef.current || !canvasRef.current || !scanning) {
+      return;
+    }
+
+    const video = videoRef.current;
+    const canvas = canvasRef.current;
+    const context = canvas.getContext('2d');
+
+    if (video.readyState === video.HAVE_ENOUGH_DATA) {
+      canvas.height = video.videoHeight;
+      canvas.width = video.videoWidth;
+      context.drawImage(video, 0, 0, canvas.width, canvas.height);
+      
+      const imageData = context.getImageData(0, 0, canvas.width, canvas.height);
+      const code = jsQR(imageData.data, imageData.width, imageData.height, {
+        inversionAttempts: 'dontInvert',
+      });
+
+      if (code) {
+        onScanSuccess(code.data);
+        return;
+      }
+    }
+
+    animationRef.current = requestAnimationFrame(tick);
+  };
+
+  const onScanSuccess = async (decodedText) => {
+    stopCamera();
+    setScanning(false);
+    setConfirmationCode(decodedText);
+    await lookupCreditsDirectly(decodedText);
+  };
+
+  const startScanning = () => {
+    setResult(null);
+    setScanError(null);
+    setManualMode(false);
+    setScanning(true);
+  };
+
+  const handleManualEntry = () => {
+    setManualMode(true);
+    setScanError(null);
+    setResult(null);
+    setScanning(false);
+  };
 
   const lookupCredits = async (e) => {
     e.preventDefault();
+    await lookupCreditsDirectly(confirmationCode.trim());
+  };
+
+  const lookupCreditsDirectly = async (code) => {
     setLoading(true);
     setResult(null);
 
     try {
       const creditRecords = await base44.entities.BarCredit.filter({
-        confirmation_code: confirmationCode.trim()
+        confirmation_code: code
       });
 
       if (creditRecords.length === 0) {
@@ -98,6 +221,10 @@ export default function BarRedemption() {
     setConfirmationCode('');
     setCredits(null);
     setResult(null);
+    setScanning(false);
+    setScanError(null);
+    setManualMode(false);
+    stopCamera();
   };
 
   return (
@@ -108,10 +235,67 @@ export default function BarRedemption() {
           <p className="text-gray-400">Enter confirmation code to redeem credits</p>
         </div>
 
-        {!credits && !result && (
+        {scanError && !manualMode && !scanning && (
+          <Card className="bg-red-950 border-red-800 mb-4">
+            <CardContent className="p-6">
+              <div className="flex items-start gap-3">
+                <AlertCircle className="w-6 h-6 text-red-400 flex-shrink-0 mt-1" />
+                <div className="flex-1">
+                  <h3 className="font-semibold text-red-100 mb-1">Camera Error</h3>
+                  <p className="text-red-300 text-sm">{scanError}</p>
+                </div>
+              </div>
+              <div className="flex gap-2 mt-4">
+                <Button 
+                  onClick={() => setScanError(null)}
+                  variant="outline"
+                  className="flex-1 border-red-800 text-red-200 hover:bg-red-900"
+                >
+                  Try Again
+                </Button>
+                <Button 
+                  onClick={handleManualEntry}
+                  className="flex-1 bg-green-600 hover:bg-green-700"
+                >
+                  <Keyboard className="w-4 h-4 mr-2" />
+                  Manual Entry
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
+        {!scanning && !credits && !result && !manualMode && !scanError && (
+          <Card className="bg-stone-900 border-stone-800">
+            <CardContent className="p-12 text-center space-y-4">
+              <Camera className="w-16 h-16 text-green-500 mx-auto mb-4" />
+              <h2 className="text-xl font-semibold text-white mb-2">Scan Bar Credit</h2>
+              <p className="text-gray-400 mb-6">Point camera at QR code</p>
+              <div className="space-y-3">
+                <Button 
+                  onClick={startScanning}
+                  className="w-full bg-green-600 hover:bg-green-700 text-white px-8 py-4 text-lg"
+                >
+                  <Camera className="w-5 h-5 mr-2" />
+                  Start Camera
+                </Button>
+                <Button 
+                  onClick={handleManualEntry}
+                  variant="outline"
+                  className="w-full border-stone-700 text-white hover:bg-stone-800 px-8 py-4 text-lg"
+                >
+                  <Keyboard className="w-5 h-5 mr-2" />
+                  Manual Entry
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
+        {manualMode && !credits && !result && (
           <Card className="bg-stone-900 border-stone-800">
             <CardHeader>
-              <CardTitle className="text-white">Lookup Credits</CardTitle>
+              <CardTitle className="text-white">Manual Entry</CardTitle>
             </CardHeader>
             <CardContent>
               <form onSubmit={lookupCredits} className="space-y-4">
@@ -125,14 +309,53 @@ export default function BarRedemption() {
                     autoFocus
                   />
                 </div>
-                <Button
-                  type="submit"
-                  className="w-full bg-green-600 hover:bg-green-700 py-6"
-                  disabled={!confirmationCode.trim() || loading}
-                >
-                  {loading ? 'Looking up...' : 'Lookup Credits'}
-                </Button>
+                <div className="flex gap-3">
+                  <Button
+                    type="submit"
+                    className="flex-1 bg-green-600 hover:bg-green-700 py-6"
+                    disabled={!confirmationCode.trim() || loading}
+                  >
+                    {loading ? 'Looking up...' : 'Lookup Credits'}
+                  </Button>
+                  <Button 
+                    type="button"
+                    onClick={reset}
+                    variant="outline"
+                    className="border-stone-700 text-white hover:bg-stone-800"
+                  >
+                    Cancel
+                  </Button>
+                </div>
               </form>
+            </CardContent>
+          </Card>
+        )}
+
+        {scanning && (
+          <Card className="bg-stone-900 border-stone-800">
+            <CardHeader>
+              <CardTitle className="text-white">Point camera at QR code</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="relative bg-black rounded-lg overflow-hidden">
+                <video 
+                  ref={videoRef}
+                  className="w-full h-auto"
+                  playsInline
+                  muted
+                />
+                <canvas ref={canvasRef} className="hidden" />
+                <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                  <div className="border-2 border-green-500 w-64 h-64 rounded-lg"></div>
+                </div>
+              </div>
+              <Button 
+                onClick={reset}
+                variant="outline"
+                className="w-full border-stone-700 text-white hover:bg-stone-800"
+              >
+                Cancel
+              </Button>
             </CardContent>
           </Card>
         )}

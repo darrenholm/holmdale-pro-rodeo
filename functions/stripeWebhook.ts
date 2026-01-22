@@ -116,6 +116,16 @@ Deno.serve(async (req) => {
         // Get bar credit details
         const barCredit = await base44.asServiceRole.entities.BarCredit.get(barCreditId);
         
+        // Generate QR code with confirmation code
+        const qrCodeDataUrl = await QRCode.toDataURL(barCredit.confirmation_code, {
+          width: 400,
+          margin: 2,
+          color: {
+            dark: '#000000',
+            light: '#FFFFFF'
+          }
+        });
+        
         // Send confirmation email
         await base44.asServiceRole.integrations.Core.SendEmail({
           to: barCredit.customer_email,
@@ -136,9 +146,14 @@ Deno.serve(async (req) => {
                 <p><strong>Value:</strong> $${barCredit.total_price.toFixed(2)}</p>
               </div>
               
+              <div style="text-align: center; margin: 30px 0;">
+                <p><strong>Show this QR code at the bar:</strong></p>
+                <img src="${qrCodeDataUrl}" alt="Bar Credit QR Code" style="max-width: 300px;" />
+              </div>
+              
               <div style="background: #fff3cd; padding: 15px; border-radius: 8px; margin: 20px 0;">
                 <p style="margin: 0; color: #856404;">
-                  <strong>How to use:</strong> Show this confirmation code at the bar to redeem your credits. 
+                  <strong>How to use:</strong> Show this QR code or confirmation code at the bar to redeem your credits. 
                   Each credit can be used individually.
                 </p>
               </div>
