@@ -144,16 +144,34 @@ export default function GateScan() {
     setError(null);
     setManualMode(false);
     
-    // Check for camera permission
+    // Check HTTPS requirement
+    if (window.location.protocol !== 'https:' && window.location.hostname !== 'localhost') {
+      setError('Camera requires HTTPS. Please use manual entry.');
+      setManualMode(true);
+      return;
+    }
+
+    // Check for camera support
+    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+      setError('Camera not supported on this browser. Please use manual entry.');
+      setManualMode(true);
+      return;
+    }
+    
+    // Try camera access
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ 
-        video: { facingMode: "environment" } 
+        video: { 
+          facingMode: "environment",
+          width: { ideal: 1280 },
+          height: { ideal: 720 }
+        } 
       });
       stream.getTracks().forEach(track => track.stop());
       setScanning(true);
     } catch (err) {
-      console.error('Camera permission error:', err);
-      setError('Camera not available. Please use manual entry.');
+      console.error('Camera error:', err);
+      setError('Camera not available. Using manual entry.');
       setManualMode(true);
     }
   };
