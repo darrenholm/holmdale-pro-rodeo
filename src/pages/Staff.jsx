@@ -89,7 +89,7 @@ export default function Staff() {
           </Button>
         </div>
 
-        <div className="grid md:grid-cols-2 gap-6">
+        <div className="grid md:grid-cols-3 gap-6">
           <Link to={createPageUrl('GateScan')}>
             <Card className="bg-stone-900 border-stone-800 hover:border-green-600 transition-all cursor-pointer h-full">
               <CardContent className="p-8 text-center">
@@ -106,6 +106,16 @@ export default function Staff() {
                 <CreditCard className="w-16 h-16 text-green-500 mx-auto mb-4" />
                 <h2 className="text-2xl font-bold text-white mb-2">Bar Credits</h2>
                 <p className="text-gray-400">Redeem bar credit codes</p>
+              </CardContent>
+            </Card>
+          </Link>
+
+          <Link to={createPageUrl('StaffScheduling')}>
+            <Card className="bg-stone-900 border-stone-800 hover:border-green-600 transition-all cursor-pointer h-full">
+              <CardContent className="p-8 text-center">
+                <Ticket className="w-16 h-16 text-green-500 mx-auto mb-4" />
+                <h2 className="text-2xl font-bold text-white mb-2">Scheduling</h2>
+                <p className="text-gray-400">Manage staff shifts</p>
               </CardContent>
             </Card>
           </Link>
