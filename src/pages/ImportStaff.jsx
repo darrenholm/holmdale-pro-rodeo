@@ -44,15 +44,24 @@ export default function ImportStaff() {
     setAnalyzing(true);
     try {
       const text = await file.text();
+      
+      if (!text || text.trim().length === 0) {
+        throw new Error('File is empty');
+      }
+
       const { headers, records } = parseCSV(text);
 
+      if (!headers || headers.length === 0) {
+        throw new Error('No headers found in CSV');
+      }
+
       if (records.length === 0) {
-        throw new Error('No records found in CSV');
+        throw new Error('No data rows found in CSV');
       }
 
       setCsvData({ headers, records, sample: records[0] });
     } catch (err) {
-      setError(err.message);
+      setError(`Error reading file: ${err.message}`);
     } finally {
       setAnalyzing(false);
     }
