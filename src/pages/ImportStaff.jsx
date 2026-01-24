@@ -14,7 +14,7 @@ export default function ImportStaff() {
 
   const handleFileChange = async (e) => {
     const selectedFile = e.target.files[0];
-    if (selectedFile && selectedFile.type === 'text/csv') {
+    if (selectedFile && selectedFile.name.toLowerCase().endsWith('.csv')) {
       setFile(selectedFile);
       setError(null);
       setResult(null);
