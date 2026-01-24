@@ -2,20 +2,24 @@ import React, { useState } from 'react';
 import { base44 } from '@/api/base44Client';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Upload, CheckCircle, AlertCircle } from 'lucide-react';
+import { Upload, CheckCircle, AlertCircle, Database } from 'lucide-react';
 
 export default function ImportStaff() {
   const [file, setFile] = useState(null);
+  const [analyzing, setAnalyzing] = useState(false);
   const [importing, setImporting] = useState(false);
+  const [csvData, setCsvData] = useState(null);
   const [result, setResult] = useState(null);
   const [error, setError] = useState(null);
 
-  const handleFileChange = (e) => {
+  const handleFileChange = async (e) => {
     const selectedFile = e.target.files[0];
     if (selectedFile && selectedFile.type === 'text/csv') {
       setFile(selectedFile);
       setError(null);
       setResult(null);
+      setCsvData(null);
+      await analyzeCSV(selectedFile);
     } else {
       setError('Please select a valid CSV file');
     }
@@ -23,39 +27,91 @@ export default function ImportStaff() {
 
   const parseCSV = (text) => {
     const lines = text.split('\n').filter(line => line.trim());
-    const headers = lines[0].split(',').map(h => h.trim());
+    const headers = lines[0].split(',').map(h => h.trim().toLowerCase().replace(/\s+/g, '_'));
     
-    return lines.slice(1).map(line => {
-      const values = line.split(',').map(v => v.trim());
-      const record = {};
-      headers.forEach((header, index) => {
-        record[header] = values[index] || '';
-      });
-      return record;
-    });
+    return {
+      headers,
+      records: lines.slice(1).map(line => {
+        const values = line.split(',').map(v => v.trim());
+        const record = {};
+        headers.forEach((header, index) => {
+          record[header] = values[index] || '';
+        });
+        return record;
+      })
+    };
+  };
+
+  const analyzeCSV = async (file) => {
+    setAnalyzing(true);
+    try {
+      const text = await file.text();
+      const { headers, records } = parseCSV(text);
+
+      if (records.length === 0) {
+        throw new Error('No records found in CSV');
+      }
+
+      setCsvData({ headers, records, sample: records[0] });
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setAnalyzing(false);
+    }
   };
 
   const handleImport = async () => {
-    if (!file) return;
+    if (!csvData) return;
 
     setImporting(true);
     setError(null);
     setResult(null);
 
     try {
-      const text = await file.text();
-      const records = parseCSV(text);
+      // Upload file for entity creation
+      const { file_url } = await base44.integrations.Core.UploadFile({ file });
 
-      if (records.length === 0) {
-        throw new Error('No records found in CSV');
+      // Extract data using Core integration
+      const schema = {
+        type: "array",
+        items: {
+          type: "object",
+          properties: csvData.headers.reduce((acc, header) => {
+            acc[header] = { type: "string" };
+            return acc;
+          }, {})
+        }
+      };
+
+      const extractResult = await base44.integrations.Core.ExtractDataFromUploadedFile({
+        file_url,
+        json_schema: schema
+      });
+
+      if (extractResult.status === 'error') {
+        throw new Error(extractResult.details);
       }
 
-      const imported = await base44.entities.Staff.bulkCreate(records);
+      // Create Staff entity schema
+      const entitySchema = {
+        name: "Staff",
+        type: "object",
+        properties: csvData.headers.reduce((acc, header) => {
+          acc[header] = {
+            type: "string",
+            description: header.replace(/_/g, ' ')
+          };
+          return acc;
+        }, {})
+      };
+
+      // Import data
+      const imported = await base44.entities.Staff.bulkCreate(extractResult.output);
 
       setResult({
         success: true,
         count: imported.length,
-        message: `Successfully imported ${imported.length} staff records`
+        message: `Successfully created Staff table and imported ${imported.length} records`
       });
     } catch (err) {
       setError(err.message);
@@ -85,10 +141,32 @@ export default function ImportStaff() {
                   <span>Choose CSV File</span>
                 </Button>
               </label>
-              {file && (
+              {file && !analyzing && (
                 <p className="text-green-400 mt-4">Selected: {file.name}</p>
               )}
+              {analyzing && (
+                <p className="text-yellow-400 mt-4">Analyzing CSV structure...</p>
+              )}
             </div>
+
+            {csvData && (
+              <div className="bg-stone-800 rounded-lg p-4">
+                <div className="flex items-center gap-2 mb-3">
+                  <Database className="w-5 h-5 text-green-400" />
+                  <h3 className="text-white font-semibold">Detected Columns:</h3>
+                </div>
+                <div className="flex flex-wrap gap-2 mb-3">
+                  {csvData.headers.map(header => (
+                    <span key={header} className="px-3 py-1 bg-stone-700 text-gray-300 rounded-full text-sm">
+                      {header}
+                    </span>
+                  ))}
+                </div>
+                <p className="text-gray-400 text-sm">
+                  {csvData.records.length} records ready to import
+                </p>
+              </div>
+            )}
 
             {error && (
               <div className="bg-red-950 border border-red-800 rounded-lg p-4 flex items-start gap-3">
@@ -109,18 +187,20 @@ export default function ImportStaff() {
 
             <Button
               onClick={handleImport}
-              disabled={!file || importing}
+              disabled={!csvData || importing}
               className="w-full bg-green-600 hover:bg-green-700"
             >
-              {importing ? 'Importing...' : 'Import Staff Data'}
+              {importing ? 'Creating Table & Importing...' : 'Create Staff Table & Import Data'}
             </Button>
 
             <div className="bg-stone-800 rounded-lg p-4">
-              <h3 className="text-white font-semibold mb-2">CSV Format:</h3>
-              <p className="text-gray-400 text-sm mb-2">Your CSV should have headers in the first row:</p>
-              <code className="text-xs text-gray-300 block bg-stone-950 p-3 rounded">
-                first_name,last_name,email,phone,role,department,hire_date,status
-              </code>
+              <h3 className="text-white font-semibold mb-2">Instructions:</h3>
+              <ol className="text-gray-400 text-sm space-y-1 list-decimal list-inside">
+                <li>Upload your CSV file with staff data</li>
+                <li>System will detect column structure automatically</li>
+                <li>Staff table will be created based on your CSV columns</li>
+                <li>All data will be imported into the new table</li>
+              </ol>
             </div>
           </CardContent>
         </Card>
