@@ -79,7 +79,8 @@
     "zod": "^3.24.2",
     "qrcode": "^1.5.3",
     "html5-qrcode": "^2.3.8",
-    "jsqr": "^1.4.0"
+    "jsqr": "^1.4.0",
+    "mssql": "^10.0.0"
   },
   "devDependencies": {
     "@eslint/js": "^9.19.0",
