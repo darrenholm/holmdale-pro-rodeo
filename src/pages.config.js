@@ -1,4 +1,6 @@
 import About from './pages/About';
+import BarRedemption from './pages/BarRedemption';
+import BuyBarCredits from './pages/BuyBarCredits';
 import BuyTickets from './pages/BuyTickets';
 import CheckoutCancel from './pages/CheckoutCancel';
 import CheckoutSuccess from './pages/CheckoutSuccess';
@@ -8,13 +10,14 @@ import GateScan from './pages/GateScan';
 import Home from './pages/Home';
 import Shop from './pages/Shop';
 import TrackOrder from './pages/TrackOrder';
-import BuyBarCredits from './pages/BuyBarCredits';
-import BarRedemption from './pages/BarRedemption';
+import Staff from './pages/Staff';
 import __Layout from './Layout.jsx';
 
 
 export const PAGES = {
     "About": About,
+    "BarRedemption": BarRedemption,
+    "BuyBarCredits": BuyBarCredits,
     "BuyTickets": BuyTickets,
     "CheckoutCancel": CheckoutCancel,
     "CheckoutSuccess": CheckoutSuccess,
@@ -24,8 +27,7 @@ export const PAGES = {
     "Home": Home,
     "Shop": Shop,
     "TrackOrder": TrackOrder,
-    "BuyBarCredits": BuyBarCredits,
-    "BarRedemption": BarRedemption,
+    "Staff": Staff,
 }
 
 export const pagesConfig = {
