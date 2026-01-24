@@ -26,19 +26,43 @@ export default function ImportStaff() {
   };
 
   const parseCSV = (text) => {
-    const lines = text.split('\n').filter(line => line.trim());
+    const lines = text.trim().split('\n');
     if (lines.length === 0) {
       throw new Error('CSV file is empty');
     }
     
-    const headers = lines[0].split(',').map(h => h.trim().toLowerCase().replace(/\s+/g, '_'));
+    // Parse CSV properly handling quoted values
+    const parseCSVLine = (line) => {
+      const values = [];
+      let current = '';
+      let inQuotes = false;
+      
+      for (let i = 0; i < line.length; i++) {
+        const char = line[i];
+        
+        if (char === '"') {
+          inQuotes = !inQuotes;
+        } else if (char === ',' && !inQuotes) {
+          values.push(current.trim());
+          current = '';
+        } else {
+          current += char;
+        }
+      }
+      values.push(current.trim());
+      return values;
+    };
+    
+    const headers = parseCSVLine(lines[0]).map(h => 
+      h.toLowerCase().replace(/\s+/g, '_').replace(/[^a-z0-9_]/g, '')
+    );
     
     if (headers.length === 0) {
       throw new Error('No columns found in CSV');
     }
     
-    const records = lines.slice(1).map(line => {
-      const values = line.split(',').map(v => v.trim());
+    const records = lines.slice(1).filter(line => line.trim()).map(line => {
+      const values = parseCSVLine(line);
       const record = {};
       headers.forEach((header, index) => {
         record[header] = values[index] || '';
