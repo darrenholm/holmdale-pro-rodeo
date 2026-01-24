@@ -154,18 +154,30 @@ export default function ImportStaff() {
             </div>
 
             {csvData && (
-              <div className="bg-stone-800 rounded-lg p-4">
-                <div className="flex items-center gap-2 mb-3">
-                  <Database className="w-5 h-5 text-green-400" />
-                  <h3 className="text-white font-semibold">Detected Columns:</h3>
+              <div className="bg-stone-800 rounded-lg p-4 space-y-4">
+                <div>
+                  <div className="flex items-center gap-2 mb-3">
+                    <Database className="w-5 h-5 text-green-400" />
+                    <h3 className="text-white font-semibold">Detected Columns:</h3>
+                  </div>
+                  <div className="flex flex-wrap gap-2">
+                    {csvData.headers.map(header => (
+                      <span key={header} className="px-3 py-1 bg-stone-700 text-gray-300 rounded-full text-sm">
+                        {header}
+                      </span>
+                    ))}
+                  </div>
                 </div>
-                <div className="flex flex-wrap gap-2 mb-3">
-                  {csvData.headers.map(header => (
-                    <span key={header} className="px-3 py-1 bg-stone-700 text-gray-300 rounded-full text-sm">
-                      {header}
-                    </span>
-                  ))}
+
+                <div>
+                  <h4 className="text-white font-semibold mb-2">Sample Data (First Row):</h4>
+                  <div className="bg-stone-900 rounded p-3 max-h-48 overflow-auto">
+                    <pre className="text-gray-300 text-xs">
+                      {JSON.stringify(csvData.sample, null, 2)}
+                    </pre>
+                  </div>
                 </div>
+
                 <p className="text-gray-400 text-sm">
                   {csvData.records.length} records ready to import
                 </p>
