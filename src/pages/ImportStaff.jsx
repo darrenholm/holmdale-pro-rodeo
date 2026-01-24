@@ -63,6 +63,7 @@ export default function ImportStaff() {
       console.log('Headers:', headers);
       console.log('Records count:', records.length);
 
+      console.log('Sample record:', records[0]);
       setCsvData({ headers, records, sample: records[0] });
     } catch (err) {
       console.error('Error analyzing CSV:', err);
