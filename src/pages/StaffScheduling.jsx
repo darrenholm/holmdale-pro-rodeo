@@ -29,9 +29,9 @@ export default function StaffScheduling() {
     queryKey: ['shifts', selectedDate],
     queryFn: async () => {
       if (selectedDate) {
-        return await base44.entities.Shift.filter({ date: selectedDate }, '-start_time');
+        return await base44.entities.Shift.filter({ date: selectedDate }, 'start_time');
       }
-      return await base44.entities.Shift.list('-date', 100);
+      return await base44.entities.Shift.list('date', 100);
     }
   });
 
@@ -114,6 +114,12 @@ export default function StaffScheduling() {
     acc[date].push(shift);
     return acc;
   }, {});
+
+  // Sort dates and shifts within each date
+  const sortedDates = Object.keys(groupedShifts).sort();
+  sortedDates.forEach(date => {
+    groupedShifts[date].sort((a, b) => a.start_time.localeCompare(b.start_time));
+  });
 
   return (
     <div className="min-h-screen bg-stone-950 p-4 pt-20">
@@ -276,7 +282,7 @@ export default function StaffScheduling() {
           </Card>
         ) : (
           <div className="space-y-6">
-            {Object.entries(groupedShifts).map(([date, dateShifts]) => (
+            {sortedDates.map((date) => (
               <Card key={date} className="bg-stone-900 border-stone-800">
                 <CardHeader>
                   <CardTitle className="text-white flex items-center gap-2">
@@ -286,7 +292,7 @@ export default function StaffScheduling() {
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-3">
-                    {dateShifts.map((shift) => (
+                    {groupedShifts[date].map((shift) => (
                       <div
                         key={shift.id}
                         className="bg-stone-800 rounded-lg p-4 flex items-center justify-between"
