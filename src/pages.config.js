@@ -8,11 +8,11 @@ import Contact from './pages/Contact';
 import Events from './pages/Events';
 import GateScan from './pages/GateScan';
 import Home from './pages/Home';
+import ImportStaff from './pages/ImportStaff';
 import Shop from './pages/Shop';
 import Staff from './pages/Staff';
 import StaffScheduling from './pages/StaffScheduling';
 import TrackOrder from './pages/TrackOrder';
-import ImportStaff from './pages/ImportStaff';
 import __Layout from './Layout.jsx';
 
 
@@ -27,11 +27,11 @@ export const PAGES = {
     "Events": Events,
     "GateScan": GateScan,
     "Home": Home,
+    "ImportStaff": ImportStaff,
     "Shop": Shop,
     "Staff": Staff,
     "StaffScheduling": StaffScheduling,
     "TrackOrder": TrackOrder,
-    "ImportStaff": ImportStaff,
 }
 
 export const pagesConfig = {

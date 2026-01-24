@@ -81,45 +81,10 @@ export default function ImportStaff() {
     setResult(null);
 
     try {
-      // Upload file for entity creation
-      const { file_url } = await base44.integrations.Core.UploadFile({ file });
-
-      // Extract data using Core integration
-      const schema = {
-        type: "array",
-        items: {
-          type: "object",
-          properties: csvData.headers.reduce((acc, header) => {
-            acc[header] = { type: "string" };
-            return acc;
-          }, {})
-        }
-      };
-
-      const extractResult = await base44.integrations.Core.ExtractDataFromUploadedFile({
-        file_url,
-        json_schema: schema
-      });
-
-      if (extractResult.status === 'error') {
-        throw new Error(extractResult.details);
-      }
-
-      // Create Staff entity schema
-      const entitySchema = {
-        name: "Staff",
-        type: "object",
-        properties: csvData.headers.reduce((acc, header) => {
-          acc[header] = {
-            type: "string",
-            description: header.replace(/_/g, ' ')
-          };
-          return acc;
-        }, {})
-      };
-
-      // Import data
-      const imported = await base44.entities.Staff.bulkCreate(extractResult.output);
+      console.log('Starting import with', csvData.records.length, 'records');
+      
+      // Import data directly - the Staff entity will be created automatically on first insert
+      const imported = await base44.entities.Staff.bulkCreate(csvData.records);
 
       setResult({
         success: true,
@@ -127,6 +92,7 @@ export default function ImportStaff() {
         message: `Successfully created Staff table and imported ${imported.length} records`
       });
     } catch (err) {
+      console.error('Import error:', err);
       setError(err.message);
     } finally {
       setImporting(false);
