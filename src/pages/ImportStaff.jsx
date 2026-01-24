@@ -16,6 +16,8 @@ export default function ImportStaff() {
     const selectedFile = e.target.files[0];
     if (!selectedFile) return;
     
+    console.log('File selected:', selectedFile.name, selectedFile.type, selectedFile.size);
+    
     setFile(selectedFile);
     setError(null);
     setResult(null);
@@ -25,43 +27,47 @@ export default function ImportStaff() {
 
   const parseCSV = (text) => {
     const lines = text.split('\n').filter(line => line.trim());
+    if (lines.length === 0) {
+      throw new Error('CSV file is empty');
+    }
+    
     const headers = lines[0].split(',').map(h => h.trim().toLowerCase().replace(/\s+/g, '_'));
     
-    return {
-      headers,
-      records: lines.slice(1).map(line => {
-        const values = line.split(',').map(v => v.trim());
-        const record = {};
-        headers.forEach((header, index) => {
-          record[header] = values[index] || '';
-        });
-        return record;
-      })
-    };
+    if (headers.length === 0) {
+      throw new Error('No columns found in CSV');
+    }
+    
+    const records = lines.slice(1).map(line => {
+      const values = line.split(',').map(v => v.trim());
+      const record = {};
+      headers.forEach((header, index) => {
+        record[header] = values[index] || '';
+      });
+      return record;
+    });
+    
+    return { headers, records };
   };
 
   const analyzeCSV = async (file) => {
     setAnalyzing(true);
+    setError(null);
+    
     try {
+      console.log('Reading file...');
       const text = await file.text();
+      console.log('File content length:', text.length);
       
-      if (!text || text.trim().length === 0) {
-        throw new Error('File is empty');
-      }
-
+      console.log('Parsing CSV...');
       const { headers, records } = parseCSV(text);
-
-      if (!headers || headers.length === 0) {
-        throw new Error('No headers found in CSV');
-      }
-
-      if (records.length === 0) {
-        throw new Error('No data rows found in CSV');
-      }
+      console.log('Headers:', headers);
+      console.log('Records count:', records.length);
 
       setCsvData({ headers, records, sample: records[0] });
     } catch (err) {
-      setError(`Error reading file: ${err.message}`);
+      console.error('Error analyzing CSV:', err);
+      setError(err.message);
+      setFile(null);
     } finally {
       setAnalyzing(false);
     }
