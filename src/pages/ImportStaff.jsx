@@ -14,15 +14,13 @@ export default function ImportStaff() {
 
   const handleFileChange = async (e) => {
     const selectedFile = e.target.files[0];
-    if (selectedFile && selectedFile.name.toLowerCase().endsWith('.csv')) {
-      setFile(selectedFile);
-      setError(null);
-      setResult(null);
-      setCsvData(null);
-      await analyzeCSV(selectedFile);
-    } else {
-      setError('Please select a valid CSV file');
-    }
+    if (!selectedFile) return;
+    
+    setFile(selectedFile);
+    setError(null);
+    setResult(null);
+    setCsvData(null);
+    await analyzeCSV(selectedFile);
   };
 
   const parseCSV = (text) => {
