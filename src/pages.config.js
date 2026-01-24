@@ -9,8 +9,8 @@ import Events from './pages/Events';
 import GateScan from './pages/GateScan';
 import Home from './pages/Home';
 import Shop from './pages/Shop';
-import TrackOrder from './pages/TrackOrder';
 import Staff from './pages/Staff';
+import TrackOrder from './pages/TrackOrder';
 import __Layout from './Layout.jsx';
 
 
@@ -26,8 +26,8 @@ export const PAGES = {
     "GateScan": GateScan,
     "Home": Home,
     "Shop": Shop,
-    "TrackOrder": TrackOrder,
     "Staff": Staff,
+    "TrackOrder": TrackOrder,
 }
 
 export const pagesConfig = {
