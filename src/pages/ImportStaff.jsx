@@ -141,16 +141,29 @@ export default function ImportStaff() {
 
     try {
       console.log('Starting import with', csvData.records.length, 'records');
-      console.log('First record:', csvData.records[0]);
-      
-      const imported = await base44.entities.Staff.bulkCreate(csvData.records);
-      console.log('Import response:', imported);
+      console.log('First record to import:', csvData.records[0]);
+
+      // Import records in batches of 50 to avoid timeouts
+      const batchSize = 50;
+      let totalImported = 0;
+
+      for (let i = 0; i < csvData.records.length; i += batchSize) {
+        const batch = csvData.records.slice(i, i + batchSize);
+        console.log(`Importing batch ${Math.floor(i / batchSize) + 1}...`);
+        await base44.entities.Staff.bulkCreate(batch);
+        totalImported += batch.length;
+      }
+
+      console.log('Import completed:', totalImported, 'records');
+
+      // Get a sample of imported data
+      const sample = await base44.entities.Staff.list('-created_date', 1);
 
       setResult({
         success: true,
-        count: imported.length,
-        message: `Successfully imported ${imported.length} records`,
-        sample: imported[0]
+        count: totalImported,
+        message: `Successfully imported ${totalImported} staff records`,
+        sample: sample[0]
       });
     } catch (err) {
       console.error('Import error:', err);
