@@ -5,12 +5,44 @@ import { Button } from '@/components/ui/button';
 import { Upload, CheckCircle, AlertCircle, Database } from 'lucide-react';
 
 export default function ImportStaff() {
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
   const [file, setFile] = useState(null);
   const [analyzing, setAnalyzing] = useState(false);
   const [importing, setImporting] = useState(false);
   const [csvData, setCsvData] = useState(null);
   const [result, setResult] = useState(null);
   const [error, setError] = useState(null);
+
+  React.useEffect(() => {
+    const checkAuth = async () => {
+      try {
+        const currentUser = await base44.auth.me();
+        if (!currentUser || currentUser.role !== 'admin') {
+          base44.auth.redirectToLogin();
+          return;
+        }
+        setUser(currentUser);
+      } catch (err) {
+        base44.auth.redirectToLogin();
+      } finally {
+        setLoading(false);
+      }
+    };
+    checkAuth();
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-stone-950 flex items-center justify-center">
+        <p className="text-white">Loading...</p>
+      </div>
+    );
+  }
+
+  if (!user) {
+    return null;
+  }
 
   const handleFileChange = async (e) => {
     const selectedFile = e.target.files[0];
