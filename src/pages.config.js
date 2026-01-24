@@ -10,8 +10,9 @@ import GateScan from './pages/GateScan';
 import Home from './pages/Home';
 import Shop from './pages/Shop';
 import Staff from './pages/Staff';
-import TrackOrder from './pages/TrackOrder';
 import StaffScheduling from './pages/StaffScheduling';
+import TrackOrder from './pages/TrackOrder';
+import ImportStaff from './pages/ImportStaff';
 import __Layout from './Layout.jsx';
 
 
@@ -28,8 +29,9 @@ export const PAGES = {
     "Home": Home,
     "Shop": Shop,
     "Staff": Staff,
-    "TrackOrder": TrackOrder,
     "StaffScheduling": StaffScheduling,
+    "TrackOrder": TrackOrder,
+    "ImportStaff": ImportStaff,
 }
 
 export const pagesConfig = {
