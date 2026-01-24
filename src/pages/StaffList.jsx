@@ -16,12 +16,14 @@ export default function StaffList() {
   const filteredStaff = staff.filter(person => {
     if (!searchTerm) return true;
     const searchLower = searchTerm.toLowerCase();
-    return Object.values(person.data || person).some(value => 
+    return Object.values(person).some(value => 
       String(value).toLowerCase().includes(searchLower)
     );
   });
 
-  const columns = staff.length > 0 && staff[0].data ? Object.keys(staff[0].data) : [];
+  const columns = staff.length > 0 ? Object.keys(staff[0]).filter(key => 
+    !['id', 'created_date', 'updated_date', 'created_by'].includes(key)
+  ) : [];
 
   return (
     <div className="min-h-screen bg-stone-950 p-4 pt-20">
@@ -86,7 +88,7 @@ export default function StaffList() {
                       <tr key={person.id || idx} className="border-b border-stone-800 hover:bg-stone-800/50">
                         {columns.map(col => (
                           <td key={col} className="p-3 text-gray-300 text-sm">
-                            {person.data?.[col] || '-'}
+                            {person[col] || '-'}
                           </td>
                         ))}
                       </tr>
