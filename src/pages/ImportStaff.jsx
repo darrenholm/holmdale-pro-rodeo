@@ -110,18 +110,21 @@ export default function ImportStaff() {
   const analyzeCSV = async (file) => {
     setAnalyzing(true);
     setError(null);
-    
+
     try {
       console.log('Reading file...');
       const text = await file.text();
       console.log('File content length:', text.length);
-      
+      console.log('First 500 chars:', text.substring(0, 500));
+
       console.log('Parsing CSV...');
       const { headers, records } = parseCSV(text);
-      console.log('Headers:', headers);
+      console.log('Headers found:', headers);
       console.log('Records count:', records.length);
+      console.log('First record keys:', Object.keys(records[0]));
+      console.log('First record values:', Object.values(records[0]));
+      console.log('Full first record:', JSON.stringify(records[0], null, 2));
 
-      console.log('Sample record:', records[0]);
       setCsvData({ headers, records, sample: records[0] });
     } catch (err) {
       console.error('Error analyzing CSV:', err);
