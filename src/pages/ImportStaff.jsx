@@ -107,18 +107,20 @@ export default function ImportStaff() {
 
     try {
       console.log('Starting import with', csvData.records.length, 'records');
+      console.log('First record:', csvData.records[0]);
       
-      // Import data directly - the Staff entity will be created automatically on first insert
       const imported = await base44.entities.Staff.bulkCreate(csvData.records);
+      console.log('Import response:', imported);
 
       setResult({
         success: true,
         count: imported.length,
-        message: `Successfully created Staff table and imported ${imported.length} records`
+        message: `Successfully imported ${imported.length} records`,
+        sample: imported[0]
       });
     } catch (err) {
       console.error('Import error:', err);
-      setError(err.message);
+      setError(`Import failed: ${err.message}`);
     } finally {
       setImporting(false);
     }
