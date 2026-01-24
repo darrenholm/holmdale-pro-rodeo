@@ -194,12 +194,22 @@ export default function ImportStaff() {
             )}
 
             {result && (
-              <div className="bg-green-950 border border-green-800 rounded-lg p-4 flex items-start gap-3">
-                <CheckCircle className="w-5 h-5 text-green-400 flex-shrink-0 mt-0.5" />
-                <div>
-                  <p className="text-green-200 font-semibold">{result.message}</p>
-                  <p className="text-green-300 text-sm mt-1">{result.count} records added to database</p>
+              <div className="bg-green-950 border border-green-800 rounded-lg p-4">
+                <div className="flex items-start gap-3">
+                  <CheckCircle className="w-5 h-5 text-green-400 flex-shrink-0 mt-0.5" />
+                  <div>
+                    <p className="text-green-200 font-semibold">{result.message}</p>
+                    <p className="text-green-300 text-sm mt-1">{result.count} records added to database</p>
+                  </div>
                 </div>
+                {result.sample && (
+                  <div className="mt-3 bg-green-900 rounded p-3">
+                    <h4 className="text-green-200 text-sm font-semibold mb-2">Sample Record:</h4>
+                    <pre className="text-green-300 text-xs overflow-auto max-h-32">
+                      {JSON.stringify(result.sample, null, 2)}
+                    </pre>
+                  </div>
+                )}
               </div>
             )}
 
