@@ -245,13 +245,24 @@ export default function ImportStaff() {
               </div>
             )}
 
-            <Button
-              onClick={handleImport}
-              disabled={!csvData || importing}
-              className="w-full bg-green-600 hover:bg-green-700"
-            >
-              {importing ? 'Creating Table & Importing...' : 'Create Staff Table & Import Data'}
-            </Button>
+            <div className="space-y-3">
+              <Button
+                onClick={handleImport}
+                disabled={!csvData || importing}
+                className="w-full bg-green-600 hover:bg-green-700"
+              >
+                {importing ? 'Importing...' : 'Import Data'}
+              </Button>
+
+              {result && (
+                <Button
+                  onClick={() => window.location.href = '/staff-list'}
+                  className="w-full bg-blue-600 hover:bg-blue-700"
+                >
+                  View Staff Directory
+                </Button>
+              )}
+            </div>
 
             <div className="bg-stone-800 rounded-lg p-4">
               <h3 className="text-white font-semibold mb-2">Instructions:</h3>
