@@ -11,7 +11,8 @@ const navLinks = [
   { name: 'Shop', page: 'Shop' },
   { name: 'Bar Credits', page: 'BuyBarCredits' },
   { name: 'About', page: 'About' },
-  { name: 'Contact', page: 'Contact' }
+  { name: 'Contact', page: 'Contact' },
+  { name: 'Staff', page: 'Staff' }
 ];
 
 export default function Sidebar() {
