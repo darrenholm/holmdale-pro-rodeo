@@ -4,7 +4,6 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { QrCode, Ticket, CreditCard, LogOut } from 'lucide-react';
-import { createPageUrl } from './utils';
 
 const STAFF_PASSWORD = 'staff2026'; // Change this to your desired password
 
@@ -90,7 +89,7 @@ export default function Staff() {
         </div>
 
         <div className="grid md:grid-cols-2 gap-6">
-          <Link to={createPageUrl('GateScan')}>
+          <Link to="/page/GateScan">
             <Card className="bg-stone-900 border-stone-800 hover:border-green-600 transition-all cursor-pointer h-full">
               <CardContent className="p-8 text-center">
                 <QrCode className="w-16 h-16 text-green-500 mx-auto mb-4" />
@@ -100,7 +99,7 @@ export default function Staff() {
             </Card>
           </Link>
 
-          <Link to={createPageUrl('BarRedemption')}>
+          <Link to="/page/BarRedemption">
             <Card className="bg-stone-900 border-stone-800 hover:border-green-600 transition-all cursor-pointer h-full">
               <CardContent className="p-8 text-center">
                 <CreditCard className="w-16 h-16 text-green-500 mx-auto mb-4" />
@@ -116,10 +115,10 @@ export default function Staff() {
             <CardTitle className="text-white text-sm">Quick Access Links</CardTitle>
           </CardHeader>
           <CardContent className="space-y-2">
-            <a href={createPageUrl('GateScan')} className="block text-green-500 hover:text-green-400">
+            <a href="/page/GateScan" className="block text-green-500 hover:text-green-400">
               /page/GateScan - Gate Scanner
             </a>
-            <a href={createPageUrl('BarRedemption')} className="block text-green-500 hover:text-green-400">
+            <a href="/page/BarRedemption" className="block text-green-500 hover:text-green-400">
               /page/BarRedemption - Bar Redemption
             </a>
           </CardContent>
