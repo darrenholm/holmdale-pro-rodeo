@@ -257,11 +257,8 @@ export default function ImportStaff() {
               </Button>
 
               {result && (
-                <Button
-                  onClick={() => window.location.href = '/staff-list'}
-                  className="w-full bg-blue-600 hover:bg-blue-700"
-                >
-                  View Staff Directory
+                <Button asChild className="w-full bg-blue-600 hover:bg-blue-700">
+                  <Link to={createPageUrl('StaffList')}>View Staff Directory</Link>
                 </Button>
               )}
             </div>
