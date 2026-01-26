@@ -118,13 +118,14 @@ export default function BuyTickets() {
                 status: 'pending'
             });
 
-            // Then redirect to Stripe checkout
+            // Then redirect to Moneris checkout
             const result = await createCheckout.mutateAsync(checkoutData);
             if (result.url) {
                 window.location.href = result.url;
             }
         } catch (error) {
             console.error('Checkout error:', error);
+            alert('Payment checkout failed. Please check your payment credentials and try again.');
         }
     };
     
