@@ -46,6 +46,7 @@ Deno.serve(async (req) => {
       action: 'preload',
       test: true,
       order_no: orderId,
+      country: 'CA',
       cust_id: customer_info.email || 'guest',
       dynamic_descriptor: 'Holmdale Bar Credits',
       language: 'en',

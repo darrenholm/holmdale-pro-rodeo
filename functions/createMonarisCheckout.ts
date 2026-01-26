@@ -47,6 +47,7 @@ Deno.serve(async (req) => {
       action: 'preload',
       test: true,
       order_no: orderId,
+      country: 'CA',
       cust_id: shipping_address.email || 'guest',
       dynamic_descriptor: 'Holmdale Pro Rodeo',
       language: 'en',
