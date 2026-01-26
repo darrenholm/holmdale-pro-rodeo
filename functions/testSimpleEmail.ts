@@ -1,11 +1,9 @@
-import { createClientFromRequest } from 'npm:@base44/sdk@0.8.6';
 import { Resend } from 'npm:resend@4.0.0';
 
 const resend = new Resend(Deno.env.get('RESEND_API_KEY'));
 
 Deno.serve(async (req) => {
   try {
-    const base44 = createClientFromRequest(req);
     const { email } = await req.json();
 
     if (!email) {
@@ -27,7 +25,7 @@ Deno.serve(async (req) => {
       `
     });
     
-    console.log('SendEmail result:', JSON.stringify(emailResult, null, 2));
+    console.log('Resend result:', JSON.stringify(emailResult, null, 2));
 
     return Response.json({ 
       success: true,

@@ -27,7 +27,6 @@ Deno.serve(async (req) => {
       }
     });
     console.log('QR code generated for:', barCredit.confirmation_code);
-    console.log('QR code data URL length:', qrCodeDataUrl.length);
     
     // Send confirmation email via Resend
     console.log('Sending email to:', barCredit.customer_email);
@@ -67,7 +66,7 @@ Deno.serve(async (req) => {
         </div>
       `
     });
-    console.log('Email result:', JSON.stringify(emailResult, null, 2));
+    console.log('Resend result:', JSON.stringify(emailResult, null, 2));
 
     return Response.json({ 
       success: true, 
