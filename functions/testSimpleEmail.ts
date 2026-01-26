@@ -1,4 +1,7 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.6';
+import { Resend } from 'npm:resend@4.0.0';
+
+const resend = new Resend(Deno.env.get('RESEND_API_KEY'));
 
 Deno.serve(async (req) => {
   try {
@@ -11,11 +14,11 @@ Deno.serve(async (req) => {
 
     console.log('Attempting to send email to:', email);
     
-    const emailResult = await base44.asServiceRole.integrations.Core.SendEmail({
+    const emailResult = await resend.emails.send({
+      from: 'Holmdale Pro Rodeo <onboarding@resend.dev>',
       to: email,
-      from_name: 'Holmdale Pro Rodeo',
       subject: 'Test Email - Bar Credits',
-      body: `
+      html: `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
           <h1 style="color: #22c55e;">Test Email</h1>
           <p>This is a test email to verify email delivery is working.</p>

@@ -1,5 +1,8 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.6';
 import QRCode from 'npm:qrcode@1.5.3';
+import { Resend } from 'npm:resend@4.0.0';
+
+const resend = new Resend(Deno.env.get('RESEND_API_KEY'));
 
 Deno.serve(async (req) => {
   try {
@@ -26,13 +29,13 @@ Deno.serve(async (req) => {
     console.log('QR code generated for:', barCredit.confirmation_code);
     console.log('QR code data URL length:', qrCodeDataUrl.length);
     
-    // Send confirmation email
+    // Send confirmation email via Resend
     console.log('Sending email to:', barCredit.customer_email);
-    const emailResult = await base44.asServiceRole.integrations.Core.SendEmail({
+    const emailResult = await resend.emails.send({
+      from: 'Holmdale Pro Rodeo <onboarding@resend.dev>',
       to: barCredit.customer_email,
-      from_name: 'Holmdale Pro Rodeo',
       subject: 'Your Bar Credits - Ready to Use',
-      body: `
+      html: `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
           <h1 style="color: #22c55e;">Bar Credits Confirmed!</h1>
           <p>Hi ${barCredit.customer_name},</p>

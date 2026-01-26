@@ -1,7 +1,9 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.6';
 import QRCode from 'npm:qrcode@1.5.3';
+import { Resend } from 'npm:resend@4.0.0';
 
 const stripe = await import('npm:stripe@17.4.0').then(m => new m.default(Deno.env.get('STRIPE_SECRET_KEY')));
+const resend = new Resend(Deno.env.get('RESEND_API_KEY'));
 
 Deno.serve(async (req) => {
   try {
@@ -64,12 +66,12 @@ Deno.serve(async (req) => {
           // Get event details
           const event = await base44.asServiceRole.entities.Event.get(eventId);
           
-          // Send email with QR code
-          await base44.asServiceRole.integrations.Core.SendEmail({
+          // Send email with QR code via Resend
+          await resend.emails.send({
+            from: 'Holmdale Pro Rodeo <onboarding@resend.dev>',
             to: customerEmail,
-            from_name: 'Holmdale Pro Rodeo',
             subject: `Your Tickets - ${event.title}`,
-            body: `
+            html: `
               <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
                 <h1 style="color: #22c55e;">Tickets Confirmed!</h1>
                 <p>Hi ${customerName},</p>
@@ -137,13 +139,13 @@ Deno.serve(async (req) => {
         const { file_url: qrCodeUrl } = await base44.asServiceRole.integrations.Core.UploadFile({ file: qrFile });
         console.log('QR code uploaded to:', qrCodeUrl);
         
-        // Send confirmation email
+        // Send confirmation email via Resend
         console.log('Sending email to:', barCredit.customer_email);
-        const emailResult = await base44.asServiceRole.integrations.Core.SendEmail({
+        const emailResult = await resend.emails.send({
+          from: 'Holmdale Pro Rodeo <onboarding@resend.dev>',
           to: barCredit.customer_email,
-          from_name: 'Holmdale Pro Rodeo',
           subject: 'Your Bar Credits - Ready to Use',
-          body: `
+          html: `
             <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
               <h1 style="color: #22c55e;">Bar Credits Confirmed!</h1>
               <p>Hi ${barCredit.customer_name},</p>
