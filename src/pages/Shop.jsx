@@ -43,7 +43,7 @@ export default function Shop() {
     setShowAddressModal(true);
   };
 
-  const handleCheckout = async (paymentMethod = 'stripe') => {
+  const handleCheckout = async () => {
     if (!shippingAddress.postal_code) {
       alert('Please enter your postal code');
       return;
@@ -51,9 +51,7 @@ export default function Shop() {
 
     setIsCheckingOut(true);
     try {
-      const functionName = paymentMethod === 'moneris' ? 'createMonarisCheckout' : 'createMerchandiseCheckout';
-      
-      const response = await base44.functions.invoke(functionName, {
+      const response = await base44.functions.invoke('createMonarisCheckout', {
         items: cartItems.map(item => ({
           product_id: item.id,
           quantity: 1
@@ -217,38 +215,20 @@ export default function Shop() {
                   <option value="US">United States</option>
                 </select>
               </div>
-              <div className="space-y-3 mt-6">
-                <Button
-                  onClick={() => handleCheckout('stripe')}
-                  disabled={isCheckingOut || !shippingAddress.postal_code}
-                  className="w-full bg-green-500 hover:bg-green-600 text-stone-900 font-semibold py-6 text-lg"
-                >
-                  {isCheckingOut ? (
-                    <>
-                      <Loader2 className="w-5 h-5 mr-2 animate-spin" />
-                      Processing...
-                    </>
-                  ) : (
-                    'Pay with Stripe'
-                  )}
-                </Button>
-
-                <Button
-                  onClick={() => handleCheckout('moneris')}
-                  disabled={isCheckingOut || !shippingAddress.postal_code}
-                  variant="outline"
-                  className="w-full border-green-500 text-green-500 hover:bg-green-500/10 font-semibold py-6 text-lg"
-                >
-                  {isCheckingOut ? (
-                    <>
-                      <Loader2 className="w-5 h-5 mr-2 animate-spin" />
-                      Processing...
-                    </>
-                  ) : (
-                    'Pay with Moneris'
-                  )}
-                </Button>
-              </div>
+              <Button
+                onClick={handleCheckout}
+                disabled={isCheckingOut || !shippingAddress.postal_code}
+                className="w-full bg-green-500 hover:bg-green-600 text-stone-900 font-semibold py-6 text-lg mt-6"
+              >
+                {isCheckingOut ? (
+                  <>
+                    <Loader2 className="w-5 h-5 mr-2 animate-spin" />
+                    Processing...
+                  </>
+                ) : (
+                  'Proceed to Checkout'
+                )}
+              </Button>
             </div>
           </DialogContent>
         </Dialog>

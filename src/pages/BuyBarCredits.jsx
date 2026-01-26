@@ -40,7 +40,7 @@ export default function BuyBarCredits() {
         throw new Error('Checkout only works from the published app URL, not in preview mode.');
       }
 
-      const response = await base44.functions.invoke('createBarCreditCheckout', data);
+      const response = await base44.functions.invoke('createBarCreditCheckoutMoneris', data);
       return response.data;
     },
     onSuccess: (data) => {
