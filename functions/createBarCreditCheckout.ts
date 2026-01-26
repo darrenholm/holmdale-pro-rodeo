@@ -47,6 +47,7 @@ Deno.serve(async (req) => {
       success_url: `${Deno.env.get('BASE44_APP_URL')}BuyBarCredits?success=true&code=${confirmation_code}`,
       cancel_url: `${Deno.env.get('BASE44_APP_URL')}BuyBarCredits`,
       customer_email: customer_info.email,
+      automatic_tax: { enabled: true },
       metadata: {
         bar_credit_id: barCredit.id,
         confirmation_code: confirmation_code,
