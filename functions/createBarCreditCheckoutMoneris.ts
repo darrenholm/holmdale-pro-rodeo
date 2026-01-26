@@ -44,6 +44,7 @@ Deno.serve(async (req) => {
       txn_total: total_price.toFixed(2),
       environment: 'qa',
       action: 'preload',
+      test: true,
       order_no: orderId,
       cust_id: customer_info.email || 'guest',
       dynamic_descriptor: 'Holmdale Bar Credits',

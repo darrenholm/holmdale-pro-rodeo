@@ -45,6 +45,7 @@ Deno.serve(async (req) => {
       txn_total: total.toFixed(2),
       environment: 'qa',
       action: 'preload',
+      test: true,
       order_no: orderId,
       cust_id: shipping_address.email || 'guest',
       dynamic_descriptor: 'Holmdale Pro Rodeo',
