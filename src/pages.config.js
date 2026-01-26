@@ -11,9 +11,9 @@ import Home from './pages/Home';
 import ImportStaff from './pages/ImportStaff';
 import Shop from './pages/Shop';
 import Staff from './pages/Staff';
+import StaffList from './pages/StaffList';
 import StaffScheduling from './pages/StaffScheduling';
 import TrackOrder from './pages/TrackOrder';
-import StaffList from './pages/StaffList';
 import __Layout from './Layout.jsx';
 
 
@@ -31,9 +31,9 @@ export const PAGES = {
     "ImportStaff": ImportStaff,
     "Shop": Shop,
     "Staff": Staff,
+    "StaffList": StaffList,
     "StaffScheduling": StaffScheduling,
     "TrackOrder": TrackOrder,
-    "StaffList": StaffList,
 }
 
 export const pagesConfig = {
