@@ -29,78 +29,56 @@ Deno.serve(async (req) => {
     // Get Moneris credentials
     const storeId = Deno.env.get('MONERIS_STORE_ID');
     const apiToken = Deno.env.get('MONERIS_API_TOKEN');
-    const checkoutId = Deno.env.get('MONERIS_CHECKOUT_ID');
-    
-    if (!storeId || !apiToken || !checkoutId) {
+
+    if (!storeId || !apiToken) {
       return Response.json({ error: 'Moneris credentials not configured' }, { status: 500 });
     }
 
-    // Create Moneris Checkout ticket
+    // Create Moneris Gateway transaction
     const orderId = `BAR-${Date.now()}`;
-    const ticketPayload = {
+    const transactionPayload = {
       store_id: storeId,
       api_token: apiToken,
-      checkout_id: checkoutId,
-      txn_total: total_price.toFixed(2),
-      environment: 'qa',
-      action: 'preload',
-      test: true,
-      order_no: orderId,
-      country: 'CA',
-      cust_id: customer_info.email || 'guest',
-      dynamic_descriptor: 'Holmdale Bar Credits',
-      language: 'en',
-      cart: {
-        items: [{
-          url: `${Deno.env.get('BASE44_APP_URL')}/BuyBarCredits`,
-          description: `Bar Credits (${quantity}x at $${price_per_credit} each)`,
-          product_code: 'bar-credits',
-          unit_cost: price_per_credit.toFixed(2),
-          quantity: quantity.toString()
-        }]
-      },
-      contact_details: {
-        email: customer_info.email || '',
-        first_name: customer_info.name?.split(' ')[0] || 'Guest',
-        last_name: customer_info.name?.split(' ').slice(1).join(' ') || 'Customer',
-        phone: customer_info.phone || ''
+      purchase: {
+        order_id: orderId,
+        amount: total_price.toFixed(2),
+        crypt_type: '7',
+        description: `Bar Credits (${quantity}x at $${price_per_credit} each)`
       }
     };
 
-    console.log('Creating Moneris checkout for bar credits:', orderId);
-    const monerisResponse = await fetch('https://gatewayt.moneris.com/chkt/request/request.php', {
+    console.log('Creating Moneris Gateway transaction for bar credits:', orderId);
+    const monerisResponse = await fetch('https://esqa.moneris.com:443/gateway2/servlet/MpgRequest', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify(ticketPayload)
+      body: JSON.stringify(transactionPayload)
     });
 
     if (!monerisResponse.ok) {
       const errorData = await monerisResponse.text();
-      console.error('Moneris error:', errorData);
-      return Response.json({ error: 'Failed to create checkout', details: errorData }, { status: 500 });
+      console.error('Moneris Gateway error:', errorData);
+      return Response.json({ error: 'Failed to create transaction', details: errorData }, { status: 500 });
     }
 
     const monerisData = await monerisResponse.json();
 
-    if (monerisData.response?.success !== 'true' || !monerisData.response?.ticket) {
+    if (!monerisData.receipt) {
       console.error('Moneris error:', monerisData);
-      return Response.json({ error: 'Failed to create checkout ticket', details: monerisData }, { status: 500 });
+      return Response.json({ error: 'Failed to process transaction', details: monerisData }, { status: 500 });
     }
-
-    const checkoutUrl = `https://gatewayt.moneris.com/chkt/display/display.php?ticket=${monerisData.response.ticket}`;
 
     // Update bar credit with Moneris transaction ID
     await base44.asServiceRole.entities.BarCredit.update(barCredit.id, {
-      monaris_transaction_id: monerisData.response.ticket
+      monaris_transaction_id: monerisData.receipt.TransID
     });
 
-    console.log('Moneris checkout created for bar credits:', orderId, checkoutUrl);
+    console.log('Moneris transaction created for bar credits:', orderId, monerisData);
     return Response.json({ 
-      url: checkoutUrl,
-      ticket: monerisData.response.ticket,
-      order_id: orderId
+      transaction_id: monerisData.receipt.TransID,
+      order_id: orderId,
+      receipt: monerisData.receipt
     });
 
   } catch (error) {

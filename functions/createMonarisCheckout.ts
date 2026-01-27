@@ -28,82 +28,56 @@ Deno.serve(async (req) => {
     // Get Moneris credentials
     const storeId = Deno.env.get('MONERIS_STORE_ID');
     const apiToken = Deno.env.get('MONERIS_API_TOKEN');
-    const checkoutId = Deno.env.get('MONERIS_CHECKOUT_ID');
-    
-    if (!storeId || !apiToken || !checkoutId) {
+
+    if (!storeId || !apiToken) {
       return Response.json({ 
         error: 'Moneris credentials not configured' 
       }, { status: 500 });
     }
 
-    // Create Moneris Checkout ticket
+    // Create Moneris Gateway transaction
     const orderId = `ORDER-${Date.now()}`;
-    const ticketPayload = {
+    const transactionPayload = {
       store_id: storeId,
       api_token: apiToken,
-      checkout_id: checkoutId,
-      txn_total: total.toFixed(2),
-      environment: 'qa',
-      action: 'preload',
-      test: true,
-      order_no: orderId,
-      country: 'CA',
-      cust_id: shipping_address.email || 'guest',
-      dynamic_descriptor: 'Holmdale Pro Rodeo',
-      language: 'en',
-      cart: {
-        items: products.map(p => ({
-          url: `${Deno.env.get('BASE44_APP_URL')}/Shop`,
-          description: p.name,
-          product_code: p.id,
-          unit_cost: p.price.toFixed(2),
-          quantity: '1'
-        }))
-      },
-      contact_details: {
-        email: shipping_address.email || '',
-        first_name: shipping_address.name?.split(' ')[0] || 'Guest',
-        last_name: shipping_address.name?.split(' ').slice(1).join(' ') || 'Customer'
-      },
-      shipping_details: {
-        address_1: shipping_address.address || '',
-        city: shipping_address.city || '',
-        province: shipping_address.province || '',
-        country: shipping_address.country || 'CA',
-        postal_code: shipping_address.postal_code || ''
+      purchase: {
+        order_id: orderId,
+        amount: total.toFixed(2),
+        crypt_type: '7',
+        description: `Order: ${products.map(p => p.name).join(', ')}`
       }
     };
 
-    const monerisResponse = await fetch('https://gatewayt.moneris.com/chkt/request/request.php', {
+    const monerisResponse = await fetch('https://esqa.moneris.com:443/gateway2/servlet/MpgRequest', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify(ticketPayload)
+      body: JSON.stringify(transactionPayload)
     });
 
     if (!monerisResponse.ok) {
       const errorData = await monerisResponse.text();
-      console.error('Moneris ticket error:', errorData);
+      console.error('Moneris Gateway error:', errorData);
       return Response.json({ 
-        error: 'Failed to create checkout',
+        error: 'Failed to create transaction',
         details: errorData
       }, { status: 500 });
     }
 
     const monerisData = await monerisResponse.json();
 
-    if (monerisData.response?.success !== 'true' || !monerisData.response?.ticket) {
+    if (!monerisData.receipt) {
       console.error('Moneris error:', monerisData);
       return Response.json({ 
-        error: 'Failed to create checkout ticket',
+        error: 'Failed to process transaction',
         details: monerisData
       }, { status: 500 });
     }
 
     // Create order record
     await base44.asServiceRole.entities.Order.create({
-      monaris_transaction_id: orderId,
+      monaris_transaction_id: monerisData.receipt.TransID,
       customer_email: shipping_address.email || 'customer@example.com',
       customer_name: shipping_address.name || 'Customer',
       items: products.map(p => ({
@@ -116,12 +90,10 @@ Deno.serve(async (req) => {
       status: 'pending'
     });
 
-    const checkoutUrl = `https://gatewayt.moneris.com/chkt/display/display.php?ticket=${monerisData.response.ticket}`;
-
     return Response.json({ 
-      url: checkoutUrl,
-      ticket: monerisData.response.ticket,
-      order_id: orderId
+      transaction_id: monerisData.receipt.TransID,
+      order_id: orderId,
+      receipt: monerisData.receipt
     });
 
   } catch (error) {
