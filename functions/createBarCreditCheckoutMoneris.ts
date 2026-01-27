@@ -1,4 +1,7 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.6';
+import Stripe from 'npm:stripe@17.5.0';
+
+const stripe = new Stripe(Deno.env.get('STRIPE_SECRET_KEY'));
 
 Deno.serve(async (req) => {
   try {
@@ -26,80 +29,42 @@ Deno.serve(async (req) => {
       confirmation_code: confirmation_code
     });
 
-    // Get Moneris credentials
-    const storeId = Deno.env.get('MONERIS_STORE_ID');
-    const apiToken = Deno.env.get('MONERIS_API_TOKEN');
-
-    if (!storeId || !apiToken) {
-      return Response.json({ error: 'Moneris credentials not configured' }, { status: 500 });
-    }
-
-    // Create Moneris Hosted PayPage transaction
-    const orderId = `BAR-${Date.now()}`;
-
-    // Build XML request for Hosted PayPage
-    const xmlRequest = `<?xml version="1.0" encoding="UTF-8"?>
-    <request>
-    <store_id>${storeId}</store_id>
-    <api_token>${apiToken}</api_token>
-    <hosted_tokenization>
-    <order_id>${orderId}</order_id>
-    <txn_total>${total_price.toFixed(2)}</txn_total>
-    <dynamic_descriptor>Bar Credits</dynamic_descriptor>
-    </hosted_tokenization>
-    </request>`;
-
-    console.log('Creating Moneris Hosted PayPage for bar credits:', orderId);
-    const monerisResponse = await fetch('https://esqa.moneris.com:443/gateway2/servlet/MpgRequest', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/xml'
-      },
-      body: xmlRequest
+    // Create Stripe checkout session
+    const session = await stripe.checkout.sessions.create({
+      payment_method_types: ['card'],
+      line_items: [{
+        price_data: {
+          currency: 'cad',
+          product_data: {
+            name: 'Bar Credits',
+            description: `${quantity} bar credits`
+          },
+          unit_amount: Math.round(price_per_credit * 100)
+        },
+        quantity: parseInt(quantity)
+      }],
+      mode: 'payment',
+      success_url: `${Deno.env.get('BASE44_APP_URL')}/CheckoutSuccess?session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url: `${Deno.env.get('BASE44_APP_URL')}/BuyBarCredits`,
+      customer_email: customer_info.email,
+      metadata: {
+        base44_app_id: Deno.env.get('BASE44_APP_ID'),
+        type: 'bar_credit',
+        bar_credit_id: barCredit.id,
+        confirmation_code: confirmation_code
+      }
     });
 
-    if (!monerisResponse.ok) {
-      const errorData = await monerisResponse.text();
-      console.error('Moneris Gateway error:', errorData);
-      return Response.json({ error: 'Failed to create hosted page', details: errorData }, { status: 500 });
-    }
-
-    const xmlResponse = await monerisResponse.text();
-    console.log('Moneris response:', xmlResponse);
-
-    // Parse XML response for ticket
-    const ticketMatch = xmlResponse.match(/<ticket>(.*?)<\/ticket>/);
-    const responseCodeMatch = xmlResponse.match(/<ResponseCode>(.*?)<\/ResponseCode>/);
-    const messageMatch = xmlResponse.match(/<Message>(.*?)<\/Message>/);
-
-    const ticket = ticketMatch ? ticketMatch[1] : null;
-    const responseCode = responseCodeMatch ? responseCodeMatch[1] : null;
-    const message = messageMatch ? messageMatch[1] : null;
-
-    if (!ticket) {
-      console.error('Failed to get hosted page ticket:', { responseCode, message, xmlResponse });
-      return Response.json({ 
-        error: 'Failed to create payment page', 
-        details: { responseCode, message } 
-      }, { status: 500 });
-    }
-
-    const hostedUrl = `https://esqa.moneris.com/HPPtoken/index.php?id=${ticket}`;
-
-    // Update bar credit with Moneris ticket
+    // Update bar credit with Stripe session ID
     await base44.asServiceRole.entities.BarCredit.update(barCredit.id, {
-      monaris_transaction_id: ticket
+      stripe_session_id: session.id
     });
 
-    console.log('Moneris hosted page created for bar credits:', { orderId, ticket, hostedUrl });
-    return Response.json({ 
-      url: hostedUrl,
-      ticket: ticket,
-      order_id: orderId
-    });
+    console.log('Stripe checkout session created:', session.id);
+    return Response.json({ url: session.url });
 
   } catch (error) {
-    console.error('Moneris bar credit checkout error:', error);
+    console.error('Stripe bar credit checkout error:', error);
     return Response.json({ error: error.message }, { status: 500 });
   }
 });
