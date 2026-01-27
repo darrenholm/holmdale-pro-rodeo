@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
@@ -47,6 +47,10 @@ export default function BuyTickets() {
     const [orderComplete, setOrderComplete] = useState(false);
     const [confirmationCode, setConfirmationCode] = useState('');
     const [isInIframe, setIsInIframe] = useState(window.self !== window.top);
+    const [showCheckout, setShowCheckout] = useState(false);
+    const [checkoutTicket, setCheckoutTicket] = useState(null);
+    const checkoutRef = useRef(null);
+    const monerisCheckoutRef = useRef(null);
     
     const { data: event, isLoading } = useQuery({
         queryKey: ['event', eventId],
@@ -57,6 +61,63 @@ export default function BuyTickets() {
         enabled: !!eventId
     });
     
+    useEffect(() => {
+        // Load Moneris Checkout script
+        if (!document.getElementById('moneris-checkout-script')) {
+            const script = document.createElement('script');
+            script.id = 'moneris-checkout-script';
+            script.src = 'https://gatewayt.moneris.com/chkt/js/chkt_v1.00.js';
+            script.async = true;
+            document.body.appendChild(script);
+        }
+
+        return () => {
+            if (monerisCheckoutRef.current && typeof monerisCheckoutRef.current.closeCheckout === 'function') {
+                monerisCheckoutRef.current.closeCheckout();
+            }
+        };
+    }, []);
+
+    useEffect(() => {
+        if (showCheckout && checkoutTicket && typeof window.monerisCheckout !== 'undefined') {
+            const myCheckout = new window.monerisCheckout();
+            monerisCheckoutRef.current = myCheckout;
+
+            myCheckout.setMode('qa');
+            myCheckout.setCheckoutDiv('monerisCheckout');
+
+            myCheckout.setCallback('page_loaded', () => {
+                console.log('Moneris checkout loaded');
+            });
+
+            myCheckout.setCallback('cancel_transaction', () => {
+                console.log('Transaction cancelled');
+                setShowCheckout(false);
+                setCheckoutTicket(null);
+            });
+
+            myCheckout.setCallback('error_event', (error) => {
+                console.error('Moneris error:', error);
+                alert('Payment error occurred');
+                setShowCheckout(false);
+                setCheckoutTicket(null);
+            });
+
+            myCheckout.setCallback('payment_receipt', (data) => {
+                console.log('Payment receipt:', data);
+            });
+
+            myCheckout.setCallback('payment_complete', async (data) => {
+                console.log('Payment complete:', data);
+                // Order was already created, just mark as complete
+                setOrderComplete(true);
+                setShowCheckout(false);
+            });
+
+            myCheckout.startCheckout(checkoutTicket);
+        }
+    }, [showCheckout, checkoutTicket]);
+
     const createCheckout = useMutation({
         mutationFn: async (checkoutData) => {
             const response = await base44.functions.invoke('createTicketCheckoutMoneris', checkoutData);
@@ -118,10 +179,15 @@ export default function BuyTickets() {
                 status: 'pending'
             });
 
-            // Then redirect to Moneris checkout
+            setConfirmationCode(code);
+
+            // Get Moneris checkout ticket
             const result = await createCheckout.mutateAsync(checkoutData);
-            if (result.url) {
-                window.location.href = result.url;
+            if (result.ticket) {
+                setCheckoutTicket(result.ticket);
+                setShowCheckout(true);
+            } else {
+                alert('Failed to create checkout session');
             }
         } catch (error) {
             console.error('Checkout error:', error);
@@ -196,6 +262,23 @@ export default function BuyTickets() {
         );
     }
     
+    if (showCheckout) {
+        return (
+            <div className="min-h-screen bg-stone-950 pt-24 pb-20 px-6">
+                <div className="max-w-4xl mx-auto">
+                    <Card className="bg-stone-900 border-stone-800">
+                        <CardHeader>
+                            <CardTitle className="text-white">Complete Your Purchase</CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                            <div id="monerisCheckout" ref={checkoutRef}></div>
+                        </CardContent>
+                    </Card>
+                </div>
+            </div>
+        );
+    }
+
     return (
         <div className="min-h-screen bg-stone-950 pt-24 pb-20 px-6">
             <div className="max-w-6xl mx-auto">
