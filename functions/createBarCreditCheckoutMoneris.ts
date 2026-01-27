@@ -34,25 +34,22 @@ Deno.serve(async (req) => {
       return Response.json({ error: 'Moneris credentials not configured' }, { status: 500 });
     }
 
-    // Create Moneris Gateway transaction
+    // Create Moneris Hosted PayPage transaction
     const orderId = `BAR-${Date.now()}`;
 
-    // Build XML request for Moneris Gateway API
+    // Build XML request for Hosted PayPage
     const xmlRequest = `<?xml version="1.0" encoding="UTF-8"?>
     <request>
     <store_id>${storeId}</store_id>
     <api_token>${apiToken}</api_token>
-    <purchase>
+    <hosted_tokenization>
     <order_id>${orderId}</order_id>
-    <amount>${total_price.toFixed(2)}</amount>
-    <pan>4242424242424242</pan>
-    <expdate>2512</expdate>
-    <crypt_type>7</crypt_type>
+    <txn_total>${total_price.toFixed(2)}</txn_total>
     <dynamic_descriptor>Bar Credits</dynamic_descriptor>
-    </purchase>
+    </hosted_tokenization>
     </request>`;
 
-    console.log('Creating Moneris Gateway transaction for bar credits:', orderId);
+    console.log('Creating Moneris Hosted PayPage for bar credits:', orderId);
     const monerisResponse = await fetch('https://esqa.moneris.com:443/gateway2/servlet/MpgRequest', {
       method: 'POST',
       headers: {
@@ -64,42 +61,41 @@ Deno.serve(async (req) => {
     if (!monerisResponse.ok) {
       const errorData = await monerisResponse.text();
       console.error('Moneris Gateway error:', errorData);
-      return Response.json({ error: 'Failed to create transaction', details: errorData }, { status: 500 });
+      return Response.json({ error: 'Failed to create hosted page', details: errorData }, { status: 500 });
     }
 
     const xmlResponse = await monerisResponse.text();
     console.log('Moneris response:', xmlResponse);
 
-    // Parse XML response
-    const receiptCodeMatch = xmlResponse.match(/<ReceiptId>(.*?)<\/ReceiptId>/);
+    // Parse XML response for ticket
+    const ticketMatch = xmlResponse.match(/<ticket>(.*?)<\/ticket>/);
     const responseCodeMatch = xmlResponse.match(/<ResponseCode>(.*?)<\/ResponseCode>/);
     const messageMatch = xmlResponse.match(/<Message>(.*?)<\/Message>/);
-    const transIdMatch = xmlResponse.match(/<TransID>(.*?)<\/TransID>/);
 
-    const receiptId = receiptCodeMatch ? receiptCodeMatch[1] : null;
+    const ticket = ticketMatch ? ticketMatch[1] : null;
     const responseCode = responseCodeMatch ? responseCodeMatch[1] : null;
     const message = messageMatch ? messageMatch[1] : null;
-    const transId = transIdMatch ? transIdMatch[1] : null;
 
-    if (!receiptId || parseInt(responseCode) >= 50) {
-      console.error('Moneris transaction failed:', { responseCode, message });
+    if (!ticket) {
+      console.error('Failed to get hosted page ticket:', { responseCode, message, xmlResponse });
       return Response.json({ 
-        error: 'Payment failed', 
+        error: 'Failed to create payment page', 
         details: { responseCode, message } 
       }, { status: 500 });
     }
 
-    // Update bar credit with Moneris transaction ID
+    const hostedUrl = `https://esqa.moneris.com/HPPtoken/index.php?id=${ticket}`;
+
+    // Update bar credit with Moneris ticket
     await base44.asServiceRole.entities.BarCredit.update(barCredit.id, {
-      monaris_transaction_id: transId
+      monaris_transaction_id: ticket
     });
 
-    console.log('Moneris transaction successful:', { orderId, receiptId, transId });
+    console.log('Moneris hosted page created for bar credits:', { orderId, ticket, hostedUrl });
     return Response.json({ 
-      transaction_id: transId,
-      receipt_id: receiptId,
-      order_id: orderId,
-      message: message
+      url: hostedUrl,
+      ticket: ticket,
+      order_id: orderId
     });
 
   } catch (error) {

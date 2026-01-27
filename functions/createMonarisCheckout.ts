@@ -35,22 +35,19 @@ Deno.serve(async (req) => {
       }, { status: 500 });
     }
 
-    // Create Moneris Gateway transaction
+    // Create Moneris Hosted PayPage transaction
     const orderId = `ORDER-${Date.now()}`;
 
-    // Build XML request for Moneris Gateway API
+    // Build XML request for Hosted PayPage
     const xmlRequest = `<?xml version="1.0" encoding="UTF-8"?>
     <request>
     <store_id>${storeId}</store_id>
     <api_token>${apiToken}</api_token>
-    <purchase>
+    <hosted_tokenization>
     <order_id>${orderId}</order_id>
-    <amount>${total.toFixed(2)}</amount>
-    <pan>4242424242424242</pan>
-    <expdate>2512</expdate>
-    <crypt_type>7</crypt_type>
+    <txn_total>${total.toFixed(2)}</txn_total>
     <dynamic_descriptor>Holmdale Shop</dynamic_descriptor>
-    </purchase>
+    </hosted_tokenization>
     </request>`;
 
     const monerisResponse = await fetch('https://esqa.moneris.com:443/gateway2/servlet/MpgRequest', {
@@ -65,7 +62,7 @@ Deno.serve(async (req) => {
       const errorData = await monerisResponse.text();
       console.error('Moneris Gateway error:', errorData);
       return Response.json({ 
-        error: 'Failed to create transaction',
+        error: 'Failed to create hosted page',
         details: errorData
       }, { status: 500 });
     }
@@ -73,28 +70,28 @@ Deno.serve(async (req) => {
     const xmlResponse = await monerisResponse.text();
     console.log('Moneris response:', xmlResponse);
 
-    // Parse XML response
-    const receiptCodeMatch = xmlResponse.match(/<ReceiptId>(.*?)<\/ReceiptId>/);
+    // Parse XML response for ticket
+    const ticketMatch = xmlResponse.match(/<ticket>(.*?)<\/ticket>/);
     const responseCodeMatch = xmlResponse.match(/<ResponseCode>(.*?)<\/ResponseCode>/);
     const messageMatch = xmlResponse.match(/<Message>(.*?)<\/Message>/);
-    const transIdMatch = xmlResponse.match(/<TransID>(.*?)<\/TransID>/);
 
-    const receiptId = receiptCodeMatch ? receiptCodeMatch[1] : null;
+    const ticket = ticketMatch ? ticketMatch[1] : null;
     const responseCode = responseCodeMatch ? responseCodeMatch[1] : null;
     const message = messageMatch ? messageMatch[1] : null;
-    const transId = transIdMatch ? transIdMatch[1] : null;
 
-    if (!receiptId || parseInt(responseCode) >= 50) {
-      console.error('Moneris transaction failed:', { responseCode, message });
+    if (!ticket) {
+      console.error('Failed to get hosted page ticket:', { responseCode, message, xmlResponse });
       return Response.json({ 
-        error: 'Payment failed',
+        error: 'Failed to create payment page',
         details: { responseCode, message }
       }, { status: 500 });
     }
 
+    const hostedUrl = `https://esqa.moneris.com/HPPtoken/index.php?id=${ticket}`;
+
     // Create order record
     await base44.asServiceRole.entities.Order.create({
-      monaris_transaction_id: transId,
+      monaris_transaction_id: ticket,
       customer_email: shipping_address.email || 'customer@example.com',
       customer_name: shipping_address.name || 'Customer',
       items: products.map(p => ({
@@ -108,10 +105,9 @@ Deno.serve(async (req) => {
     });
 
     return Response.json({ 
-      transaction_id: transId,
-      receipt_id: receiptId,
-      order_id: orderId,
-      message: message
+      url: hostedUrl,
+      ticket: ticket,
+      order_id: orderId
     });
 
   } catch (error) {
