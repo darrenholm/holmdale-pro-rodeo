@@ -37,23 +37,28 @@ Deno.serve(async (req) => {
 
     // Create Moneris Gateway transaction
     const orderId = `ORDER-${Date.now()}`;
-    const transactionPayload = {
-      store_id: storeId,
-      api_token: apiToken,
-      purchase: {
-        order_id: orderId,
-        amount: total.toFixed(2),
-        crypt_type: '7',
-        description: `Order: ${products.map(p => p.name).join(', ')}`
-      }
-    };
+
+    // Build XML request for Moneris Gateway API
+    const xmlRequest = `<?xml version="1.0" encoding="UTF-8"?>
+    <request>
+    <store_id>${storeId}</store_id>
+    <api_token>${apiToken}</api_token>
+    <purchase>
+    <order_id>${orderId}</order_id>
+    <amount>${total.toFixed(2)}</amount>
+    <pan>4242424242424242</pan>
+    <expdate>2512</expdate>
+    <crypt_type>7</crypt_type>
+    <dynamic_descriptor>Holmdale Shop</dynamic_descriptor>
+    </purchase>
+    </request>`;
 
     const monerisResponse = await fetch('https://esqa.moneris.com:443/gateway2/servlet/MpgRequest', {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/xml'
       },
-      body: JSON.stringify(transactionPayload)
+      body: xmlRequest
     });
 
     if (!monerisResponse.ok) {
@@ -65,19 +70,31 @@ Deno.serve(async (req) => {
       }, { status: 500 });
     }
 
-    const monerisData = await monerisResponse.json();
+    const xmlResponse = await monerisResponse.text();
+    console.log('Moneris response:', xmlResponse);
 
-    if (!monerisData.receipt) {
-      console.error('Moneris error:', monerisData);
+    // Parse XML response
+    const receiptCodeMatch = xmlResponse.match(/<ReceiptId>(.*?)<\/ReceiptId>/);
+    const responseCodeMatch = xmlResponse.match(/<ResponseCode>(.*?)<\/ResponseCode>/);
+    const messageMatch = xmlResponse.match(/<Message>(.*?)<\/Message>/);
+    const transIdMatch = xmlResponse.match(/<TransID>(.*?)<\/TransID>/);
+
+    const receiptId = receiptCodeMatch ? receiptCodeMatch[1] : null;
+    const responseCode = responseCodeMatch ? responseCodeMatch[1] : null;
+    const message = messageMatch ? messageMatch[1] : null;
+    const transId = transIdMatch ? transIdMatch[1] : null;
+
+    if (!receiptId || parseInt(responseCode) >= 50) {
+      console.error('Moneris transaction failed:', { responseCode, message });
       return Response.json({ 
-        error: 'Failed to process transaction',
-        details: monerisData
+        error: 'Payment failed',
+        details: { responseCode, message }
       }, { status: 500 });
     }
 
     // Create order record
     await base44.asServiceRole.entities.Order.create({
-      monaris_transaction_id: monerisData.receipt.TransID,
+      monaris_transaction_id: transId,
       customer_email: shipping_address.email || 'customer@example.com',
       customer_name: shipping_address.name || 'Customer',
       items: products.map(p => ({
@@ -91,9 +108,10 @@ Deno.serve(async (req) => {
     });
 
     return Response.json({ 
-      transaction_id: monerisData.receipt.TransID,
+      transaction_id: transId,
+      receipt_id: receiptId,
       order_id: orderId,
-      receipt: monerisData.receipt
+      message: message
     });
 
   } catch (error) {
