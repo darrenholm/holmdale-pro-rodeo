@@ -1,7 +1,4 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.6';
-import Stripe from 'npm:stripe@17.5.0';
-
-const stripe = new Stripe(Deno.env.get('STRIPE_SECRET_KEY'));
 
 Deno.serve(async (req) => {
   try {
@@ -26,53 +23,73 @@ Deno.serve(async (req) => {
     // Calculate total
     const subtotal = products.reduce((sum, p) => sum + p.price, 0);
     const shipping = 5.00;
+    const total = subtotal + shipping;
 
-    // Create line items for Stripe
-    const lineItems = products.map(p => ({
-      price_data: {
-        currency: 'cad',
-        product_data: {
-          name: p.name,
-          description: p.description || ''
-        },
-        unit_amount: Math.round(p.price * 100)
-      },
-      quantity: 1
-    }));
+    // Get Moneris credentials
+    const checkoutId = Deno.env.get('MONERIS_CHECKOUT_ID');
+    const apiToken = Deno.env.get('MONERIS_API_TOKEN');
+    const storeId = Deno.env.get('MONERIS_STORE_ID');
 
-    // Add shipping as line item
-    lineItems.push({
-      price_data: {
-        currency: 'cad',
-        product_data: {
-          name: 'Shipping'
-        },
-        unit_amount: Math.round(shipping * 100)
-      },
-      quantity: 1
-    });
+    if (!checkoutId || !apiToken || !storeId) {
+      return Response.json({ 
+        error: 'Moneris credentials not configured' 
+      }, { status: 500 });
+    }
 
-    // Create Stripe checkout session
-    const session = await stripe.checkout.sessions.create({
-      payment_method_types: ['card'],
-      line_items: lineItems,
-      mode: 'payment',
-      success_url: `${Deno.env.get('BASE44_APP_URL')}/CheckoutSuccess?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${Deno.env.get('BASE44_APP_URL')}/Shop`,
-      customer_email: shipping_address.email || undefined,
-      shipping_address_collection: {
-        allowed_countries: ['CA', 'US']
-      },
-      metadata: {
-        base44_app_id: Deno.env.get('BASE44_APP_ID'),
-        type: 'merchandise',
-        items: JSON.stringify(products.map(p => ({ id: p.id, name: p.name, price: p.price })))
+    const orderId = `ORDER-${Date.now()}`;
+
+    // Create Moneris Checkout ticket
+    const checkoutData = {
+      store_id: storeId,
+      api_token: apiToken,
+      checkout_id: checkoutId,
+      txn_total: total.toFixed(2),
+      environment: 'qa',
+      action: 'preload',
+      order_no: orderId,
+      cust_id: shipping_address.email || 'customer@example.com',
+      dynamic_descriptor: 'Holmdale Shop',
+      contact_details: {
+        email: shipping_address.email || 'customer@example.com',
+        first_name: shipping_address.name?.split(' ')[0] || 'Customer',
+        last_name: shipping_address.name?.split(' ').slice(1).join(' ') || ''
       }
+    };
+
+    console.log('Creating Moneris Checkout for shop:', orderId);
+    const monerisResponse = await fetch('https://gatewayt.moneris.com/chktv2/request/request.php', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(checkoutData)
     });
+
+    if (!monerisResponse.ok) {
+      const errorData = await monerisResponse.text();
+      console.error('Moneris Checkout error:', errorData);
+      return Response.json({ 
+        error: 'Failed to create checkout',
+        details: errorData
+      }, { status: 500 });
+    }
+
+    const result = await monerisResponse.json();
+    console.log('Moneris response:', result);
+
+    if (!result.response || !result.response.success || !result.response.ticket) {
+      console.error('Failed to get checkout ticket:', result);
+      return Response.json({ 
+        error: 'Failed to create payment page',
+        details: result
+      }, { status: 500 });
+    }
+
+    const checkoutUrl = `https://gatewayt.moneris.com/chkt/index.php?ticket=${result.response.ticket}`;
 
     // Create order record
     await base44.asServiceRole.entities.Order.create({
-      stripe_session_id: session.id,
+      monaris_transaction_id: result.response.ticket,
       customer_email: shipping_address.email || 'customer@example.com',
       customer_name: shipping_address.name || 'Customer',
       items: products.map(p => ({
@@ -80,16 +97,20 @@ Deno.serve(async (req) => {
         name: p.name,
         price: p.price
       })),
-      total_amount: subtotal + shipping,
+      total_amount: total,
       shipping_address: shipping_address,
       status: 'pending'
     });
 
-    console.log('Stripe checkout session created:', session.id);
-    return Response.json({ url: session.url });
+    console.log('Moneris checkout created:', { orderId, ticket: result.response.ticket, checkoutUrl });
+    return Response.json({ 
+      url: checkoutUrl,
+      ticket: result.response.ticket,
+      order_id: orderId
+    });
 
   } catch (error) {
-    console.error('Stripe checkout error:', error);
+    console.error('Moneris checkout error:', error);
     return Response.json({ 
       error: error.message || 'Failed to create checkout session' 
     }, { status: 500 });

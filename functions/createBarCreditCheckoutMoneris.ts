@@ -1,7 +1,4 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.6';
-import Stripe from 'npm:stripe@17.5.0';
-
-const stripe = new Stripe(Deno.env.get('STRIPE_SECRET_KEY'));
 
 Deno.serve(async (req) => {
   try {
@@ -29,42 +26,77 @@ Deno.serve(async (req) => {
       confirmation_code: confirmation_code
     });
 
-    // Create Stripe checkout session
-    const session = await stripe.checkout.sessions.create({
-      payment_method_types: ['card'],
-      line_items: [{
-        price_data: {
-          currency: 'cad',
-          product_data: {
-            name: 'Bar Credits',
-            description: `${quantity} bar credits`
-          },
-          unit_amount: Math.round(price_per_credit * 100)
-        },
-        quantity: parseInt(quantity)
-      }],
-      mode: 'payment',
-      success_url: `${Deno.env.get('BASE44_APP_URL')}/CheckoutSuccess?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${Deno.env.get('BASE44_APP_URL')}/BuyBarCredits`,
-      customer_email: customer_info.email,
-      metadata: {
-        base44_app_id: Deno.env.get('BASE44_APP_ID'),
-        type: 'bar_credit',
-        bar_credit_id: barCredit.id,
-        confirmation_code: confirmation_code
+    // Get Moneris credentials
+    const checkoutId = Deno.env.get('MONERIS_CHECKOUT_ID');
+    const apiToken = Deno.env.get('MONERIS_API_TOKEN');
+    const storeId = Deno.env.get('MONERIS_STORE_ID');
+
+    if (!checkoutId || !apiToken || !storeId) {
+      return Response.json({ error: 'Moneris credentials not configured' }, { status: 500 });
+    }
+
+    const orderId = `BAR-${Date.now()}`;
+
+    // Create Moneris Checkout ticket
+    const checkoutData = {
+      store_id: storeId,
+      api_token: apiToken,
+      checkout_id: checkoutId,
+      txn_total: total_price.toFixed(2),
+      environment: 'qa',
+      action: 'preload',
+      order_no: orderId,
+      cust_id: customer_info.email,
+      dynamic_descriptor: 'Bar Credits',
+      contact_details: {
+        email: customer_info.email,
+        first_name: customer_info.name.split(' ')[0] || customer_info.name,
+        last_name: customer_info.name.split(' ').slice(1).join(' ') || ''
       }
+    };
+
+    console.log('Creating Moneris Checkout for bar credits:', orderId);
+    const monerisResponse = await fetch('https://gatewayt.moneris.com/chktv2/request/request.php', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(checkoutData)
     });
 
-    // Update bar credit with Stripe session ID
+    if (!monerisResponse.ok) {
+      const errorData = await monerisResponse.text();
+      console.error('Moneris Checkout error:', errorData);
+      return Response.json({ error: 'Failed to create checkout', details: errorData }, { status: 500 });
+    }
+
+    const result = await monerisResponse.json();
+    console.log('Moneris response:', result);
+
+    if (!result.response || !result.response.success || !result.response.ticket) {
+      console.error('Failed to get checkout ticket:', result);
+      return Response.json({ 
+        error: 'Failed to create payment page', 
+        details: result 
+      }, { status: 500 });
+    }
+
+    const checkoutUrl = `https://gatewayt.moneris.com/chkt/index.php?ticket=${result.response.ticket}`;
+    
+    // Update bar credit with Moneris ticket
     await base44.asServiceRole.entities.BarCredit.update(barCredit.id, {
-      stripe_session_id: session.id
+      monaris_transaction_id: result.response.ticket
     });
 
-    console.log('Stripe checkout session created:', session.id);
-    return Response.json({ url: session.url });
+    console.log('Moneris checkout created for bar credits:', { orderId, ticket: result.response.ticket, checkoutUrl });
+    return Response.json({ 
+      url: checkoutUrl,
+      ticket: result.response.ticket,
+      order_id: orderId
+    });
 
   } catch (error) {
-    console.error('Stripe bar credit checkout error:', error);
+    console.error('Moneris bar credit checkout error:', error);
     return Response.json({ error: error.message }, { status: 500 });
   }
 });
