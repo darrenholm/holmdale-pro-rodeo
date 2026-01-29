@@ -52,8 +52,7 @@ Deno.serve(async (req) => {
     };
 
     console.log('Creating Moneris Checkout for:', orderId);
-    console.log('Moneris request data:', JSON.stringify(checkoutData, null, 2));
-    const monerisResponse = await fetch('https://gateway.moneris.com/chktv2/request/request.php', {
+    const monerisResponse = await fetch('https://gateway.moneris.com/chkt/request/request.php', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
