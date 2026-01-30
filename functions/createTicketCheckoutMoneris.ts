@@ -43,6 +43,12 @@ Deno.serve(async (req) => {
       api_token: apiToken,
       checkout_id: checkoutId,
       txn_total: total.toFixed(2),
+      cart_subtotal: subtotal.toFixed(2),
+      tax: {
+        amount: hst.toFixed(2),
+        description: 'HST',
+        rate: '13.00'
+      },
       environment: 'prod',
       action: 'preload',
       order_no: orderId,
