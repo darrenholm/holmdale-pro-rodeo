@@ -25,6 +25,19 @@ export default function BuyBarCredits() {
   const monerisCheckoutRef = useRef(null);
 
   useEffect(() => {
+    // Reset state when component mounts
+    return () => {
+      try {
+        if (monerisCheckoutRef.current?.closeCheckout) {
+          monerisCheckoutRef.current.closeCheckout();
+        }
+      } catch (e) {
+        console.error('Error closing checkout:', e);
+      }
+    };
+  }, []);
+
+  useEffect(() => {
     // Load Moneris Checkout script
     if (!document.getElementById('moneris-checkout-script')) {
       const script = document.createElement('script');
@@ -33,18 +46,6 @@ export default function BuyBarCredits() {
       script.async = true;
       document.body.appendChild(script);
     }
-
-    return () => {
-      try {
-        if (monerisCheckoutRef.current && typeof monerisCheckoutRef.current.closeCheckout === 'function') {
-          monerisCheckoutRef.current.closeCheckout();
-        }
-      } catch (e) {
-        // Ignore cleanup errors
-      }
-      setShowCheckout(false);
-      setCheckoutTicket(null);
-    };
   }, []);
 
   useEffect(() => {
