@@ -54,16 +54,20 @@ export default function Shop() {
   const calculateShipping = async (postalCode, country) => {
     try {
       const response = await base44.functions.invoke('getShippingRates', {
-        postal_code: postalCode,
-        country: country,
-        items: cartItems.map(item => ({
+        destination: { postal_code: postalCode, country },
+        packages: cartItems.map(item => ({
           weight: item.weight || 0.5,
           length: item.length || 10,
           width: item.width || 10,
           height: item.height || 10
         }))
       });
-      return response.data?.shipping_cost || 0;
+      // Get cheapest rate from the response
+      const rates = response.data?.rates || [];
+      if (Array.isArray(rates) && rates.length > 0) {
+        return parseFloat(rates[0].rate) || 15;
+      }
+      return 15; // Default fallback
     } catch (error) {
       console.error('Shipping calculation error:', error);
       return 15; // Default shipping cost

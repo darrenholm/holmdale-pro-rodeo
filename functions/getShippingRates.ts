@@ -42,7 +42,14 @@ Deno.serve(async (req) => {
     }
 
     const rates = await response.json();
-    return Response.json({ rates });
+    
+    // Extract and sort rates by price (cheapest first)
+    const sortedRates = Array.isArray(rates) ? rates.sort((a, b) => parseFloat(a.rate) - parseFloat(b.rate)) : [];
+    
+    return Response.json({ 
+      rates: sortedRates,
+      shipping_cost: sortedRates.length > 0 ? sortedRates[0].rate : 15
+    });
   } catch (error) {
     console.error('Shipping rates error:', error);
     return Response.json({ error: error.message }, { status: 500 });
