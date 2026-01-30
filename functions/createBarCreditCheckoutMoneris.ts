@@ -43,7 +43,7 @@ Deno.serve(async (req) => {
       api_token: apiToken,
       checkout_id: checkoutId,
       txn_total: total_price.toFixed(2),
-      environment: 'qa',
+      environment: 'prod',
       action: 'preload',
       order_no: orderId,
       cust_id: customer_info.email,
@@ -56,7 +56,7 @@ Deno.serve(async (req) => {
     };
 
     console.log('Creating Moneris Checkout for bar credits:', orderId);
-    const monerisResponse = await fetch('https://gatewayt.moneris.com/chkt/request/request.php', {
+    const monerisResponse = await fetch('https://gateway.moneris.com/chkt/request/request.php', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
@@ -81,7 +81,7 @@ Deno.serve(async (req) => {
       }, { status: 500 });
     }
 
-    const checkoutUrl = `https://gatewayt.moneris.com/chkt/index.php?ticket=${result.response.ticket}`;
+    const checkoutUrl = `https://gateway.moneris.com/chkt/index.php?ticket=${result.response.ticket}`;
     
     // Update bar credit with Moneris ticket
     await base44.asServiceRole.entities.BarCredit.update(barCredit.id, {
