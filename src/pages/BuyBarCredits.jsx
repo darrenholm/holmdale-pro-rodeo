@@ -143,7 +143,7 @@ export default function BuyBarCredits() {
                     onClick={() => setQuantity(quantity + 1)}
                     variant="outline"
                     size="icon"
-                    className="border-stone-700 text-white hover:bg-stone-800 h-12 w-12"
+                    className="bg-stone-800 border-stone-700 text-white hover:bg-stone-700 h-12 w-12"
                   >
                     <Plus className="w-5 h-5" />
                   </Button>
