@@ -1,11 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useMutation } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { CreditCard, Plus, Minus, Check } from 'lucide-react';
+import { CreditCard, Plus, Minus, Check, Loader2 } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 const PRICE_PER_CREDIT = 7; // $7 per credit
@@ -19,19 +19,62 @@ export default function BuyBarCredits() {
   });
   const [orderComplete, setOrderComplete] = useState(false);
   const [confirmationCode, setConfirmationCode] = useState('');
+  const [showCheckout, setShowCheckout] = useState(false);
+  const [checkoutTicket, setCheckoutTicket] = useState(null);
+  const checkoutRef = useRef(null);
+  const monerisCheckoutRef = useRef(null);
 
   useEffect(() => {
-    const urlParams = new URLSearchParams(window.location.search);
-    const success = urlParams.get('success');
-    const code = urlParams.get('code');
-    
-    if (success === 'true' && code) {
-      setOrderComplete(true);
-      setConfirmationCode(code);
-      // Clear URL params
-      window.history.replaceState({}, '', window.location.pathname);
+    // Load Moneris Checkout script
+    if (!document.getElementById('moneris-checkout-script')) {
+      const script = document.createElement('script');
+      script.id = 'moneris-checkout-script';
+      script.src = 'https://gateway.moneris.com/chkt/js/chkt_v1.00.js';
+      script.async = true;
+      document.body.appendChild(script);
     }
+
+    return () => {
+      if (monerisCheckoutRef.current && typeof monerisCheckoutRef.current.closeCheckout === 'function') {
+        monerisCheckoutRef.current.closeCheckout();
+      }
+    };
   }, []);
+
+  useEffect(() => {
+    if (showCheckout && checkoutTicket && typeof window.monerisCheckout !== 'undefined') {
+      const myCheckout = new window.monerisCheckout();
+      monerisCheckoutRef.current = myCheckout;
+
+      myCheckout.setMode('prod');
+      myCheckout.setCheckoutDiv('monerisCheckout');
+
+      myCheckout.setCallback('page_loaded', () => {
+        console.log('Moneris checkout loaded');
+      });
+
+      myCheckout.setCallback('cancel_transaction', () => {
+        console.log('Transaction cancelled');
+        setShowCheckout(false);
+        setCheckoutTicket(null);
+      });
+
+      myCheckout.setCallback('error_event', (error) => {
+        console.error('Moneris error:', error);
+        alert('Payment error occurred');
+        setShowCheckout(false);
+        setCheckoutTicket(null);
+      });
+
+      myCheckout.setCallback('payment_complete', async (data) => {
+        console.log('Payment complete:', data);
+        setOrderComplete(true);
+        setShowCheckout(false);
+      });
+
+      myCheckout.startCheckout(checkoutTicket);
+    }
+  }, [showCheckout, checkoutTicket]);
 
   const checkoutMutation = useMutation({
     mutationFn: async (data) => {
@@ -44,8 +87,9 @@ export default function BuyBarCredits() {
       return response.data;
     },
     onSuccess: (data) => {
-      if (data.url) {
-        window.open(data.url, '_self');
+      if (data.ticket) {
+        setCheckoutTicket(data.ticket);
+        setShowCheckout(true);
       }
     },
     onError: (error) => {
@@ -69,6 +113,23 @@ export default function BuyBarCredits() {
   };
 
   const total = quantity * PRICE_PER_CREDIT;
+
+  if (showCheckout) {
+    return (
+      <div className="min-h-screen bg-stone-950 p-4 pt-20">
+        <div className="max-w-4xl mx-auto">
+          <Card className="bg-stone-900 border-stone-800">
+            <CardHeader>
+              <CardTitle className="text-white">Complete Your Purchase</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div id="monerisCheckout" ref={checkoutRef}></div>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+    );
+  }
 
   if (orderComplete) {
     return (
@@ -231,7 +292,14 @@ export default function BuyBarCredits() {
                   className="w-full bg-green-600 hover:bg-green-700 text-white py-6 text-lg"
                   disabled={checkoutMutation.isPending}
                 >
-                  {checkoutMutation.isPending ? 'Processing...' : `Pay $${total.toFixed(2)}`}
+                  {checkoutMutation.isPending ? (
+                    <>
+                      <Loader2 className="w-5 h-5 mr-2 animate-spin" />
+                      Redirecting to Checkout...
+                    </>
+                  ) : (
+                    `Pay $${total.toFixed(2)}`
+                  )}
                 </Button>
 
                 <p className="text-xs text-gray-500 text-center">
