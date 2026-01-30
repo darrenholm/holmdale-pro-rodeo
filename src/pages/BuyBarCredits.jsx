@@ -156,8 +156,8 @@ export default function BuyBarCredits() {
                       onClick={() => setQuantity(preset)}
                       variant={quantity === preset ? "default" : "outline"}
                       className={quantity === preset 
-                        ? "bg-green-600 hover:bg-green-700" 
-                        : "border-stone-700 text-white hover:bg-stone-800"
+                        ? "bg-green-600 hover:bg-green-700 text-white" 
+                        : "bg-stone-800 border-stone-700 text-white hover:bg-stone-700"
                       }
                     >
                       {preset}
