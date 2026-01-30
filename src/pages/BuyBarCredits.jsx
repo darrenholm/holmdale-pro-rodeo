@@ -22,16 +22,30 @@ export default function BuyBarCredits() {
 
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
-    const success = urlParams.get('success');
     const code = urlParams.get('code');
     
-    if (success === 'true' && code) {
-      setOrderComplete(true);
-      setConfirmationCode(code);
+    if (code) {
+      // Check payment status
+      checkPaymentStatus(code);
       // Clear URL params
       window.history.replaceState({}, '', window.location.pathname);
     }
   }, []);
+
+  const checkPaymentStatus = async (code) => {
+    try {
+      const response = await base44.functions.invoke('checkBarCreditPaymentStatus', {
+        confirmation_code: code
+      });
+      
+      if (response.data.status === 'confirmed') {
+        setOrderComplete(true);
+        setConfirmationCode(code);
+      }
+    } catch (error) {
+      console.error('Error checking payment status:', error);
+    }
+  };
 
   const checkoutMutation = useMutation({
     mutationFn: async (data) => {
