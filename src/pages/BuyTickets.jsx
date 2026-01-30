@@ -51,6 +51,19 @@ export default function BuyTickets() {
     const [checkoutTicket, setCheckoutTicket] = useState(null);
     const checkoutRef = useRef(null);
     const monerisCheckoutRef = useRef(null);
+
+    useEffect(() => {
+        // Cleanup on unmount
+        return () => {
+            try {
+                if (monerisCheckoutRef.current?.closeCheckout) {
+                    monerisCheckoutRef.current.closeCheckout();
+                }
+            } catch (e) {
+                console.error('Error closing checkout:', e);
+            }
+        };
+    }, []);
     
     const { data: event, isLoading } = useQuery({
         queryKey: ['event', eventId],
@@ -70,12 +83,6 @@ export default function BuyTickets() {
             script.async = true;
             document.body.appendChild(script);
         }
-
-        return () => {
-            if (monerisCheckoutRef.current && typeof monerisCheckoutRef.current.closeCheckout === 'function') {
-                monerisCheckoutRef.current.closeCheckout();
-            }
-        };
     }, []);
 
     useEffect(() => {
