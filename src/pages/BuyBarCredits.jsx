@@ -107,14 +107,14 @@ export default function BuyBarCredits() {
 
     checkoutMutation.mutate({
       quantity,
-      price_per_credit: PRICE_PER_CREDIT,
+      price_per_credit: subtotal,
       customer_info: customerInfo
     });
   };
 
-  const subtotal = quantity * PRICE_PER_CREDIT;
-  const hst = subtotal * 0.13;
-  const total = subtotal + hst;
+  const total = quantity * PRICE_PER_CREDIT;
+  const subtotal = total / 1.13;
+  const hst = total - subtotal;
 
   if (showCheckout) {
     return (
