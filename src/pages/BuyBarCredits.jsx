@@ -205,9 +205,9 @@ export default function BuyBarCredits() {
                   >
                     <Minus className="w-5 h-5" />
                   </Button>
-                  <div className="text-center">
-                    <div className="text-5xl font-bold text-white">{quantity}</div>
-                    <div className="text-sm text-gray-400">Credits</div>
+                  <div className="text-center bg-stone-800 rounded-lg p-6 min-w-32">
+                    <div className="text-5xl font-bold text-green-500">{quantity}</div>
+                    <div className="text-sm text-gray-400 mt-2">Credits</div>
                   </div>
                   <Button
                     onClick={() => setQuantity(quantity + 1)}
