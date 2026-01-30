@@ -35,9 +35,15 @@ export default function BuyBarCredits() {
     }
 
     return () => {
-      if (monerisCheckoutRef.current && typeof monerisCheckoutRef.current.closeCheckout === 'function') {
-        monerisCheckoutRef.current.closeCheckout();
+      try {
+        if (monerisCheckoutRef.current && typeof monerisCheckoutRef.current.closeCheckout === 'function') {
+          monerisCheckoutRef.current.closeCheckout();
+        }
+      } catch (e) {
+        // Ignore cleanup errors
       }
+      setShowCheckout(false);
+      setCheckoutTicket(null);
     };
   }, []);
 
