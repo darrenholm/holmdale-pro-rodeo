@@ -13,6 +13,7 @@ import { ShoppingBag, Loader2, MapPin } from 'lucide-react';
 export default function Shop() {
   const [cartItems, setCartItems] = useState([]);
   const [isCheckingOut, setIsCheckingOut] = useState(false);
+  const [showOrderReview, setShowOrderReview] = useState(false);
   const [showAddressModal, setShowAddressModal] = useState(false);
   const [showCheckout, setShowCheckout] = useState(false);
   const [checkoutTicket, setCheckoutTicket] = useState(null);
@@ -125,6 +126,11 @@ export default function Shop() {
       return;
     }
 
+    setShowOrderReview(true);
+  };
+
+  const handleApproveOrder = () => {
+    setShowOrderReview(false);
     setShowAddressModal(true);
   };
 
@@ -301,6 +307,69 @@ export default function Shop() {
             </Card>
           </motion.div>
         </div>
+
+        {/* Order Review Modal */}
+        <Dialog open={showOrderReview} onOpenChange={setShowOrderReview}>
+          <DialogContent className="bg-stone-900 border-stone-800 text-white max-w-md">
+            <DialogHeader>
+              <DialogTitle>Review Your Order</DialogTitle>
+            </DialogHeader>
+            <div className="space-y-6 mt-4">
+              <div className="space-y-3 max-h-64 overflow-y-auto pb-4 border-b border-stone-700">
+                {cartItems.map((item, idx) => (
+                  <div key={idx} className="flex justify-between items-start">
+                    <div>
+                      <p className="text-white font-medium">{item.name}</p>
+                      {(item.selectedSize || item.selectedColor) && (
+                        <p className="text-xs text-stone-400 mt-1">
+                          {item.selectedSize && <span>Size: {item.selectedSize}</span>}
+                          {item.selectedSize && item.selectedColor && <span> • </span>}
+                          {item.selectedColor && <span>Color: {item.selectedColor}</span>}
+                        </p>
+                      )}
+                    </div>
+                    <p className="text-white font-semibold">${item.price.toFixed(2)}</p>
+                  </div>
+                ))}
+              </div>
+
+              <div className="space-y-2">
+                <div className="flex justify-between text-sm">
+                  <span className="text-stone-400">Subtotal</span>
+                  <span className="text-white">${subtotal.toFixed(2)}</span>
+                </div>
+                <div className="flex justify-between text-sm">
+                  <span className="text-stone-400">Shipping</span>
+                  <span className="text-white">TBD (calculated at checkout)</span>
+                </div>
+                <div className="flex justify-between text-sm">
+                  <span className="text-stone-400">Tax (13%)</span>
+                  <span className="text-white">TBD</span>
+                </div>
+                <div className="flex justify-between pt-2 border-t border-stone-700">
+                  <span className="text-stone-300 font-semibold">Estimated Total</span>
+                  <span className="text-lg font-bold text-green-500">${(subtotal + 15 + (subtotal + 15) * 0.13).toFixed(2)}+</span>
+                </div>
+              </div>
+
+              <div className="flex gap-3">
+                <Button
+                  onClick={() => setShowOrderReview(false)}
+                  variant="outline"
+                  className="flex-1 border-stone-700 text-white hover:bg-stone-800"
+                >
+                  Back to Cart
+                </Button>
+                <Button
+                  onClick={handleApproveOrder}
+                  className="flex-1 bg-green-500 hover:bg-green-600 text-stone-900 font-semibold"
+                >
+                  Approve & Continue
+                </Button>
+              </div>
+            </div>
+          </DialogContent>
+        </Dialog>
 
         {/* Address Modal */}
         <Dialog open={showAddressModal} onOpenChange={setShowAddressModal}>
