@@ -499,6 +499,14 @@ export default function BuyTickets() {
                                         <span>Quantity</span>
                                         <span>× {quantity}</span>
                                     </div>
+                                    <div className="flex justify-between text-stone-300">
+                                        <span>Subtotal</span>
+                                        <span>${subtotal.toFixed(2)}</span>
+                                    </div>
+                                    <div className="flex justify-between text-stone-300">
+                                        <span>HST (13%)</span>
+                                        <span>${hst.toFixed(2)}</span>
+                                    </div>
                                     <div className="border-t border-stone-800 pt-4">
                                         <div className="flex justify-between text-lg font-bold">
                                             <span className="text-white">Total</span>
