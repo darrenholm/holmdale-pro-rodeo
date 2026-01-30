@@ -126,12 +126,34 @@ export default function Shop() {
       return;
     }
 
-    setShowOrderReview(true);
+    setShowAddressModal(true);
   };
 
-  const handleApproveOrder = () => {
+  const handleApproveOrder = async () => {
     setShowOrderReview(false);
-    setShowAddressModal(true);
+    try {
+      const response = await base44.functions.invoke('createMonarisCheckout', {
+        items: cartItems.map(item => ({
+          product_id: item.id,
+          quantity: 1
+        })),
+        shipping_address: shippingAddress,
+        shipping_cost: shippingCost
+      });
+
+      if (response.data?.ticket) {
+        setCheckoutTicket(response.data.ticket);
+        setShowCheckout(true);
+        setShowAddressModal(false);
+      } else {
+        alert('Failed to create checkout session');
+      }
+    } catch (error) {
+      console.error('Checkout error:', error);
+      alert(error.response?.data?.error || 'Checkout failed. Please try again.');
+    } finally {
+      setIsCheckingOut(false);
+    }
   };
 
   const handleCheckout = async () => {
@@ -145,26 +167,11 @@ export default function Shop() {
       // Calculate shipping based on postal code
       const shipping = await calculateShipping(shippingAddress.postal_code, shippingAddress.country);
       setShippingCost(shipping);
-
-      const response = await base44.functions.invoke('createMonarisCheckout', {
-        items: cartItems.map(item => ({
-          product_id: item.id,
-          quantity: 1
-        })),
-        shipping_address: shippingAddress,
-        shipping_cost: shipping
-      });
-
-      if (response.data?.ticket) {
-        setCheckoutTicket(response.data.ticket);
-        setShowCheckout(true);
-        setShowAddressModal(false);
-      } else {
-        alert('Failed to create checkout session');
-      }
+      setShowAddressModal(false);
+      setShowOrderReview(true);
     } catch (error) {
       console.error('Checkout error:', error);
-      alert(error.response?.data?.error || 'Checkout failed. Please try again.');
+      alert('Failed to calculate shipping. Please try again.');
     } finally {
       setIsCheckingOut(false);
     }
@@ -340,31 +347,42 @@ export default function Shop() {
                 </div>
                 <div className="flex justify-between text-sm">
                   <span className="text-stone-400">Shipping</span>
-                  <span className="text-white">TBD (calculated at checkout)</span>
+                  <span className="text-white">${shippingCost.toFixed(2)}</span>
                 </div>
                 <div className="flex justify-between text-sm">
                   <span className="text-stone-400">Tax (13%)</span>
-                  <span className="text-white">TBD</span>
+                  <span className="text-white">${hst.toFixed(2)}</span>
                 </div>
                 <div className="flex justify-between pt-2 border-t border-stone-700">
-                  <span className="text-stone-300 font-semibold">Estimated Total</span>
-                  <span className="text-lg font-bold text-green-500">${(subtotal + 15 + (subtotal + 15) * 0.13).toFixed(2)}+</span>
+                  <span className="text-stone-300 font-semibold">Total</span>
+                  <span className="text-lg font-bold text-green-500">${cartTotal.toFixed(2)}</span>
                 </div>
               </div>
 
               <div className="flex gap-3">
                 <Button
-                  onClick={() => setShowOrderReview(false)}
+                  onClick={() => {
+                    setShowOrderReview(false);
+                    setShowAddressModal(true);
+                  }}
                   variant="outline"
                   className="flex-1 border-stone-700 text-white hover:bg-stone-800"
                 >
-                  Back to Cart
+                  Back
                 </Button>
                 <Button
                   onClick={handleApproveOrder}
+                  disabled={isCheckingOut}
                   className="flex-1 bg-green-500 hover:bg-green-600 text-stone-900 font-semibold"
                 >
-                  Approve & Continue
+                  {isCheckingOut ? (
+                    <>
+                      <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                      Processing...
+                    </>
+                  ) : (
+                    'Approve & Pay'
+                  )}
                 </Button>
               </div>
             </div>
