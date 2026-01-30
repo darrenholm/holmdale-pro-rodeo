@@ -16,6 +16,7 @@ export default function Shop() {
   const [showAddressModal, setShowAddressModal] = useState(false);
   const [showCheckout, setShowCheckout] = useState(false);
   const [checkoutTicket, setCheckoutTicket] = useState(null);
+  const [shippingCost, setShippingCost] = useState(0);
   const [shippingAddress, setShippingAddress] = useState({
     postal_code: '',
     country: 'CA'
@@ -40,11 +41,34 @@ export default function Shop() {
     }
 
     return () => {
-      if (monerisCheckoutRef.current && typeof monerisCheckoutRef.current.closeCheckout === 'function') {
-        monerisCheckoutRef.current.closeCheckout();
+      try {
+        if (monerisCheckoutRef.current?.closeCheckout) {
+          monerisCheckoutRef.current.closeCheckout();
+        }
+      } catch (e) {
+        console.error('Error closing checkout:', e);
       }
     };
   }, []);
+
+  const calculateShipping = async (postalCode, country) => {
+    try {
+      const response = await base44.functions.invoke('getShippingRates', {
+        postal_code: postalCode,
+        country: country,
+        items: cartItems.map(item => ({
+          weight: item.weight || 0.5,
+          length: item.length || 10,
+          width: item.width || 10,
+          height: item.height || 10
+        }))
+      });
+      return response.data?.shipping_cost || 0;
+    } catch (error) {
+      console.error('Shipping calculation error:', error);
+      return 15; // Default shipping cost
+    }
+  };
 
   useEffect(() => {
     if (showCheckout && checkoutTicket && typeof window.monerisCheckout !== 'undefined') {
@@ -88,8 +112,8 @@ export default function Shop() {
   };
 
   const subtotal = cartItems.reduce((sum, item) => sum + item.price, 0);
-  const hst = subtotal * 0.13;
-  const cartTotal = subtotal + hst;
+  const hst = (subtotal + shippingCost) * 0.13;
+  const cartTotal = subtotal + shippingCost + hst;
 
   const handleProceedToCheckout = () => {
     if (cartItems.length === 0) return;
@@ -111,12 +135,17 @@ export default function Shop() {
 
     setIsCheckingOut(true);
     try {
+      // Calculate shipping based on postal code
+      const shipping = await calculateShipping(shippingAddress.postal_code, shippingAddress.country);
+      setShippingCost(shipping);
+
       const response = await base44.functions.invoke('createMonarisCheckout', {
         items: cartItems.map(item => ({
           product_id: item.id,
           quantity: 1
         })),
-        shipping_address: shippingAddress
+        shipping_address: shippingAddress,
+        shipping_cost: shipping
       });
 
       if (response.data?.ticket) {
@@ -232,20 +261,26 @@ export default function Shop() {
                 </div>
 
                 <div className="pt-4 border-t border-stone-700 space-y-2">
-                  <div className="flex justify-between text-sm">
-                    <span className="text-stone-400">Subtotal</span>
-                    <span className="text-white">${subtotal.toFixed(2)}</span>
-                  </div>
-                  <div className="flex justify-between text-sm">
-                    <span className="text-stone-400">HST (13%)</span>
-                    <span className="text-white">${hst.toFixed(2)}</span>
-                  </div>
-                  <div className="flex justify-between mb-6 pt-2 border-t border-stone-700">
-                    <span className="text-stone-300 font-semibold">Total</span>
-                    <span className="text-2xl font-bold text-green-500">
-                      ${cartTotal.toFixed(2)}
-                    </span>
-                  </div>
+                   <div className="flex justify-between text-sm">
+                     <span className="text-stone-400">Subtotal</span>
+                     <span className="text-white">${subtotal.toFixed(2)}</span>
+                   </div>
+                   {shippingCost > 0 && (
+                     <div className="flex justify-between text-sm">
+                       <span className="text-stone-400">Shipping</span>
+                       <span className="text-white">${shippingCost.toFixed(2)}</span>
+                     </div>
+                   )}
+                   <div className="flex justify-between text-sm">
+                     <span className="text-stone-400">HST (13%)</span>
+                     <span className="text-white">${hst.toFixed(2)}</span>
+                   </div>
+                   <div className="flex justify-between mb-6 pt-2 border-t border-stone-700">
+                     <span className="text-stone-300 font-semibold">Total</span>
+                     <span className="text-2xl font-bold text-green-500">
+                       ${cartTotal.toFixed(2)}
+                     </span>
+                   </div>
 
                   <Button
                     onClick={handleProceedToCheckout}
