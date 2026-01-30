@@ -62,12 +62,9 @@ export default function Shop() {
           height: item.height || 10
         }))
       });
-      // Get cheapest rate from the response
-      const rates = response.data?.rates || [];
-      if (Array.isArray(rates) && rates.length > 0) {
-        return parseFloat(rates[0].rate) || 15;
-      }
-      return 15; // Default fallback
+      // Get shipping cost from response
+      const shippingCost = response.data?.shipping_cost || 15;
+      return parseFloat(shippingCost);
     } catch (error) {
       console.error('Shipping calculation error:', error);
       return 15; // Default shipping cost

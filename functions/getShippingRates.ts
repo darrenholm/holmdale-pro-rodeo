@@ -13,6 +13,17 @@ Deno.serve(async (req) => {
     // Shiptime API authentication
     const username = Deno.env.get('SHIPTIME_USERNAME');
     const password = Deno.env.get('SHIPTIME_PASSWORD');
+
+    if (!username || !password) {
+      console.error('Shiptime credentials missing');
+      // Return default shipping cost if credentials not available
+      return Response.json({ 
+        rates: [],
+        shipping_cost: 15,
+        message: 'Using default shipping rate'
+      });
+    }
+
     const authString = btoa(`${username}:${password}`);
 
     // Get shipping rates from Shiptime
@@ -38,7 +49,12 @@ Deno.serve(async (req) => {
     if (!response.ok) {
       const errorText = await response.text();
       console.error('Shiptime API error:', errorText);
-      return Response.json({ error: 'Failed to get shipping rates' }, { status: response.status });
+      // Return default shipping cost on error
+      return Response.json({ 
+        rates: [],
+        shipping_cost: 15,
+        message: 'Using default shipping rate due to API error'
+      });
     }
 
     const rates = await response.json();
@@ -48,10 +64,14 @@ Deno.serve(async (req) => {
     
     return Response.json({ 
       rates: sortedRates,
-      shipping_cost: sortedRates.length > 0 ? sortedRates[0].rate : 15
+      shipping_cost: sortedRates.length > 0 ? parseFloat(sortedRates[0].rate) : 15
     });
   } catch (error) {
     console.error('Shipping rates error:', error);
-    return Response.json({ error: error.message }, { status: 500 });
+    // Return default shipping cost on error
+    return Response.json({ 
+      shipping_cost: 15,
+      message: 'Using default shipping rate'
+    });
   }
 });
