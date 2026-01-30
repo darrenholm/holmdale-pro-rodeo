@@ -177,6 +177,14 @@ export default function BuyBarCredits() {
                   <span className="text-gray-400">Quantity:</span>
                   <span className="text-white">{quantity}</span>
                 </div>
+                <div className="flex justify-between text-sm">
+                  <span className="text-gray-400">Subtotal:</span>
+                  <span className="text-white">${subtotal.toFixed(2)}</span>
+                </div>
+                <div className="flex justify-between text-sm">
+                  <span className="text-gray-400">HST (13%):</span>
+                  <span className="text-white">${hst.toFixed(2)}</span>
+                </div>
                 <div className="h-px bg-stone-700 my-2"></div>
                 <div className="flex justify-between">
                   <span className="text-white font-semibold">Total:</span>
