@@ -69,6 +69,8 @@ export default function BuyBarCredits() {
   };
 
   const total = quantity * PRICE_PER_CREDIT;
+  const subtotal = total / 1.13;
+  const hst = total - subtotal;
 
   if (orderComplete) {
     return (
