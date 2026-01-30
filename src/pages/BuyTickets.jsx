@@ -66,7 +66,7 @@ export default function BuyTickets() {
         if (!document.getElementById('moneris-checkout-script')) {
             const script = document.createElement('script');
             script.id = 'moneris-checkout-script';
-            script.src = 'https://gatewayt.moneris.com/chkt/js/chkt_v1.00.js';
+            script.src = 'https://gateway.moneris.com/chkt/js/chkt_v1.00.js';
             script.async = true;
             document.body.appendChild(script);
         }
