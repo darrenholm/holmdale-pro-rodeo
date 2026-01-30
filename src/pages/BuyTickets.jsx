@@ -83,7 +83,7 @@ export default function BuyTickets() {
             const myCheckout = new window.monerisCheckout();
             monerisCheckoutRef.current = myCheckout;
 
-            myCheckout.setMode('qa');
+            myCheckout.setMode('prod');
             myCheckout.setCheckoutDiv('monerisCheckout');
 
             myCheckout.setCallback('page_loaded', () => {
