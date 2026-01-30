@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
 import { base44 } from '@/api/base44Client';
 import { useQuery } from '@tanstack/react-query';
@@ -14,16 +14,74 @@ export default function Shop() {
   const [cartItems, setCartItems] = useState([]);
   const [isCheckingOut, setIsCheckingOut] = useState(false);
   const [showAddressModal, setShowAddressModal] = useState(false);
+  const [showCheckout, setShowCheckout] = useState(false);
+  const [checkoutTicket, setCheckoutTicket] = useState(null);
   const [shippingAddress, setShippingAddress] = useState({
     postal_code: '',
     country: 'CA'
   });
+  const checkoutRef = useRef(null);
+  const monerisCheckoutRef = useRef(null);
 
   const { data: products, isLoading } = useQuery({
     queryKey: ['products'],
     queryFn: () => base44.entities.Product.list(),
     initialData: [],
   });
+
+  useEffect(() => {
+    // Load Moneris Checkout script
+    if (!document.getElementById('moneris-checkout-script')) {
+      const script = document.createElement('script');
+      script.id = 'moneris-checkout-script';
+      script.src = 'https://gateway.moneris.com/chkt/js/chkt_v1.00.js';
+      script.async = true;
+      document.body.appendChild(script);
+    }
+
+    return () => {
+      if (monerisCheckoutRef.current && typeof monerisCheckoutRef.current.closeCheckout === 'function') {
+        monerisCheckoutRef.current.closeCheckout();
+      }
+    };
+  }, []);
+
+  useEffect(() => {
+    if (showCheckout && checkoutTicket && typeof window.monerisCheckout !== 'undefined') {
+      const myCheckout = new window.monerisCheckout();
+      monerisCheckoutRef.current = myCheckout;
+
+      myCheckout.setMode('prod');
+      myCheckout.setCheckoutDiv('monerisCheckout');
+
+      myCheckout.setCallback('page_loaded', () => {
+        console.log('Moneris checkout loaded');
+      });
+
+      myCheckout.setCallback('cancel_transaction', () => {
+        console.log('Transaction cancelled');
+        setShowCheckout(false);
+        setCheckoutTicket(null);
+        setShowAddressModal(false);
+      });
+
+      myCheckout.setCallback('error_event', (error) => {
+        console.error('Moneris error:', error);
+        alert('Payment error occurred');
+        setShowCheckout(false);
+        setCheckoutTicket(null);
+      });
+
+      myCheckout.setCallback('payment_complete', async (data) => {
+        console.log('Payment complete:', data);
+        setShowCheckout(false);
+        setCartItems([]);
+        window.location.href = '/checkout-success';
+      });
+
+      myCheckout.startCheckout(checkoutTicket);
+    }
+  }, [showCheckout, checkoutTicket]);
 
   const handleAddToCart = (product) => {
     setCartItems([...cartItems, product]);
@@ -59,8 +117,10 @@ export default function Shop() {
         shipping_address: shippingAddress
       });
 
-      if (response.data?.url) {
-        window.open(response.data.url, '_self');
+      if (response.data?.ticket) {
+        setCheckoutTicket(response.data.ticket);
+        setShowCheckout(true);
+        setShowAddressModal(false);
       } else {
         alert('Failed to create checkout session');
       }
@@ -71,6 +131,23 @@ export default function Shop() {
       setIsCheckingOut(false);
     }
   };
+
+  if (showCheckout) {
+    return (
+      <div className="min-h-screen bg-stone-950 pt-24 pb-20 px-6">
+        <div className="max-w-4xl mx-auto">
+          <Card className="bg-stone-900 border-stone-800">
+            <CardHeader>
+              <CardTitle className="text-white">Complete Your Purchase</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div id="monerisCheckout" ref={checkoutRef}></div>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-stone-950 pt-24 pb-20 px-6">
