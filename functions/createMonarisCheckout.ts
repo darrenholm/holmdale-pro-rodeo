@@ -44,7 +44,7 @@ Deno.serve(async (req) => {
       api_token: apiToken,
       checkout_id: checkoutId,
       txn_total: total.toFixed(2),
-      environment: 'prod',
+      environment: 'qa',
       action: 'preload',
       order_no: orderId,
       cust_id: shipping_address.email || 'customer@example.com',
@@ -57,7 +57,7 @@ Deno.serve(async (req) => {
     };
 
     console.log('Creating Moneris Checkout for shop:', orderId);
-    const monerisResponse = await fetch('https://gateway.moneris.com/chkt/request/request.php', {
+    const monerisResponse = await fetch('https://gatewayt.moneris.com/chkt/request/request.php', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
@@ -85,7 +85,7 @@ Deno.serve(async (req) => {
       }, { status: 500 });
     }
 
-    const checkoutUrl = `https://gateway.moneris.com/chkt/index.php?ticket=${result.response.ticket}`;
+    const checkoutUrl = `https://gatewayt.moneris.com/chkt/index.php?ticket=${result.response.ticket}`;
 
     // Create order record
     await base44.asServiceRole.entities.Order.create({
