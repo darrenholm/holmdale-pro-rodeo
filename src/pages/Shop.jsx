@@ -87,7 +87,9 @@ export default function Shop() {
     setCartItems([...cartItems, product]);
   };
 
-  const cartTotal = cartItems.reduce((sum, item) => sum + item.price, 0);
+  const subtotal = cartItems.reduce((sum, item) => sum + item.price, 0);
+  const hst = subtotal * 0.13;
+  const cartTotal = subtotal + hst;
 
   const handleProceedToCheckout = () => {
     if (cartItems.length === 0) return;
@@ -229,9 +231,17 @@ export default function Shop() {
                   )}
                 </div>
 
-                <div className="pt-4 border-t border-stone-700">
-                  <div className="flex justify-between mb-6">
-                    <span className="text-stone-300">Total</span>
+                <div className="pt-4 border-t border-stone-700 space-y-2">
+                  <div className="flex justify-between text-sm">
+                    <span className="text-stone-400">Subtotal</span>
+                    <span className="text-white">${subtotal.toFixed(2)}</span>
+                  </div>
+                  <div className="flex justify-between text-sm">
+                    <span className="text-stone-400">HST (13%)</span>
+                    <span className="text-white">${hst.toFixed(2)}</span>
+                  </div>
+                  <div className="flex justify-between mb-6 pt-2 border-t border-stone-700">
+                    <span className="text-stone-300 font-semibold">Total</span>
                     <span className="text-2xl font-bold text-green-500">
                       ${cartTotal.toFixed(2)}
                     </span>

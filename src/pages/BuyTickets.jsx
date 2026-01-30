@@ -145,7 +145,9 @@ export default function BuyTickets() {
     const selectedTicketType = ticketTypes.find(t => t.id === selectedType);
     const ticketPrice = event?.[selectedTicketType?.priceKey] || 0;
     const ticketAvailable = event?.[selectedTicketType?.availableKey] || 0;
-    const totalPrice = ticketPrice * quantity;
+    const subtotal = ticketPrice * quantity;
+    const hst = subtotal * 0.13;
+    const totalPrice = subtotal + hst;
     
     const handleSubmit = async (e) => {
         e.preventDefault();

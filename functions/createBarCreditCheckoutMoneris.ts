@@ -10,7 +10,9 @@ Deno.serve(async (req) => {
       return Response.json({ error: 'Missing required fields' }, { status: 400 });
     }
 
-    const total_price = quantity * price_per_credit;
+    const subtotal = quantity * price_per_credit;
+    const hst = subtotal * 0.13;
+    const total_price = subtotal + hst;
     const confirmation_code = `BAR${Date.now().toString(36).toUpperCase()}${Math.random().toString(36).substring(2, 6).toUpperCase()}`;
 
     // Create pending bar credit record

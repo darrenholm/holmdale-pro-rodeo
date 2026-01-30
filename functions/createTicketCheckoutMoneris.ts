@@ -17,10 +17,12 @@ Deno.serve(async (req) => {
       return Response.json({ error: 'Event not found' }, { status: 404 });
     }
 
-    // Calculate price
+    // Calculate price with HST
     const priceKey = ticketType === 'vip' ? 'vip_price' : 'general_price';
     const unitPrice = event[priceKey] || 0;
-    const total = unitPrice * parseInt(quantity);
+    const subtotal = unitPrice * parseInt(quantity);
+    const hst = subtotal * 0.13;
+    const total = subtotal + hst;
 
     // Get Moneris credentials
     const checkoutId = Deno.env.get('MONERIS_CHECKOUT_ID');

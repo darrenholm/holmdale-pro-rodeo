@@ -20,10 +20,11 @@ Deno.serve(async (req) => {
       products.push(product);
     }
 
-    // Calculate total
+    // Calculate total with HST
     const subtotal = products.reduce((sum, p) => sum + p.price, 0);
+    const hst = subtotal * 0.13;
     const shipping = 5.00;
-    const total = subtotal + shipping;
+    const total = subtotal + hst + shipping;
 
     // Get Moneris credentials
     const checkoutId = Deno.env.get('MONERIS_CHECKOUT_ID');
