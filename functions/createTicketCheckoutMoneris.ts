@@ -27,6 +27,8 @@ Deno.serve(async (req) => {
     const apiToken = Deno.env.get('MONERIS_API_TOKEN');
     const storeId = Deno.env.get('MONERIS_STORE_ID');
 
+    console.log('Moneris credentials:', { storeId, checkoutId, apiToken: apiToken?.substring(0, 5) + '...' });
+
     if (!checkoutId || !apiToken || !storeId) {
       return Response.json({ error: 'Moneris credentials not configured' }, { status: 500 });
     }
