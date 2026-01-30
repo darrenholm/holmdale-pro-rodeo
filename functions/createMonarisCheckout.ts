@@ -4,7 +4,7 @@ Deno.serve(async (req) => {
   try {
     const base44 = createClientFromRequest(req);
     const body = await req.json();
-    const { items, shipping_address } = body;
+    const { items, shipping_address, shipping_cost } = body;
 
     if (!items || items.length === 0) {
       return Response.json({ error: 'No items in cart' }, { status: 400 });
@@ -22,8 +22,8 @@ Deno.serve(async (req) => {
 
     // Calculate total with HST
     const subtotal = products.reduce((sum, p) => sum + p.price, 0);
-    const hst = subtotal * 0.13;
-    const shipping = 5.00;
+    const shipping = shipping_cost || 15.00;
+    const hst = (subtotal + shipping) * 0.13;
     const total = subtotal + hst + shipping;
 
     // Get Moneris credentials
