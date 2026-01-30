@@ -60,7 +60,7 @@ export default function Shop() {
       });
 
       if (response.data?.url) {
-        window.location.href = response.data.url;
+        window.open(response.data.url, '_self');
       } else {
         alert('Failed to create checkout session');
       }
