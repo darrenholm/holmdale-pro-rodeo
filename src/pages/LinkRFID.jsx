@@ -52,9 +52,31 @@ export default function LinkRFID() {
 
   useEffect(() => {
     if (step === STEP.SCAN_RFID || step === STEP.MANUAL_RFID) {
+      // Capture scanner input at document level as fallback
+      const handleGlobalKeyDown = (e) => {
+        console.log('Global keyDown:', e.key, 'code:', e.code);
+        if (e.key === 'Enter' && rfidTagId.trim()) {
+          console.log('Global Enter detected, confirming RFID:', rfidTagId);
+          setStep(STEP.CONFIRM);
+        }
+      };
+
+      const handleGlobalInput = (e) => {
+        if (e.target === rfidInputRef.current) return; // Already handled by onChange
+        console.log('Global input detected:', e);
+      };
+
+      document.addEventListener('keydown', handleGlobalKeyDown);
+      document.addEventListener('input', handleGlobalInput);
+      
       rfidInputRef.current?.focus();
+
+      return () => {
+        document.removeEventListener('keydown', handleGlobalKeyDown);
+        document.removeEventListener('input', handleGlobalInput);
+      };
     }
-  }, [step]);
+  }, [step, rfidTagId]);
 
   const startCamera = async () => {
     try {
