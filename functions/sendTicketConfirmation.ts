@@ -23,7 +23,7 @@ Deno.serve(async (req) => {
       return Response.json({ error: 'Event not found' }, { status: 404 });
     }
 
-    // Generate QR code as data URL
+    // Generate QR code as buffer
     const qrCodeData = JSON.stringify({
       confirmation_code: ticketOrder.confirmation_code,
       event_id: ticketOrder.event_id,
@@ -31,16 +31,23 @@ Deno.serve(async (req) => {
       quantity: ticketOrder.quantity
     });
     
-    const qrCodeDataUrl = await QRCode.toDataURL(qrCodeData, {
+    const qrCodeBuffer = await QRCode.toBuffer(qrCodeData, {
       width: 400,
       margin: 2,
       color: {
         dark: '#000000',
         light: '#FFFFFF'
-      }
+      },
+      type: 'png'
     });
 
-    // Create email HTML with embedded QR code
+    // Upload QR code to get a URL
+    const qrFile = new File([qrCodeBuffer], 'qr-code.png', { type: 'image/png' });
+    const { file_url: qrCodeUrl } = await base44.asServiceRole.integrations.Core.UploadFile({
+      file: qrFile
+    });
+
+    // Create email HTML with QR code image
     const emailHtml = `
       <!DOCTYPE html>
       <html>
