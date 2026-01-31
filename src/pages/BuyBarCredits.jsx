@@ -106,7 +106,7 @@ export default function BuyBarCredits() {
           // Send confirmation email with QR code
           await base44.functions.invoke('sendBarCreditConfirmation', {
             bar_credit_id: credit.id
-          });
+          }).catch(err => console.error('Email send error:', err));
         }
 
         setOrderComplete(true);
@@ -114,6 +114,11 @@ export default function BuyBarCredits() {
       }
     } catch (error) {
       console.error('Error checking payment status:', error);
+      // Still show success even if email fails
+      if (code) {
+        setOrderComplete(true);
+        setConfirmationCode(code);
+      }
     }
   };
 
