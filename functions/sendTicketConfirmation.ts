@@ -112,7 +112,7 @@ Deno.serve(async (req) => {
               <h2>Your Entry Pass</h2>
               <p>Show this QR code at the gate for entry:</p>
               <div class="confirmation-code">${ticketOrder.confirmation_code}</div>
-              <img src="${qrCodeDataUrl}" alt="Ticket QR Code" class="qr-code" />
+              <img src="${qrCodeUrl}" alt="Ticket QR Code" class="qr-code" />
               <p style="color: #78716c; font-size: 14px; margin-top: 20px;">
                 Save this email or take a screenshot of the QR code<br>
                 You can also show your confirmation code at the gate
