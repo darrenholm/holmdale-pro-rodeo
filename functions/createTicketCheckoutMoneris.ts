@@ -36,6 +36,22 @@ Deno.serve(async (req) => {
     }
 
     const orderId = `TICKET-${Date.now()}`;
+    const confirmationCode = `CONF-${Date.now().toString().slice(-8)}`;
+
+    // Create pending ticket order
+    const ticketOrder = await base44.asServiceRole.entities.TicketOrder.create({
+      event_id: eventId,
+      customer_name: customerName,
+      customer_email: customerEmail,
+      customer_phone: customerPhone,
+      ticket_type: ticketType,
+      quantity: parseInt(quantity),
+      total_price: total,
+      status: 'pending',
+      confirmation_code: confirmationCode
+    });
+
+    console.log('Created pending ticket order:', ticketOrder.id);
 
     // Create Moneris Checkout ticket
     const checkoutData = {
@@ -51,7 +67,7 @@ Deno.serve(async (req) => {
       },
       environment: 'prod',
       action: 'preload',
-      order_no: orderId,
+      order_no: confirmationCode,
       cust_id: customerEmail,
       dynamic_descriptor: event.title,
       contact_details: {
@@ -89,13 +105,18 @@ Deno.serve(async (req) => {
       }, { status: 500 });
     }
 
-    const checkoutUrl = `https://gateway.moneris.com/chkt/index.php?ticket=${result.response.ticket}`;
-    console.log('Moneris checkout created:', { orderId, ticket: result.response.ticket, checkoutUrl });
+    const appUrl = Deno.env.get('BASE44_APP_URL') || 'https://holmdalerodeo.app.base44.com';
+    const successUrl = `${appUrl}/checkout-success?confirmation_code=${confirmationCode}`;
+    const checkoutUrl = `https://gateway.moneris.com/chkt/index.php?ticket=${result.response.ticket}&redirect=${encodeURIComponent(successUrl)}`;
+    
+    console.log('Moneris checkout created:', { orderId, confirmationCode, ticket: result.response.ticket, checkoutUrl });
     
     return Response.json({ 
       url: checkoutUrl,
       ticket: result.response.ticket,
-      order_id: orderId
+      order_id: orderId,
+      confirmation_code: confirmationCode,
+      ticket_order_id: ticketOrder.id
     });
 
   } catch (error) {
