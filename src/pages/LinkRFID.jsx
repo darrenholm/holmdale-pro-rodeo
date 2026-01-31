@@ -391,14 +391,15 @@ export default function LinkRFID() {
               <CardContent className="space-y-4">
                 <p className="text-gray-400 text-center">Present RFID wristband to scanner or enter tag ID below</p>
                 <Input
-                  ref={rfidInputRef}
-                  type="text"
-                  value={rfidTagId}
-                  onChange={handleRFIDInput}
-                  placeholder="RFID tag will appear here"
-                  className="bg-stone-800 border-stone-700 text-white text-lg p-6 text-center"
-                  autoComplete="off"
-                />
+                   ref={rfidInputRef}
+                   type="text"
+                   value={rfidTagId}
+                   onChange={handleRFIDInput}
+                   onKeyPress={handleRFIDKeyPress}
+                   placeholder="RFID tag will appear here"
+                   className="bg-stone-800 border-stone-700 text-white text-lg p-6 text-center"
+                   autoComplete="off"
+                 />
                 <Button
                   onClick={reset}
                   variant="outline"
