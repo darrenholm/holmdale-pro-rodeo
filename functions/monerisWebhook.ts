@@ -18,8 +18,8 @@ Deno.serve(async (req) => {
 
     console.log('Processing successful payment for order:', order_no);
 
-    // Handle ticket orders
-    if (order_no.startsWith('TICKET-')) {
+    // Handle ticket orders (order_no is now the confirmation code)
+    if (order_no.startsWith('CONF-')) {
       const ticketOrders = await base44.asServiceRole.entities.TicketOrder.filter({
         confirmation_code: order_no
       });
