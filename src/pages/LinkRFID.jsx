@@ -35,6 +35,10 @@ export default function LinkRFID() {
   const rfidInputRef = useRef(null);
 
   useEffect(() => {
+    setFormLoadTime(new Date());
+  }, []);
+
+  useEffect(() => {
     if (scanning && step === STEP.SCAN_QR) {
       startCamera();
     } else {
