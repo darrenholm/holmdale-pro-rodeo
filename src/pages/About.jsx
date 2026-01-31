@@ -93,7 +93,8 @@ Holm Potato Farms grows approimately 800 acres potatoes annually, focussed on th
                                 <p className="text-4xl font-bold text-white mb-1">{stat.value}</p>
                                 <p className="text-stone-400">{stat.label}</p>
                             </motion.div>
-            )}
+            );
+            })}
                     </div>
                 </div>
             </section>
