@@ -134,14 +134,22 @@ export default function LinkRFID() {
     setScanError(null);
 
     try {
+      console.log('Looking up ticket with code:', code);
+      
       const tickets = await base44.entities.TicketOrder.filter({
         confirmation_code: code
       });
 
+      console.log('Lookup result:', tickets);
+
       if (tickets.length === 0) {
+        // Try listing all tickets to debug
+        const allTickets = await base44.entities.TicketOrder.list();
+        console.log('All tickets in system:', allTickets);
+        
         setResult({
           success: false,
-          message: 'Ticket not found. Invalid confirmation code.'
+          message: `Ticket not found. Invalid confirmation code. (Searched for: ${code})`
         });
       } else {
         setTicket(tickets[0]);
@@ -149,6 +157,7 @@ export default function LinkRFID() {
         setResult(null);
       }
     } catch (error) {
+      console.error('Lookup error:', error);
       setResult({
         success: false,
         message: 'Error looking up ticket: ' + error.message
