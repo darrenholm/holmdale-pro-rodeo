@@ -142,6 +142,9 @@ export default function Staff() {
             <a href={createPageUrl('BarRedemption')} className="block text-green-500 hover:text-green-400">
               Bar Redemption
             </a>
+            <a href={createPageUrl('LinkRFID')} className="block text-green-500 hover:text-green-400">
+              Link RFID
+            </a>
           </CardContent>
         </Card>
       </div>
