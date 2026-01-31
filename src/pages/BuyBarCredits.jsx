@@ -95,6 +95,11 @@ export default function BuyBarCredits() {
       if (response.data.status === 'confirmed') {
         setOrderComplete(true);
         setConfirmationCode(code);
+        
+        // Send confirmation email
+        await base44.functions.invoke('sendBarCreditConfirmation', {
+          bar_credit_id: response.data.credit.id
+        });
       }
     } catch (error) {
       console.error('Error checking payment status:', error);
