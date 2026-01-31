@@ -22,7 +22,7 @@ Deno.serve(async (req) => {
 
     // Calculate total with HST
     const subtotal = products.reduce((sum, p) => sum + p.price, 0);
-    const shipping = shipping_cost || 15.00;
+    const shipping = shipping_method === 'pickup' ? 0 : (shipping_cost || 15.00);
     const hst = (subtotal + shipping) * 0.13;
     const total = subtotal + hst + shipping;
 
