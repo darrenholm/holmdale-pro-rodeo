@@ -60,7 +60,7 @@ Deno.serve(async (req) => {
         
         return Response.json({
           status: 'confirmed',
-          credit: { ...credit, status: 'confirmed' }
+          credit: { ...credit, status: 'confirmed', id: credit.id }
         });
       }
     }
