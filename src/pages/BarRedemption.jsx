@@ -112,10 +112,16 @@ export default function BarRedemption() {
   };
 
   const onScanSuccess = async (decodedText) => {
-    stopCamera();
-    setScanning(false);
-    setConfirmationCode(decodedText);
-    await lookupCreditsDirectly(decodedText);
+   stopCamera();
+   setScanning(false);
+   if (rfidMode) {
+     // Scan RFID - look up by tag ID
+     await lookupCreditsByRFID(decodedText);
+   } else {
+     // Scan QR - look up by confirmation code
+     setConfirmationCode(decodedText);
+     await lookupCreditsDirectly(decodedText);
+   }
   };
 
   const startScanning = () => {
