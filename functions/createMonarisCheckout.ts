@@ -4,7 +4,7 @@ Deno.serve(async (req) => {
   try {
     const base44 = createClientFromRequest(req);
     const body = await req.json();
-    const { items, shipping_address, shipping_cost } = body;
+    const { items, customer_info, shipping_address, shipping_cost } = body;
 
     if (!items || items.length === 0) {
       return Response.json({ error: 'No items in cart' }, { status: 400 });
