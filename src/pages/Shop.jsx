@@ -158,16 +158,20 @@ export default function Shop() {
   };
 
   const handleCheckout = async () => {
-    if (!shippingAddress.postal_code) {
+    if (shippingMethod === 'ship' && !shippingAddress.postal_code) {
       alert('Please enter your postal code');
       return;
     }
 
     setIsCheckingOut(true);
     try {
-      // Calculate shipping based on postal code
-      const shipping = await calculateShipping(shippingAddress.postal_code, shippingAddress.country);
-      setShippingCost(shipping);
+      if (shippingMethod === 'pickup') {
+        setShippingCost(0);
+      } else {
+        // Calculate shipping based on postal code
+        const shipping = await calculateShipping(shippingAddress.postal_code, shippingAddress.country);
+        setShippingCost(shipping);
+      }
       setShowAddressModal(false);
       setShowOrderReview(true);
     } catch (error) {
