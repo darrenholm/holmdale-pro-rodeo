@@ -26,6 +26,7 @@ export default function LinkRFID() {
   const [scanError, setScanError] = useState(null);
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState(null);
+  const [formLoadTime, setFormLoadTime] = useState(new Date());
 
   const videoRef = useRef(null);
   const canvasRef = useRef(null);
