@@ -400,8 +400,9 @@ export default function LinkRFID() {
                    type="text"
                    value={rfidTagId}
                    onChange={handleRFIDInput}
+                   onKeyDown={handleRFIDKeyDown}
                    placeholder="RFID tag will appear here"
-                   className="bg-stone-800 border-stone-700 text-white text-lg p-6 text-center"
+                   className="bg-stone-800 border-stone-700 text-white text-lg p-6 text-center focus:ring-2 focus:ring-green-500"
                    autoComplete="off"
                  />
                 <Button
