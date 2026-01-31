@@ -97,8 +97,8 @@ Deno.serve(async (req) => {
     // Create order record
     await base44.asServiceRole.entities.Order.create({
       monaris_transaction_id: result.response.ticket,
-      customer_email: shipping_address.email || 'customer@example.com',
-      customer_name: shipping_address.name || 'Customer',
+      customer_email: customer_info?.email || 'customer@example.com',
+      customer_name: customer_info?.name || 'Customer',
       items: products.map(p => ({
         product_id: p.id,
         name: p.name,
