@@ -25,6 +25,9 @@ export default function Shop() {
     phone: ''
   });
   const [shippingAddress, setShippingAddress] = useState({
+    street: '',
+    city: '',
+    province: '',
     postal_code: '',
     country: 'CA'
   });
@@ -170,8 +173,8 @@ export default function Shop() {
       return;
     }
 
-    if (shippingMethod === 'ship' && !shippingAddress.postal_code) {
-      alert('Please enter your postal code');
+    if (shippingMethod === 'ship' && (!shippingAddress.street || !shippingAddress.city || !shippingAddress.province || !shippingAddress.postal_code)) {
+      alert('Please enter your complete shipping address');
       return;
     }
 
@@ -504,11 +507,44 @@ export default function Shop() {
               {shippingMethod === 'ship' && (
                 <>
                   <div className="space-y-2">
-                    <Label htmlFor="postal_code" className="text-stone-300">Postal Code</Label>
+                    <Label htmlFor="street" className="text-stone-300">Street Address *</Label>
+                    <Input
+                      id="street"
+                      type="text"
+                      placeholder="123 Main St"
+                      value={shippingAddress.street}
+                      onChange={(e) => setShippingAddress({...shippingAddress, street: e.target.value})}
+                      className="bg-stone-800 border-stone-700 text-white"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="city" className="text-stone-300">City *</Label>
+                    <Input
+                      id="city"
+                      type="text"
+                      placeholder="Ottawa"
+                      value={shippingAddress.city}
+                      onChange={(e) => setShippingAddress({...shippingAddress, city: e.target.value})}
+                      className="bg-stone-800 border-stone-700 text-white"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="province" className="text-stone-300">Province/State *</Label>
+                    <Input
+                      id="province"
+                      type="text"
+                      placeholder="ON"
+                      value={shippingAddress.province}
+                      onChange={(e) => setShippingAddress({...shippingAddress, province: e.target.value.toUpperCase()})}
+                      className="bg-stone-800 border-stone-700 text-white"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="postal_code" className="text-stone-300">Postal Code *</Label>
                     <Input
                       id="postal_code"
                       type="text"
-                      placeholder="e.g., K0A 1K0"
+                      placeholder="K0A 1K0"
                       value={shippingAddress.postal_code}
                       onChange={(e) => setShippingAddress({...shippingAddress, postal_code: e.target.value.toUpperCase()})}
                       className="bg-stone-800 border-stone-700 text-white"
@@ -531,7 +567,7 @@ export default function Shop() {
 
               <Button
                 onClick={handleCheckout}
-                disabled={isCheckingOut || !customerInfo.name || !customerInfo.email || (shippingMethod === 'ship' && !shippingAddress.postal_code)}
+                disabled={isCheckingOut || !customerInfo.name || !customerInfo.email}
                 className="w-full bg-green-500 hover:bg-green-600 text-stone-900 font-semibold py-6 text-lg mt-6"
               >
                 {isCheckingOut ? (
