@@ -180,20 +180,22 @@ export default function LinkRFID() {
   };
 
   const handleRFIDInput = (e) => {
-    const value = e.target.value.trim();
+    const value = e.target.value;
+    console.log('RFID input change:', value, 'Length:', value.length);
     setRfidTagId(value);
   };
 
-  useEffect(() => {
-    // Auto-advance when RFID data is received (typically RFID reader sends data + Enter)
-    if (rfidTagId && (step === STEP.SCAN_RFID || step === STEP.MANUAL_RFID)) {
-      const timer = setTimeout(() => {
-        console.log('Auto-confirming RFID:', rfidTagId);
-        setStep(STEP.CONFIRM);
-      }, 500); // 500ms delay to ensure full scan is captured
-      return () => clearTimeout(timer);
+  const handleRFIDKeyDown = (e) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      const value = (e.target as HTMLInputElement).value.trim();
+      console.log('RFID Enter pressed, value:', value);
+      if (value) {
+        setRfidTagId(value);
+        setTimeout(() => setStep(STEP.CONFIRM), 100);
+      }
     }
-  }, [rfidTagId, step]);
+  };
 
   const linkRFIDToTicket = async () => {
     if (!ticket || !rfidTagId) return;
