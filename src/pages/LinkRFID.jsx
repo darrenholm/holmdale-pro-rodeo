@@ -188,7 +188,7 @@ export default function LinkRFID() {
   const handleRFIDKeyDown = (e) => {
     if (e.key === 'Enter') {
       e.preventDefault();
-      const value = (e.target as HTMLInputElement).value.trim();
+      const value = e.target.value.trim();
       console.log('RFID Enter pressed, value:', value);
       if (value) {
         setRfidTagId(value);
