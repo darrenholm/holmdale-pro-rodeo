@@ -21,8 +21,6 @@ export default function BuyBarCredits() {
   const [confirmationCode, setConfirmationCode] = useState('');
   const [showCheckout, setShowCheckout] = useState(false);
   const [checkoutTicket, setCheckoutTicket] = useState(null);
-  const [statusCheckCode, setStatusCheckCode] = useState('');
-  const [checkingStatus, setCheckingStatus] = useState(false);
   const monerisCheckoutRef = useRef(null);
 
   useEffect(() => {
@@ -97,29 +95,10 @@ export default function BuyBarCredits() {
       if (response.data.status === 'confirmed') {
         setOrderComplete(true);
         setConfirmationCode(code);
-        
-        // Send confirmation email
-        await base44.functions.invoke('sendBarCreditConfirmation', {
-          bar_credit_id: response.data.credit.id
-        });
-      } else {
-        alert('Payment not yet confirmed. Please try again in a moment.');
       }
     } catch (error) {
       console.error('Error checking payment status:', error);
-      alert('Error checking status. Please verify your confirmation code.');
     }
-  };
-
-  const handleStatusCheck = async (e) => {
-    e.preventDefault();
-    if (!statusCheckCode.trim()) {
-      alert('Please enter a confirmation code');
-      return;
-    }
-    setCheckingStatus(true);
-    await checkPaymentStatus(statusCheckCode.trim());
-    setCheckingStatus(false);
   };
 
   const checkoutMutation = useMutation({
@@ -222,31 +201,6 @@ export default function BuyBarCredits() {
           <h1 className="text-4xl font-bold text-white mb-3">Bar Credits</h1>
           <p className="text-gray-400 text-lg">Purchase drink credits for easy bar service</p>
         </div>
-
-        {/* Status Check Card */}
-        <Card className="bg-stone-900 border-stone-800 mb-6">
-          <CardHeader>
-            <CardTitle className="text-white text-center">Check Payment Status</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <form onSubmit={handleStatusCheck} className="flex gap-2">
-              <Input
-                type="text"
-                value={statusCheckCode}
-                onChange={(e) => setStatusCheckCode(e.target.value)}
-                className="bg-stone-800 border-stone-700 text-white flex-1"
-                placeholder="Enter confirmation code (e.g., BARML2B6ULYY4HY)"
-              />
-              <Button
-                type="submit"
-                disabled={checkingStatus}
-                className="bg-green-600 hover:bg-green-700"
-              >
-                {checkingStatus ? 'Checking...' : 'Check Status'}
-              </Button>
-            </form>
-          </CardContent>
-        </Card>
 
         <div className="grid md:grid-cols-2 gap-6">
           {/* Credit Selection */}
