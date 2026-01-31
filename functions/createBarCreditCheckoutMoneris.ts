@@ -61,7 +61,7 @@ Deno.serve(async (req) => {
       }
     };
 
-    console.log('Creating Moneris Checkout for bar credits:', orderId);
+    console.log('Creating Moneris Checkout for bar credits:', confirmation_code);
     const monerisResponse = await fetch('https://gateway.moneris.com/chkt/request/request.php', {
       method: 'POST',
       headers: {
