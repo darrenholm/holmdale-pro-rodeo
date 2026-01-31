@@ -76,7 +76,9 @@ Holm Potato Farms grows approimately 800 acres potatoes annually, focussed on th
             <section className="py-16 px-6 bg-stone-900">
                 <div className="max-w-6xl mx-auto">
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
-                        {stats.map((stat, index) =>
+                        {stats.map((stat, index) => {
+            const Icon = stat.icon;
+            return (
             <motion.div
               key={stat.label}
               className="text-center"
@@ -86,7 +88,7 @@ Holm Potato Farms grows approimately 800 acres potatoes annually, focussed on th
               transition={{ delay: index * 0.1 }}>
 
                                 <div className="w-14 h-14 mx-auto mb-4 rounded-xl bg-green-500/20 flex items-center justify-center">
-                                    <stat.icon className="w-7 h-7 text-green-500" />
+                                    <Icon className="w-7 h-7 text-green-500" />
                                 </div>
                                 <p className="text-4xl font-bold text-white mb-1">{stat.value}</p>
                                 <p className="text-stone-400">{stat.label}</p>
