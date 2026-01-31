@@ -52,9 +52,9 @@ export default function LinkRFID() {
 
   useEffect(() => {
     if (step === STEP.SCAN_RFID || step === STEP.MANUAL_RFID) {
+      setRfidTagId('');
       setTimeout(() => {
         rfidInputRef.current?.focus();
-        rfidInputRef.current?.select();
       }, 0);
     }
   }, [step]);
