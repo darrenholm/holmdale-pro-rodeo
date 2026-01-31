@@ -186,11 +186,12 @@ export default function LinkRFID() {
 
   const handleRFIDInput = (e) => {
     const value = e.target.value;
-    console.log('RFID input change:', value, 'Length:', value.length);
+    console.log('RFID onChange:', value, 'Length:', value.length);
     setRfidTagId(value);
   };
 
   const handleRFIDKeyDown = (e) => {
+    console.log('RFID keyDown:', e.key, 'code:', e.code);
     if (e.key === 'Enter') {
       e.preventDefault();
       const value = e.target.value.trim();
@@ -200,6 +201,14 @@ export default function LinkRFID() {
         setTimeout(() => setStep(STEP.CONFIRM), 100);
       }
     }
+  };
+
+  const handleRFIDKeyUp = (e) => {
+    console.log('RFID keyUp:', e.key);
+  };
+
+  const handleRFIDKeyPress = (e) => {
+    console.log('RFID keyPress:', e.key);
   };
 
   const linkRFIDToTicket = async () => {
