@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { QrCode, Ticket, CreditCard, LogOut } from 'lucide-react';
+import { QrCode, Ticket, CreditCard, LogOut, Radio } from 'lucide-react';
 import { createPageUrl } from '@/utils';
 
 const STAFF_PASSWORD = 'staff2026'; // Change this to your desired password
