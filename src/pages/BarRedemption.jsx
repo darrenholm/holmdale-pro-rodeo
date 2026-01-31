@@ -413,7 +413,9 @@ export default function BarRedemption() {
         {scanning && (
           <Card className="bg-stone-900 border-stone-800">
             <CardHeader>
-              <CardTitle className="text-white">Point camera at QR code</CardTitle>
+              <CardTitle className="text-white">
+                {rfidMode ? 'Scan RFID Wristband' : 'Scan QR Code'}
+              </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="relative bg-black rounded-lg overflow-hidden">
