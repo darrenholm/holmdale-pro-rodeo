@@ -283,13 +283,14 @@ export default function BarRedemption() {
   };
 
   const reset = () => {
-    setConfirmationCode('');
-    setCredits(null);
-    setResult(null);
-    setScanning(false);
-    setScanError(null);
-    setManualMode(false);
-    stopCamera();
+   setConfirmationCode('');
+   setCredits(null);
+   setResult(null);
+   setScanning(false);
+   setScanError(null);
+   setManualMode(false);
+   setRfidMode(false);
+   stopCamera();
   };
 
   return (
