@@ -125,8 +125,20 @@ export default function LinkRFID() {
   const onQRScanSuccess = async (decodedText) => {
     stopCamera();
     setScanning(false);
-    setConfirmationCode(decodedText);
-    await lookupTicket(decodedText);
+    
+    // Parse JSON from QR code if needed
+    let code = decodedText;
+    try {
+      const parsed = JSON.parse(decodedText);
+      if (parsed.confirmation_code) {
+        code = parsed.confirmation_code;
+      }
+    } catch (e) {
+      // Not JSON, use as-is
+    }
+    
+    setConfirmationCode(code);
+    await lookupTicket(code);
   };
 
   const lookupTicket = async (code) => {
