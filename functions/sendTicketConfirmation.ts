@@ -23,12 +23,13 @@ Deno.serve(async (req) => {
       return Response.json({ error: 'Event not found' }, { status: 404 });
     }
 
-    // Generate QR code as data URL
+    // Generate QR code as data URL for embedding directly in email
     const qrCodeData = JSON.stringify({
       confirmation_code: ticketOrder.confirmation_code,
       event_id: ticketOrder.event_id,
       ticket_type: ticketOrder.ticket_type,
-      quantity: ticketOrder.quantity
+      quantity: ticketOrder.quantity,
+      customer_email: ticketOrder.customer_email
     });
     
     const qrCodeDataUrl = await QRCode.toDataURL(qrCodeData, {
@@ -40,16 +41,9 @@ Deno.serve(async (req) => {
       }
     });
 
-    // Convert data URL to blob for upload
-    const base64Data = qrCodeDataUrl.split(',')[1];
-    const binaryData = Uint8Array.from(atob(base64Data), c => c.charCodeAt(0));
-    const blob = new Blob([binaryData], { type: 'image/png' });
-    
-    const { file_url: qrCodeUrl } = await base44.asServiceRole.integrations.Core.UploadFile({
-      file: blob
-    });
+    console.log('QR code generated successfully');
 
-    // Create email HTML with QR code image
+    // Create email HTML with embedded QR code
     const emailHtml = `
       <!DOCTYPE html>
       <html>
@@ -114,7 +108,7 @@ Deno.serve(async (req) => {
               <h2>Your Entry Pass</h2>
               <p>Show this QR code at the gate for entry:</p>
               <div class="confirmation-code">${ticketOrder.confirmation_code}</div>
-              <img src="${qrCodeUrl}" alt="Ticket QR Code" class="qr-code" />
+              <img src="${qrCodeDataUrl}" alt="Ticket QR Code" class="qr-code" style="max-width: 300px; height: auto; display: block; margin: 20px auto;" />
               <p style="color: #78716c; font-size: 14px; margin-top: 20px;">
                 Save this email or take a screenshot of the QR code<br>
                 You can also show your confirmation code at the gate
