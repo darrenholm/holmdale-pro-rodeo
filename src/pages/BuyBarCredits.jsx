@@ -88,11 +88,27 @@ export default function BuyBarCredits() {
 
   const checkPaymentStatus = async (code) => {
     try {
-      const response = await base44.functions.invoke('checkBarCreditPaymentStatus', {
+      // Find the bar credit order
+      const credits = await base44.entities.BarCredit.filter({
         confirmation_code: code
       });
-      
-      if (response.data.status === 'confirmed') {
+
+      if (credits.length > 0) {
+        const credit = credits[0];
+
+        // Only process if not already confirmed
+        if (credit.status !== 'confirmed') {
+          // Update status to confirmed
+          await base44.entities.BarCredit.update(credit.id, {
+            status: 'confirmed'
+          });
+
+          // Send confirmation email with QR code
+          await base44.functions.invoke('sendBarCreditConfirmation', {
+            bar_credit_id: credit.id
+          });
+        }
+
         setOrderComplete(true);
         setConfirmationCode(code);
       }
