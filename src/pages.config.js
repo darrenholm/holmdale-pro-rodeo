@@ -59,12 +59,12 @@ import Events from './pages/Events';
 import GateScan from './pages/GateScan';
 import Home from './pages/Home';
 import ImportStaff from './pages/ImportStaff';
+import LinkRFID from './pages/LinkRFID';
 import Shop from './pages/Shop';
 import Staff from './pages/Staff';
 import StaffList from './pages/StaffList';
 import StaffScheduling from './pages/StaffScheduling';
 import TrackOrder from './pages/TrackOrder';
-import LinkRFID from './pages/LinkRFID';
 import __Layout from './Layout.jsx';
 
 
@@ -81,12 +81,12 @@ export const PAGES = {
     "GateScan": GateScan,
     "Home": Home,
     "ImportStaff": ImportStaff,
+    "LinkRFID": LinkRFID,
     "Shop": Shop,
     "Staff": Staff,
     "StaffList": StaffList,
     "StaffScheduling": StaffScheduling,
     "TrackOrder": TrackOrder,
-    "LinkRFID": LinkRFID,
 }
 
 export const pagesConfig = {
