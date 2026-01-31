@@ -352,7 +352,9 @@ export default function Shop() {
                 </div>
                 <div className="flex justify-between text-sm">
                   <span className="text-stone-400">Shipping</span>
-                  <span className="text-white">${shippingCost.toFixed(2)}</span>
+                  <span className="text-white">
+                    {shippingCost === 0 ? 'FREE' : `$${shippingCost.toFixed(2)}`}
+                  </span>
                 </div>
                 <div className="flex justify-between text-sm">
                   <span className="text-stone-400">Tax (13%)</span>
