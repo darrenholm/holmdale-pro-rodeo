@@ -19,7 +19,7 @@ Deno.serve(async (req) => {
     console.log('Processing successful payment for order:', order_no);
 
     // Handle ticket orders (order_no is now the confirmation code)
-    if (order_no.startsWith('CONF-')) {
+    if (order_no.startsWith('WW-')) {
       const ticketOrders = await base44.asServiceRole.entities.TicketOrder.filter({
         confirmation_code: order_no
       });
@@ -30,17 +30,20 @@ Deno.serve(async (req) => {
         // Update ticket order status
         await base44.asServiceRole.entities.TicketOrder.update(ticketOrder.id, {
           status: 'confirmed',
-          monaris_transaction_id: txn_num
+          moneris_transaction_id: txn_num
         });
 
         console.log('Ticket order confirmed, sending email...');
 
         // Send confirmation email with QR code
-        await base44.asServiceRole.functions.invoke('sendTicketConfirmation', {
-          ticket_order_id: ticketOrder.id
-        });
-
-        console.log('Ticket confirmation email sent for:', order_no);
+        try {
+          await base44.asServiceRole.functions.invoke('sendTicketConfirmation', {
+            ticket_order_id: ticketOrder.id
+          });
+          console.log('Ticket confirmation email sent for:', order_no);
+        } catch (emailError) {
+          console.error('Error sending ticket confirmation email:', emailError);
+        }
       }
     }
     
