@@ -181,8 +181,13 @@ export default function LinkRFID() {
 
   const handleRFIDInput = (e) => {
     const value = e.target.value.trim();
-    if (value) {
-      setRfidTagId(value);
+    console.log('RFID input received:', value, 'Key:', e.key);
+    setRfidTagId(value);
+  };
+
+  const handleRFIDKeyPress = (e) => {
+    if (e.key === 'Enter' && rfidTagId.trim()) {
+      console.log('RFID enter pressed, confirming:', rfidTagId);
       setStep(STEP.CONFIRM);
     }
   };
