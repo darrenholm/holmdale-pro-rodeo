@@ -252,15 +252,15 @@ export default function LinkRFID() {
               <p className="text-gray-400 mb-6">Scan or enter ticket confirmation code</p>
               <div className="space-y-3">
                 <Button
-                  onClick={() => {
-                    setScanning(true);
-                    setStep(STEP.SCAN_QR);
-                  }}
-                  className="w-full bg-green-600 hover:bg-green-700 text-white px-8 py-4 text-lg"
-                >
-                  <Camera className="w-5 h-5 mr-2" />
-                  Scan QR Code
-                </Button>
+                   onClick={() => {
+                     setStep(STEP.SCAN_QR);
+                     setTimeout(() => setScanning(true), 100);
+                   }}
+                   className="w-full bg-green-600 hover:bg-green-700 text-white px-8 py-4 text-lg"
+                 >
+                   <Camera className="w-5 h-5 mr-2" />
+                   Scan QR Code
+                 </Button>
                 <Button
                   onClick={() => setStep(STEP.MANUAL_QR)}
                   variant="outline"
