@@ -143,8 +143,10 @@ export default function Shop() {
           product_id: item.id,
           quantity: 1
         })),
+        customer_info: customerInfo,
         shipping_address: shippingAddress,
-        shipping_cost: shippingCost
+        shipping_cost: shippingCost,
+        shipping_method: shippingMethod
       });
 
       if (response.data?.ticket) {
