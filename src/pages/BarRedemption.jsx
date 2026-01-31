@@ -143,50 +143,108 @@ export default function BarRedemption() {
     await lookupCreditsDirectly(confirmationCode.trim());
   };
 
+  const lookupCreditsByRFID = async (rfidTagId) => {
+   setLoading(true);
+   setResult(null);
+
+   try {
+     const tickets = await base44.entities.TicketOrder.filter({
+       rfid_tag_id: rfidTagId
+     });
+
+     if (tickets.length === 0) {
+       setResult({
+         success: false,
+         message: 'RFID tag not linked to any ticket'
+       });
+       setCredits(null);
+     } else {
+       const ticket = tickets[0];
+       const creditRecords = await base44.entities.BarCredit.filter({
+         customer_email: ticket.customer_email
+       });
+
+       if (creditRecords.length === 0) {
+         setResult({
+           success: false,
+           message: 'No bar credits found for this customer'
+         });
+         setCredits(null);
+       } else {
+         const credit = creditRecords[0];
+         if (credit.status !== 'confirmed') {
+           setResult({
+             success: false,
+             message: 'Credits not confirmed - payment may be pending'
+           });
+           setCredits(null);
+         } else if (credit.remaining_credits <= 0) {
+           setResult({
+             success: false,
+             message: 'No credits remaining'
+           });
+           setCredits(credit);
+         } else {
+           setCredits(credit);
+           setResult(null);
+         }
+       }
+     }
+   } catch (error) {
+     setResult({
+       success: false,
+       message: 'Error looking up credits: ' + error.message
+     });
+     setCredits(null);
+   } finally {
+     setLoading(false);
+   }
+  };
+
   const lookupCreditsDirectly = async (code) => {
-    setLoading(true);
-    setResult(null);
+   setLoading(true);
+   setResult(null);
 
-    try {
-      const creditRecords = await base44.entities.BarCredit.filter({
-        confirmation_code: code
-      });
+   try {
+     const creditRecords = await base44.entities.BarCredit.filter({
+       confirmation_code: code
+     });
 
-      if (creditRecords.length === 0) {
-        setResult({
-          success: false,
-          message: 'Invalid confirmation code'
-        });
-        setCredits(null);
-      } else {
-        const credit = creditRecords[0];
-        
-        if (credit.status !== 'confirmed') {
-          setResult({
-            success: false,
-            message: 'Credits not confirmed - payment may be pending'
-          });
-          setCredits(null);
-        } else if (credit.remaining_credits <= 0) {
-          setResult({
-            success: false,
-            message: 'No credits remaining'
-          });
-          setCredits(credit);
-        } else {
-          setCredits(credit);
-          setResult(null);
-        }
-      }
-    } catch (error) {
-      setResult({
-        success: false,
-        message: 'Error looking up credits: ' + error.message
-      });
-      setCredits(null);
-    } finally {
-      setLoading(false);
-    }
+     if (creditRecords.length === 0) {
+       setResult({
+         success: false,
+         message: 'Invalid confirmation code'
+       });
+       setCredits(null);
+     } else {
+       const credit = creditRecords[0];
+
+       if (credit.status !== 'confirmed') {
+         setResult({
+           success: false,
+           message: 'Credits not confirmed - payment may be pending'
+         });
+         setCredits(null);
+       } else if (credit.remaining_credits <= 0) {
+         setResult({
+           success: false,
+           message: 'No credits remaining'
+         });
+         setCredits(credit);
+       } else {
+         setCredits(credit);
+         setResult(null);
+       }
+     }
+   } catch (error) {
+     setResult({
+       success: false,
+       message: 'Error looking up credits: ' + error.message
+     });
+     setCredits(null);
+   } finally {
+     setLoading(false);
+   }
   };
 
   const redeemCredit = async () => {
