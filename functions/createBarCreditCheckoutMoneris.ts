@@ -90,7 +90,8 @@ Deno.serve(async (req) => {
     const appUrl = Deno.env.get('BASE44_APP_URL') || 'https://holmdalerodeo.base44.app';
     const baseUrl = appUrl.endsWith('/') ? appUrl.slice(0, -1) : appUrl;
     const successUrl = `${baseUrl}/BuyBarCredits?code=${confirmation_code}`;
-    const checkoutUrl = `https://gateway.moneris.com/chkt/index.php?ticket=${result.response.ticket}&redirect=${encodeURIComponent(successUrl)}`;
+    const cancelUrl = `${baseUrl}/BuyBarCredits`;
+    const checkoutUrl = `https://gateway.moneris.com/chkt/index.php?ticket=${result.response.ticket}&redirect=${encodeURIComponent(successUrl)}&cancel=${encodeURIComponent(cancelUrl)}`;
     
     // Update bar credit with Moneris ticket
     await base44.asServiceRole.entities.BarCredit.update(barCredit.id, {
