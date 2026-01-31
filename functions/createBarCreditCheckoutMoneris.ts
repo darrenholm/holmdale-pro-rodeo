@@ -90,8 +90,8 @@ Deno.serve(async (req) => {
     }
 
     const appUrl = Deno.env.get('BASE44_APP_URL');
-    const successUrl = `${appUrl}/BuyBarCredits?success=true&code=${confirmation_code}`;
-    const checkoutUrl = `https://gateway.moneris.com/chkt/index.php?ticket=${result.response.ticket}`;
+    const successUrl = `${appUrl}/BuyBarCredits?code=${confirmation_code}`;
+    const checkoutUrl = `https://gateway.moneris.com/chkt/index.php?ticket=${result.response.ticket}&redirect_on_success=${encodeURIComponent(successUrl)}`;
     
     // Update bar credit with Moneris ticket
     await base44.asServiceRole.entities.BarCredit.update(barCredit.id, {
