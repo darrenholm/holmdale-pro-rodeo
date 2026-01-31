@@ -75,7 +75,12 @@ Deno.serve(async (req) => {
           status: 'confirmed'
         });
 
-        console.log('Bar credit confirmed:', order_no);
+        // Send confirmation email with QR code
+        await base44.asServiceRole.functions.invoke('sendBarCreditConfirmation', {
+          bar_credit_id: matchingCredit.id
+        });
+
+        console.log('Bar credit confirmed and email sent:', order_no);
       } else {
         console.log('No matching bar credit found for order:', order_no);
       }
