@@ -181,16 +181,19 @@ export default function LinkRFID() {
 
   const handleRFIDInput = (e) => {
     const value = e.target.value.trim();
-    console.log('RFID input received:', value, 'Key:', e.key);
     setRfidTagId(value);
   };
 
-  const handleRFIDKeyPress = (e) => {
-    if (e.key === 'Enter' && rfidTagId.trim()) {
-      console.log('RFID enter pressed, confirming:', rfidTagId);
-      setStep(STEP.CONFIRM);
+  useEffect(() => {
+    // Auto-advance when RFID data is received (typically RFID reader sends data + Enter)
+    if (rfidTagId && (step === STEP.SCAN_RFID || step === STEP.MANUAL_RFID)) {
+      const timer = setTimeout(() => {
+        console.log('Auto-confirming RFID:', rfidTagId);
+        setStep(STEP.CONFIRM);
+      }, 500); // 500ms delay to ensure full scan is captured
+      return () => clearTimeout(timer);
     }
-  };
+  }, [rfidTagId, step]);
 
   const linkRFIDToTicket = async () => {
     if (!ticket || !rfidTagId) return;
