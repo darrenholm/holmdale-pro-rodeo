@@ -163,6 +163,11 @@ export default function Shop() {
   };
 
   const handleCheckout = async () => {
+    if (!customerInfo.name || !customerInfo.email) {
+      alert('Please enter your name and email address');
+      return;
+    }
+
     if (shippingMethod === 'ship' && !shippingAddress.postal_code) {
       alert('Please enter your postal code');
       return;
