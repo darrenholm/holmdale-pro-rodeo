@@ -400,39 +400,88 @@ export default function Shop() {
             <DialogHeader>
               <DialogTitle className="flex items-center gap-2">
                 <MapPin className="w-5 h-5 text-green-500" />
-                Shipping Address
+                Delivery Method
               </DialogTitle>
             </DialogHeader>
             <div className="space-y-4 mt-4">
-              <p className="text-stone-400 text-sm">
-                Enter your postal code to calculate accurate shipping rates
-              </p>
-              <div className="space-y-2">
-                <Label htmlFor="postal_code" className="text-stone-300">Postal Code</Label>
-                <Input
-                  id="postal_code"
-                  type="text"
-                  placeholder="e.g., K0A 1K0"
-                  value={shippingAddress.postal_code}
-                  onChange={(e) => setShippingAddress({...shippingAddress, postal_code: e.target.value.toUpperCase()})}
-                  className="bg-stone-800 border-stone-700 text-white"
-                />
+              <div className="space-y-3">
+                <Label className="text-stone-300">Choose your delivery option</Label>
+                <div className="space-y-2">
+                  <button
+                    onClick={() => setShippingMethod('ship')}
+                    className={`w-full p-4 rounded-lg border-2 transition-all text-left ${
+                      shippingMethod === 'ship' 
+                        ? 'border-green-500 bg-green-500/10' 
+                        : 'border-stone-700 bg-stone-800 hover:border-stone-600'
+                    }`}
+                  >
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="font-semibold text-white">Ship to Address</p>
+                        <p className="text-sm text-stone-400">Calculated based on location</p>
+                      </div>
+                      {shippingMethod === 'ship' && (
+                        <div className="w-5 h-5 rounded-full bg-green-500 flex items-center justify-center">
+                          <div className="w-2 h-2 rounded-full bg-white"></div>
+                        </div>
+                      )}
+                    </div>
+                  </button>
+
+                  <button
+                    onClick={() => setShippingMethod('pickup')}
+                    className={`w-full p-4 rounded-lg border-2 transition-all text-left ${
+                      shippingMethod === 'pickup' 
+                        ? 'border-green-500 bg-green-500/10' 
+                        : 'border-stone-700 bg-stone-800 hover:border-stone-600'
+                    }`}
+                  >
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="font-semibold text-white">Store Pickup</p>
+                        <p className="text-sm text-stone-400">No shipping charge • Free</p>
+                      </div>
+                      {shippingMethod === 'pickup' && (
+                        <div className="w-5 h-5 rounded-full bg-green-500 flex items-center justify-center">
+                          <div className="w-2 h-2 rounded-full bg-white"></div>
+                        </div>
+                      )}
+                    </div>
+                  </button>
+                </div>
               </div>
-              <div className="space-y-2">
-                <Label htmlFor="country" className="text-stone-300">Country</Label>
-                <select
-                  id="country"
-                  value={shippingAddress.country}
-                  onChange={(e) => setShippingAddress({...shippingAddress, country: e.target.value})}
-                  className="w-full h-10 px-3 rounded-md bg-stone-800 border border-stone-700 text-white"
-                >
-                  <option value="CA">Canada</option>
-                  <option value="US">United States</option>
-                </select>
-              </div>
+
+              {shippingMethod === 'ship' && (
+                <>
+                  <div className="space-y-2">
+                    <Label htmlFor="postal_code" className="text-stone-300">Postal Code</Label>
+                    <Input
+                      id="postal_code"
+                      type="text"
+                      placeholder="e.g., K0A 1K0"
+                      value={shippingAddress.postal_code}
+                      onChange={(e) => setShippingAddress({...shippingAddress, postal_code: e.target.value.toUpperCase()})}
+                      className="bg-stone-800 border-stone-700 text-white"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="country" className="text-stone-300">Country</Label>
+                    <select
+                      id="country"
+                      value={shippingAddress.country}
+                      onChange={(e) => setShippingAddress({...shippingAddress, country: e.target.value})}
+                      className="w-full h-10 px-3 rounded-md bg-stone-800 border border-stone-700 text-white"
+                    >
+                      <option value="CA">Canada</option>
+                      <option value="US">United States</option>
+                    </select>
+                  </div>
+                </>
+              )}
+
               <Button
                 onClick={handleCheckout}
-                disabled={isCheckingOut || !shippingAddress.postal_code}
+                disabled={isCheckingOut || (shippingMethod === 'ship' && !shippingAddress.postal_code)}
                 className="w-full bg-green-500 hover:bg-green-600 text-stone-900 font-semibold py-6 text-lg mt-6"
               >
                 {isCheckingOut ? (
@@ -441,7 +490,7 @@ export default function Shop() {
                     Processing...
                   </>
                 ) : (
-                  'Proceed to Checkout'
+                  'Continue to Review'
                 )}
               </Button>
             </div>
