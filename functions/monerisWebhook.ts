@@ -61,19 +61,23 @@ Deno.serve(async (req) => {
       }
     }
     
-    // Handle bar credit orders
+    // Handle bar credit orders (order_no is the BAR- transaction ID)
     else if (order_no.startsWith('BAR-')) {
-      const credits = await base44.asServiceRole.entities.BarCredit.filter({
-        confirmation_code: order_no
-      });
+      // Find bar credit by the monaris_transaction_id stored during checkout
+      const credits = await base44.asServiceRole.entities.BarCredit.list();
+      const matchingCredit = credits.find(c => 
+        c.monaris_transaction_id === body.ticket || 
+        c.confirmation_code.startsWith('BAR')
+      );
 
-      if (credits.length > 0) {
-        const credit = credits[0];
-        await base44.asServiceRole.entities.BarCredit.update(credit.id, {
+      if (matchingCredit) {
+        await base44.asServiceRole.entities.BarCredit.update(matchingCredit.id, {
           status: 'confirmed'
         });
 
         console.log('Bar credit confirmed:', order_no);
+      } else {
+        console.log('No matching bar credit found for order:', order_no);
       }
     }
 
