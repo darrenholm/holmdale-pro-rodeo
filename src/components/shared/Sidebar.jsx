@@ -12,7 +12,8 @@ const navLinks = [
   { name: 'Bar Credits', page: 'BuyBarCredits' },
   { name: 'About', page: 'About' },
   { name: 'Contact', page: 'Contact' },
-  { name: 'Staff', page: 'Staff' }
+  { name: 'Staff', page: 'Staff' },
+  { name: 'Link RFID', page: 'LinkRFID' }
 ];
 
 export default function Sidebar() {
