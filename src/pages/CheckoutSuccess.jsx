@@ -35,15 +35,18 @@ export default function CheckoutSuccess() {
                     if (orders.length > 0) {
                         const order = orders[0];
                         
-                        // Update status to confirmed
-                        await base44.entities.TicketOrder.update(order.id, {
-                            status: 'confirmed'
-                        });
+                        // Only process if not already confirmed
+                        if (order.status !== 'confirmed') {
+                            // Update status to confirmed
+                            await base44.entities.TicketOrder.update(order.id, {
+                                status: 'confirmed'
+                            });
 
-                        // Send confirmation email with QR code
-                        await base44.functions.invoke('sendTicketConfirmation', {
-                            ticket_order_id: order.id
-                        });
+                            // Send confirmation email with QR code
+                            await base44.functions.invoke('sendTicketConfirmation', {
+                                ticket_order_id: order.id
+                            });
+                        }
 
                         setEmailSent(true);
                     }
