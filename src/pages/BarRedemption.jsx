@@ -335,15 +335,28 @@ export default function BarRedemption() {
           <Card className="bg-stone-900 border-stone-800">
             <CardContent className="p-12 text-center space-y-4">
               <Camera className="w-16 h-16 text-green-500 mx-auto mb-4" />
-              <h2 className="text-xl font-semibold text-white mb-2">Scan Bar Credit</h2>
-              <p className="text-gray-400 mb-6">Point camera at QR code</p>
+              <h2 className="text-xl font-semibold text-white mb-2">Redeem Bar Credits</h2>
+              <p className="text-gray-400 mb-6">Choose how to look up customer</p>
               <div className="space-y-3">
                 <Button 
-                  onClick={startScanning}
+                  onClick={() => {
+                    setRfidMode(false);
+                    startScanning();
+                  }}
                   className="w-full bg-green-600 hover:bg-green-700 text-white px-8 py-4 text-lg"
                 >
                   <Camera className="w-5 h-5 mr-2" />
-                  Start Camera
+                  Scan QR Code
+                </Button>
+                <Button 
+                  onClick={() => {
+                    setRfidMode(true);
+                    startScanning();
+                  }}
+                  className="w-full bg-purple-600 hover:bg-purple-700 text-white px-8 py-4 text-lg"
+                >
+                  <Keyboard className="w-5 h-5 mr-2" />
+                  Scan RFID Wristband
                 </Button>
                 <Button 
                   onClick={handleManualEntry}
