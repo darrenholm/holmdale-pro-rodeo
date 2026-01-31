@@ -114,8 +114,18 @@ export default function GateScan() {
     await validateTicket(decodedText);
   };
 
-  const validateTicket = async (confirmationCode) => {
+  const validateTicket = async (scannedData) => {
     try {
+      let confirmationCode = scannedData;
+      
+      // Try to parse as JSON (from QR code)
+      try {
+        const parsed = JSON.parse(scannedData);
+        confirmationCode = parsed.confirmation_code;
+      } catch (e) {
+        // If not JSON, use as-is (manual entry)
+      }
+      
       // Find ticket by confirmation code
       const tickets = await base44.entities.TicketOrder.filter({
         confirmation_code: confirmationCode
