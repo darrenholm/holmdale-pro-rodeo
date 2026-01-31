@@ -9,6 +9,7 @@ import { motion } from 'framer-motion';
 
 export default function BarRedemption() {
   const [confirmationCode, setConfirmationCode] = useState('');
+  const [rfidMode, setRfidMode] = useState(false);
   const [credits, setCredits] = useState(null);
   const [result, setResult] = useState(null);
   const [loading, setLoading] = useState(false);
