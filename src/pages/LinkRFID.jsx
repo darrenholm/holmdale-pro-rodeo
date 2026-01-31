@@ -438,9 +438,11 @@ export default function LinkRFID() {
                    onChange={handleRFIDInput}
                    onKeyDown={handleRFIDKeyDown}
                    placeholder="Scan or enter RFID tag ID"
-                   className="bg-stone-800 border-stone-700 text-white text-lg p-6 text-center focus:ring-2 focus:ring-green-500"
+                   className="bg-stone-800 border-stone-700 text-white text-lg p-6 text-center focus:ring-2 focus:ring-green-500 focus:outline-none focus:border-green-500"
                    autoFocus
                    spellCheck="false"
+                   inputMode="none"
+                   data-scanner="rfid"
                  />
                 <Button
                   onClick={reset}
