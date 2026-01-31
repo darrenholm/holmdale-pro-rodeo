@@ -38,6 +38,10 @@ Deno.serve(async (req) => {
     }
 
     const orderId = `ORDER-${Date.now()}`;
+    
+    // Get app URL for success redirect
+    const appUrl = Deno.env.get('BASE44_APP_URL');
+    const successUrl = `${appUrl}/checkout-success`;
 
     // Create Moneris Checkout ticket
     const checkoutData = {
@@ -56,6 +60,8 @@ Deno.serve(async (req) => {
       order_no: orderId,
       cust_id: customer_info?.email || 'customer@example.com',
       dynamic_descriptor: 'Holmdale Shop',
+      ask_cvv: 'Y',
+      url: successUrl,
       contact_details: {
         email: customer_info?.email || 'customer@example.com',
         first_name: customer_info?.name?.split(' ')[0] || 'Customer',
