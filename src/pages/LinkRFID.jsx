@@ -186,29 +186,29 @@ export default function LinkRFID() {
 
   const handleRFIDInput = (e) => {
     const value = e.target.value;
-    console.log('RFID onChange:', value, 'Length:', value.length);
+    console.log('RFID input:', value, 'length:', value.length);
     setRfidTagId(value);
-  };
-
-  const handleRFIDKeyDown = (e) => {
-    console.log('RFID keyDown:', e.key, 'code:', e.code);
-    if (e.key === 'Enter') {
-      e.preventDefault();
-      const value = e.target.value.trim();
-      console.log('RFID Enter pressed, value:', value);
-      if (value) {
-        setRfidTagId(value);
-        setTimeout(() => setStep(STEP.CONFIRM), 100);
+    
+    // Auto-confirm if scanner sent data with Enter
+    if (value.includes('\n') || value.includes('\r')) {
+      const cleanValue = value.replace(/[\n\r]/g, '').trim();
+      if (cleanValue) {
+        setRfidTagId(cleanValue);
+        setTimeout(() => setStep(STEP.CONFIRM), 50);
       }
     }
   };
 
-  const handleRFIDKeyUp = (e) => {
-    console.log('RFID keyUp:', e.key);
-  };
-
-  const handleRFIDKeyPress = (e) => {
-    console.log('RFID keyPress:', e.key);
+  const handleRFIDKeyDown = (e) => {
+    console.log('RFID keyDown:', e.key);
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      const value = rfidTagId.trim();
+      console.log('RFID Enter, value:', value);
+      if (value) {
+        setStep(STEP.CONFIRM);
+      }
+    }
   };
 
   const linkRFIDToTicket = async () => {
