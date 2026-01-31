@@ -418,6 +418,42 @@ export default function Shop() {
               </DialogTitle>
             </DialogHeader>
             <div className="space-y-4 mt-4">
+              <div className="space-y-2">
+                <Label htmlFor="customer_name" className="text-stone-300">Full Name *</Label>
+                <Input
+                  id="customer_name"
+                  type="text"
+                  placeholder="John Doe"
+                  value={customerInfo.name}
+                  onChange={(e) => setCustomerInfo({...customerInfo, name: e.target.value})}
+                  className="bg-stone-800 border-stone-700 text-white"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="customer_email" className="text-stone-300">Email *</Label>
+                <Input
+                  id="customer_email"
+                  type="email"
+                  placeholder="john@example.com"
+                  value={customerInfo.email}
+                  onChange={(e) => setCustomerInfo({...customerInfo, email: e.target.value})}
+                  className="bg-stone-800 border-stone-700 text-white"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="customer_phone" className="text-stone-300">Phone Number</Label>
+                <Input
+                  id="customer_phone"
+                  type="tel"
+                  placeholder="(555) 123-4567"
+                  value={customerInfo.phone}
+                  onChange={(e) => setCustomerInfo({...customerInfo, phone: e.target.value})}
+                  className="bg-stone-800 border-stone-700 text-white"
+                />
+              </div>
+
               <div className="space-y-3">
                 <Label className="text-stone-300">Choose your delivery option</Label>
                 <div className="space-y-2">
