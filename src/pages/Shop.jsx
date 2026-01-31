@@ -505,7 +505,7 @@ export default function Shop() {
               </div>
 
               {shippingMethod === 'ship' && (
-                <>
+                <div className="space-y-4">
                   <div className="space-y-2">
                     <Label htmlFor="street" className="text-stone-300">Street Address *</Label>
                     <Input
@@ -517,52 +517,56 @@ export default function Shop() {
                       className="bg-stone-800 border-stone-700 text-white"
                     />
                   </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="city" className="text-stone-300">City *</Label>
-                    <Input
-                      id="city"
-                      type="text"
-                      placeholder="Ottawa"
-                      value={shippingAddress.city}
-                      onChange={(e) => setShippingAddress({...shippingAddress, city: e.target.value})}
-                      className="bg-stone-800 border-stone-700 text-white"
-                    />
+                  <div className="grid grid-cols-2 gap-3">
+                    <div className="space-y-2">
+                      <Label htmlFor="city" className="text-stone-300">City *</Label>
+                      <Input
+                        id="city"
+                        type="text"
+                        placeholder="Ottawa"
+                        value={shippingAddress.city}
+                        onChange={(e) => setShippingAddress({...shippingAddress, city: e.target.value})}
+                        className="bg-stone-800 border-stone-700 text-white"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="province" className="text-stone-300">Province *</Label>
+                      <Input
+                        id="province"
+                        type="text"
+                        placeholder="ON"
+                        value={shippingAddress.province}
+                        onChange={(e) => setShippingAddress({...shippingAddress, province: e.target.value.toUpperCase()})}
+                        className="bg-stone-800 border-stone-700 text-white"
+                      />
+                    </div>
                   </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="province" className="text-stone-300">Province/State *</Label>
-                    <Input
-                      id="province"
-                      type="text"
-                      placeholder="ON"
-                      value={shippingAddress.province}
-                      onChange={(e) => setShippingAddress({...shippingAddress, province: e.target.value.toUpperCase()})}
-                      className="bg-stone-800 border-stone-700 text-white"
-                    />
+                  <div className="grid grid-cols-2 gap-3">
+                    <div className="space-y-2">
+                      <Label htmlFor="postal_code" className="text-stone-300">Postal Code *</Label>
+                      <Input
+                        id="postal_code"
+                        type="text"
+                        placeholder="K0A 1K0"
+                        value={shippingAddress.postal_code}
+                        onChange={(e) => setShippingAddress({...shippingAddress, postal_code: e.target.value.toUpperCase()})}
+                        className="bg-stone-800 border-stone-700 text-white"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="country" className="text-stone-300">Country</Label>
+                      <select
+                        id="country"
+                        value={shippingAddress.country}
+                        onChange={(e) => setShippingAddress({...shippingAddress, country: e.target.value})}
+                        className="w-full h-10 px-3 rounded-md bg-stone-800 border border-stone-700 text-white"
+                      >
+                        <option value="CA">Canada</option>
+                        <option value="US">United States</option>
+                      </select>
+                    </div>
                   </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="postal_code" className="text-stone-300">Postal Code *</Label>
-                    <Input
-                      id="postal_code"
-                      type="text"
-                      placeholder="K0A 1K0"
-                      value={shippingAddress.postal_code}
-                      onChange={(e) => setShippingAddress({...shippingAddress, postal_code: e.target.value.toUpperCase()})}
-                      className="bg-stone-800 border-stone-700 text-white"
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="country" className="text-stone-300">Country</Label>
-                    <select
-                      id="country"
-                      value={shippingAddress.country}
-                      onChange={(e) => setShippingAddress({...shippingAddress, country: e.target.value})}
-                      className="w-full h-10 px-3 rounded-md bg-stone-800 border border-stone-700 text-white"
-                    >
-                      <option value="CA">Canada</option>
-                      <option value="US">United States</option>
-                    </select>
-                  </div>
-                </>
+                </div>
               )}
 
               <Button
