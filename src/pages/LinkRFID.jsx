@@ -444,6 +444,11 @@ export default function LinkRFID() {
                   <p className="text-gray-400 text-sm mb-1">RFID Tag ID:</p>
                   <p className="text-white font-mono">{rfidTagId}</p>
                 </div>
+                <div className="h-px bg-stone-700"></div>
+                <div>
+                  <p className="text-gray-400 text-sm mb-1">Form Opened:</p>
+                  <p className="text-white font-mono">{formLoadTime.toLocaleTimeString()}</p>
+                </div>
               </div>
               <div className="flex gap-3">
                 <Button
