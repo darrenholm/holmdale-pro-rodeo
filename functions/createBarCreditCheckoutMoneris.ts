@@ -37,8 +37,6 @@ Deno.serve(async (req) => {
       return Response.json({ error: 'Moneris credentials not configured' }, { status: 500 });
     }
 
-    const orderId = `BAR-${Date.now()}`;
-
     // Create Moneris Checkout ticket
     const checkoutData = {
       store_id: storeId,
@@ -53,7 +51,7 @@ Deno.serve(async (req) => {
       },
       environment: 'prod',
       action: 'preload',
-      order_no: orderId,
+      order_no: confirmation_code,
       cust_id: customer_info.email,
       dynamic_descriptor: 'Bar Credits',
       contact_details: {
@@ -99,11 +97,11 @@ Deno.serve(async (req) => {
       monaris_transaction_id: result.response.ticket
     });
 
-    console.log('Moneris checkout created for bar credits:', { orderId, ticket: result.response.ticket, checkoutUrl });
+    console.log('Moneris checkout created for bar credits:', { confirmation_code, ticket: result.response.ticket, checkoutUrl });
     return Response.json({ 
       url: checkoutUrl,
       ticket: result.response.ticket,
-      order_id: orderId
+      order_id: confirmation_code
     });
 
   } catch (error) {

@@ -61,26 +61,28 @@ Deno.serve(async (req) => {
       }
     }
     
-    // Handle bar credit orders (order_no is the BAR- transaction ID)
-    else if (order_no.startsWith('BAR-')) {
-      // Find bar credit by the monaris_transaction_id stored during checkout
-      const credits = await base44.asServiceRole.entities.BarCredit.list();
-      const matchingCredit = credits.find(c => 
-        c.monaris_transaction_id === body.ticket || 
-        c.confirmation_code.startsWith('BAR')
-      );
+    // Handle bar credit orders (order_no is now the confirmation code)
+    else if (order_no.startsWith('BAR')) {
+      const barCredits = await base44.asServiceRole.entities.BarCredit.filter({
+        confirmation_code: order_no
+      });
 
-      if (matchingCredit) {
-        await base44.asServiceRole.entities.BarCredit.update(matchingCredit.id, {
-          status: 'confirmed'
+      if (barCredits.length > 0) {
+        const barCredit = barCredits[0];
+        
+        await base44.asServiceRole.entities.BarCredit.update(barCredit.id, {
+          status: 'confirmed',
+          monaris_transaction_id: txn_num
         });
+
+        console.log('Bar credit confirmed, sending email...');
 
         // Send confirmation email with QR code
         await base44.asServiceRole.functions.invoke('sendBarCreditConfirmation', {
-          bar_credit_id: matchingCredit.id
+          bar_credit_id: barCredit.id
         });
 
-        console.log('Bar credit confirmed and email sent:', order_no);
+        console.log('Bar credit confirmation email sent for:', order_no);
       } else {
         console.log('No matching bar credit found for order:', order_no);
       }
