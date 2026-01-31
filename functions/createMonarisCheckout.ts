@@ -54,12 +54,12 @@ Deno.serve(async (req) => {
       environment: 'prod',
       action: 'preload',
       order_no: orderId,
-      cust_id: shipping_address.email || 'customer@example.com',
+      cust_id: customer_info?.email || 'customer@example.com',
       dynamic_descriptor: 'Holmdale Shop',
       contact_details: {
-        email: shipping_address.email || 'customer@example.com',
-        first_name: shipping_address.name?.split(' ')[0] || 'Customer',
-        last_name: shipping_address.name?.split(' ').slice(1).join(' ') || ''
+        email: customer_info?.email || 'customer@example.com',
+        first_name: customer_info?.name?.split(' ')[0] || 'Customer',
+        last_name: customer_info?.name?.split(' ').slice(1).join(' ') || ''
       }
     };
 
