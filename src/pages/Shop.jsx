@@ -531,7 +531,7 @@ export default function Shop() {
 
               <Button
                 onClick={handleCheckout}
-                disabled={isCheckingOut || (shippingMethod === 'ship' && !shippingAddress.postal_code)}
+                disabled={isCheckingOut || !customerInfo.name || !customerInfo.email || (shippingMethod === 'ship' && !shippingAddress.postal_code)}
                 className="w-full bg-green-500 hover:bg-green-600 text-stone-900 font-semibold py-6 text-lg mt-6"
               >
                 {isCheckingOut ? (
