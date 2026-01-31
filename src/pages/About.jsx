@@ -183,7 +183,9 @@ Holm Potato Farms grows approimately 800 acres potatoes annually, focussed on th
                     </div>
                     
                     <div className="grid md:grid-cols-3 gap-8">
-                        {values.map((value, index) =>
+                        {values.map((value, index) => {
+            const Icon = value.icon;
+            return (
             <motion.div
               key={value.title}
               initial={{ opacity: 0, y: 30 }}
@@ -193,7 +195,7 @@ Holm Potato Farms grows approimately 800 acres potatoes annually, focussed on th
 
                                 <Card className="bg-stone-800 border-stone-700 p-8 h-full text-center hover:border-green-500/30 transition-all duration-300">
                                     <div className="w-16 h-16 mx-auto mb-6 rounded-xl bg-green-500/20 flex items-center justify-center">
-                                        <value.icon className="w-8 h-8 text-green-500" />
+                                        <Icon className="w-8 h-8 text-green-500" />
                                     </div>
                                     <h3 className="text-xl font-bold text-white mb-3">{value.title}</h3>
                                     <p className="text-stone-400">{value.description}</p>
