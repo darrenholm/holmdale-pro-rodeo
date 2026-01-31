@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useMutation } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -19,18 +19,72 @@ export default function BuyBarCredits() {
   });
   const [orderComplete, setOrderComplete] = useState(false);
   const [confirmationCode, setConfirmationCode] = useState('');
+  const [showCheckout, setShowCheckout] = useState(false);
+  const [checkoutTicket, setCheckoutTicket] = useState(null);
+  const monerisCheckoutRef = useRef(null);
 
   useEffect(() => {
+    // Load Moneris Checkout script
+    if (!document.getElementById('moneris-checkout-script')) {
+      const script = document.createElement('script');
+      script.id = 'moneris-checkout-script';
+      script.src = 'https://gateway.moneris.com/chkt/js/chkt_v1.00.js';
+      script.async = true;
+      document.body.appendChild(script);
+    }
+
     const urlParams = new URLSearchParams(window.location.search);
     const code = urlParams.get('code');
     
     if (code) {
-      // Check payment status
       checkPaymentStatus(code);
-      // Clear URL params
       window.history.replaceState({}, '', window.location.pathname);
     }
+
+    return () => {
+      try {
+        if (monerisCheckoutRef.current?.closeCheckout) {
+          monerisCheckoutRef.current.closeCheckout();
+        }
+      } catch (e) {
+        console.error('Error closing checkout:', e);
+      }
+    };
   }, []);
+
+  useEffect(() => {
+    if (showCheckout && checkoutTicket && typeof window.monerisCheckout !== 'undefined') {
+      const myCheckout = new window.monerisCheckout();
+      monerisCheckoutRef.current = myCheckout;
+
+      myCheckout.setMode('prod');
+      myCheckout.setCheckoutDiv('monerisCheckout');
+
+      myCheckout.setCallback('cancel_transaction', () => {
+        setShowCheckout(false);
+        setCheckoutTicket(null);
+      });
+
+      myCheckout.setCallback('error_event', (error) => {
+        console.error('Moneris error:', error);
+        alert('Payment error occurred');
+        setShowCheckout(false);
+        setCheckoutTicket(null);
+      });
+
+      myCheckout.setCallback('payment_complete', async (data) => {
+        console.log('Payment complete:', data);
+        setShowCheckout(false);
+        const urlParams = new URLSearchParams(window.location.search);
+        const code = urlParams.get('code');
+        if (code) {
+          await checkPaymentStatus(code);
+        }
+      });
+
+      myCheckout.startCheckout(checkoutTicket);
+    }
+  }, [showCheckout, checkoutTicket]);
 
   const checkPaymentStatus = async (code) => {
     try {
@@ -49,7 +103,6 @@ export default function BuyBarCredits() {
 
   const checkoutMutation = useMutation({
     mutationFn: async (data) => {
-      // Check if running in iframe
       if (window.self !== window.top) {
         throw new Error('Checkout only works from the published app URL, not in preview mode.');
       }
@@ -58,8 +111,9 @@ export default function BuyBarCredits() {
       return response.data;
     },
     onSuccess: (data) => {
-      if (data.url) {
-        window.open(data.url, '_self');
+      if (data.ticket) {
+        setCheckoutTicket(data.ticket);
+        setShowCheckout(true);
       }
     },
     onError: (error) => {
@@ -85,6 +139,23 @@ export default function BuyBarCredits() {
   const total = quantity * PRICE_PER_CREDIT;
   const subtotal = total / 1.13;
   const hst = total - subtotal;
+
+  if (showCheckout) {
+    return (
+      <div className="min-h-screen bg-stone-950 pt-24 pb-20 px-6">
+        <div className="max-w-4xl mx-auto">
+          <Card className="bg-stone-900 border-stone-800">
+            <CardHeader>
+              <CardTitle className="text-white">Complete Your Purchase</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div id="monerisCheckout"></div>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+    );
+  }
 
   if (orderComplete) {
     return (
