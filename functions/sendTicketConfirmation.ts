@@ -40,10 +40,7 @@ Deno.serve(async (req) => {
       }
     });
 
-    // Extract base64 from data URL
-    const qrCodeBase64 = qrCodeDataUrl.split(',')[1];
-
-    // Create email HTML
+    // Create email HTML with embedded QR code
     const emailHtml = `
       <!DOCTYPE html>
       <html>
@@ -56,7 +53,7 @@ Deno.serve(async (req) => {
           .content { padding: 30px; background: #f5f5f4; }
           .ticket-details { background: white; padding: 20px; margin: 20px 0; border-radius: 8px; }
           .qr-section { text-align: center; padding: 30px; background: white; margin: 20px 0; border-radius: 8px; }
-          .qr-code { max-width: 300px; margin: 20px auto; }
+          .qr-code { max-width: 300px; margin: 20px auto; display: block; }
           .confirmation-code { font-size: 24px; font-weight: bold; color: #1c1917; margin: 20px 0; }
           .footer { text-align: center; padding: 20px; color: #78716c; font-size: 14px; }
           table { width: 100%; }
@@ -108,7 +105,7 @@ Deno.serve(async (req) => {
               <h2>Your Entry Pass</h2>
               <p>Show this QR code at the gate for entry:</p>
               <div class="confirmation-code">${ticketOrder.confirmation_code}</div>
-              <img src="cid:qrcode" alt="Ticket QR Code" class="qr-code" />
+              <img src="${qrCodeDataUrl}" alt="Ticket QR Code" class="qr-code" />
               <p style="color: #78716c; font-size: 14px; margin-top: 20px;">
                 Save this email or take a screenshot of the QR code<br>
                 You can also show your confirmation code at the gate
@@ -126,18 +123,12 @@ Deno.serve(async (req) => {
       </html>
     `;
 
-    // Send email using Core.SendEmail with attachment
+    // Send email using Core.SendEmail
     await base44.asServiceRole.integrations.Core.SendEmail({
       from_name: 'Holmdale Rodeo',
       to: ticketOrder.customer_email,
       subject: `Your Tickets for ${event.title} - Confirmation #${ticketOrder.confirmation_code}`,
-      body: emailHtml,
-      attachments: [{
-        filename: 'ticket-qr.png',
-        content: qrCodeBase64,
-        contentType: 'image/png',
-        cid: 'qrcode'
-      }]
+      body: emailHtml
     });
 
     console.log('Ticket confirmation email sent:', ticketOrder.confirmation_code);
