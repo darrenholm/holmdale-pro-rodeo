@@ -8,7 +8,7 @@ import { Label } from '@/components/ui/label';
 import { CreditCard, Plus, Minus, Check } from 'lucide-react';
 import { motion } from 'framer-motion';
 
-const PRICE_PER_CREDIT = 7; // $7 per credit
+const PRICE_PER_CREDIT = 0.10; // $0.10 per credit
 
 export default function BuyBarCredits() {
   const [quantity, setQuantity] = useState(10);
