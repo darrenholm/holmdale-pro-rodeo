@@ -18,6 +18,7 @@ export default function Shop() {
   const [showCheckout, setShowCheckout] = useState(false);
   const [checkoutTicket, setCheckoutTicket] = useState(null);
   const [shippingCost, setShippingCost] = useState(0);
+  const [shippingMethod, setShippingMethod] = useState('ship'); // 'ship' or 'pickup'
   const [shippingAddress, setShippingAddress] = useState({
     postal_code: '',
     country: 'CA'
