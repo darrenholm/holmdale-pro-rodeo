@@ -65,8 +65,15 @@ export default function RFIDDebug() {
         }
       });
 
-      ndef.addEventListener('readingerror', () => {
-        addEvent('NFC Error', { message: 'Cannot read NFC tag' });
+      ndef.addEventListener('readingerror', (event) => {
+        addEvent('NFC Read Error', { 
+          eventType: event?.constructor?.name || typeof event,
+          message: event?.message || event?.error?.message || 'Cannot read NFC tag',
+          errorName: event?.error?.name,
+          errorCode: event?.error?.code,
+          fullEvent: JSON.stringify(event, Object.getOwnPropertyNames(event))
+        });
+        setNfcScanning(false);
       });
 
     } catch (error) {
