@@ -2,11 +2,15 @@ import React, { useState, useRef, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
+import { Wifi, WifiOff } from 'lucide-react';
 
 export default function RFIDDebug() {
   const [events, setEvents] = useState([]);
   const [value, setValue] = useState('');
+  const [nfcSupported, setNfcSupported] = useState(false);
+  const [nfcScanning, setNfcScanning] = useState(false);
   const inputRef = useRef(null);
+  const abortControllerRef = useRef(null);
 
   const addEvent = (type, data) => {
     setEvents(prev => [...prev, {
@@ -16,16 +20,63 @@ export default function RFIDDebug() {
     }].slice(-20)); // Keep last 20 events
   };
 
-  useEffect(() => {
-      // Check NFC support
-      if ('NDEFReader' in window) {
-          setNfcSupported(true);
-          logEvent('NFC', 'Web NFC API is supported on this device');
-      } else {
-          logEvent('NFC', 'Web NFC API is NOT supported on this browser/device');
-      }
+  const startNFCScan = async () => {
+    if (!nfcSupported) {
+      addEvent('NFC Error', { message: 'Web NFC not supported' });
+      return;
+    }
 
-      inputRef.current?.focus();
+    try {
+      const ndef = new NDEFReader();
+      abortControllerRef.current = new AbortController();
+      
+      await ndef.scan({ signal: abortControllerRef.current.signal });
+      
+      setNfcScanning(true);
+      addEvent('NFC Started', { message: 'Hold NFC tag near phone (screen unlocked)' });
+
+      ndef.addEventListener('reading', ({ message, serialNumber }) => {
+        addEvent('NFC Tag Detected', { serialNumber });
+        setValue(serialNumber);
+        
+        for (const record of message.records) {
+          const decoder = new TextDecoder();
+          addEvent('NFC Record', { 
+            recordType: record.recordType,
+            data: decoder.decode(record.data)
+          });
+        }
+      });
+
+      ndef.addEventListener('readingerror', () => {
+        addEvent('NFC Error', { message: 'Cannot read NFC tag' });
+      });
+
+    } catch (error) {
+      addEvent('NFC Error', { message: error.message });
+      setNfcScanning(false);
+    }
+  };
+
+  const stopNFCScan = () => {
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort();
+      abortControllerRef.current = null;
+    }
+    setNfcScanning(false);
+    addEvent('NFC Stopped', { message: 'NFC scanning stopped' });
+  };
+
+  useEffect(() => {
+    // Check NFC support
+    if ('NDEFReader' in window) {
+      setNfcSupported(true);
+      addEvent('NFC Support', { supported: true, message: 'Web NFC API is available' });
+    } else {
+      addEvent('NFC Support', { supported: false, message: 'Web NFC API is NOT supported on this browser/device' });
+    }
+
+    inputRef.current?.focus();
 
     // Keyboard events
     const handleKeyDown = (e) => {
@@ -116,6 +167,31 @@ export default function RFIDDebug() {
           </CardHeader>
           <CardContent className="space-y-4">
             <p className="text-gray-400">Point scanner at this field and scan a tag.</p>
+            
+            {nfcSupported && (
+              <div className="pb-4 border-b border-stone-700">
+                {!nfcScanning ? (
+                  <Button 
+                    onClick={startNFCScan}
+                    className="w-full bg-blue-600 hover:bg-blue-700"
+                  >
+                    <Wifi className="w-4 h-4 mr-2" />
+                    Start NFC Scan (Web NFC)
+                  </Button>
+                ) : (
+                  <Button 
+                    onClick={stopNFCScan}
+                    className="w-full bg-red-600 hover:bg-red-700"
+                  >
+                    <WifiOff className="w-4 h-4 mr-2" />
+                    Stop NFC Scan
+                  </Button>
+                )}
+                <p className="text-xs text-gray-500 mt-2 text-center">
+                  Requires HTTPS, NFC enabled in settings, screen unlocked
+                </p>
+              </div>
+            )}
             <Input
               ref={inputRef}
               type="text"
