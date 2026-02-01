@@ -70,7 +70,13 @@ export default function RFIDDebug() {
       });
 
     } catch (error) {
-      addEvent('NFC Error', { message: error.message });
+      addEvent('NFC Start Error', { 
+        errorType: error?.constructor?.name || typeof error,
+        message: error.message,
+        code: error?.code,
+        name: error?.name,
+        stack: error?.stack?.substring(0, 200)
+      });
       setNfcScanning(false);
     }
   };
