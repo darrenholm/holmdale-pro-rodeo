@@ -60,13 +60,13 @@ import GateScan from './pages/GateScan';
 import Home from './pages/Home';
 import ImportStaff from './pages/ImportStaff';
 import LinkRFID from './pages/LinkRFID';
+import RFIDDebug from './pages/RFIDDebug';
 import RFIDTest from './pages/RFIDTest';
 import Shop from './pages/Shop';
 import Staff from './pages/Staff';
 import StaffList from './pages/StaffList';
 import StaffScheduling from './pages/StaffScheduling';
 import TrackOrder from './pages/TrackOrder';
-import RFIDDebug from './pages/RFIDDebug';
 import __Layout from './Layout.jsx';
 
 
@@ -84,13 +84,13 @@ export const PAGES = {
     "Home": Home,
     "ImportStaff": ImportStaff,
     "LinkRFID": LinkRFID,
+    "RFIDDebug": RFIDDebug,
     "RFIDTest": RFIDTest,
     "Shop": Shop,
     "Staff": Staff,
     "StaffList": StaffList,
     "StaffScheduling": StaffScheduling,
     "TrackOrder": TrackOrder,
-    "RFIDDebug": RFIDDebug,
 }
 
 export const pagesConfig = {

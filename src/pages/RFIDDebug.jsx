@@ -17,7 +17,15 @@ export default function RFIDDebug() {
   };
 
   useEffect(() => {
-    inputRef.current?.focus();
+      // Check NFC support
+      if ('NDEFReader' in window) {
+          setNfcSupported(true);
+          logEvent('NFC', 'Web NFC API is supported on this device');
+      } else {
+          logEvent('NFC', 'Web NFC API is NOT supported on this browser/device');
+      }
+
+      inputRef.current?.focus();
 
     // Keyboard events
     const handleKeyDown = (e) => {
