@@ -50,15 +50,7 @@ export default function Navbar() {
                         
                         {/* Desktop Navigation - Moved to Sidebar */}
                         
-                        {/* CTA Button */}
-                        <div className="hidden md:block">
-                            <Link to={createPageUrl('Events')}>
-                                <Button className="bg-green-500 hover:bg-green-600 text-stone-900 font-semibold">
-                                    <Ticket className="w-4 h-4 mr-2" />
-                                    Get Tickets
-                                </Button>
-                            </Link>
-                        </div>
+
                         
                         {/* Mobile Menu Button */}
                         <button className="bg-green-500 text-white p-2 md:hidden"
@@ -96,15 +88,6 @@ export default function Navbar() {
                                     {link.name}
                                 </Link>
             )}
-                            <Link
-              to={createPageUrl('Events')}
-              onClick={() => setIsMobileMenuOpen(false)}>
-
-                                <Button className="w-full bg-green-500 hover:bg-green-600 text-stone-900 font-semibold py-6 text-lg mt-4">
-                                    <Ticket className="w-5 h-5 mr-2" />
-                                    Get Tickets
-                                </Button>
-                            </Link>
                         </div>
                     </motion.div>
         }

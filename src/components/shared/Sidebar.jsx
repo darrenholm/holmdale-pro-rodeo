@@ -7,9 +7,6 @@ import { Button } from "@/components/ui/button";
 
 const navLinks = [
   { name: 'Home', page: 'Home' },
-  { name: 'Tickets', page: 'Events' },
-  { name: 'Shop', page: 'Shop' },
-  { name: 'Bar Credits', page: 'BuyBarCredits' },
   { name: 'About', page: 'About' },
   { name: 'Contact', page: 'Contact' },
   { name: 'Staff', page: 'Staff' },
@@ -51,13 +48,7 @@ export default function Sidebar() {
         ))}
       </nav>
 
-      {/* CTA Button */}
-      <Link to={createPageUrl('Events')} className="mb-8">
-        <Button className="w-full bg-stone-900 hover:bg-stone-800 text-green-500 font-semibold py-6">
-          <Ticket className="w-4 h-4 mr-2" />
-          Get Tickets
-        </Button>
-      </Link>
+
     </motion.div>
   );
 }
