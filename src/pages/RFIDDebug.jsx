@@ -35,16 +35,33 @@ export default function RFIDDebug() {
       setNfcScanning(true);
       addEvent('NFC Started', { message: 'Hold NFC tag near phone (screen unlocked)' });
 
-      ndef.addEventListener('reading', ({ message, serialNumber }) => {
-        addEvent('NFC Tag Detected', { serialNumber });
-        setValue(serialNumber);
+      ndef.addEventListener('reading', (event) => {
+        addEvent('NFC Reading Event', { 
+          hasSerialNumber: !!event.serialNumber,
+          serialNumber: event.serialNumber || 'NO SERIAL',
+          messageRecords: event.message?.records?.length || 0
+        });
         
-        for (const record of message.records) {
-          const decoder = new TextDecoder();
-          addEvent('NFC Record', { 
-            recordType: record.recordType,
-            data: decoder.decode(record.data)
-          });
+        if (event.serialNumber) {
+          setValue(event.serialNumber);
+          addEvent('NFC Serial Set', { value: event.serialNumber });
+        }
+        
+        if (event.message?.records) {
+          for (const record of event.message.records) {
+            try {
+              const decoder = new TextDecoder();
+              const decodedData = decoder.decode(record.data);
+              addEvent('NFC Record', { 
+                recordType: record.recordType,
+                mediaType: record.mediaType,
+                data: decodedData,
+                rawDataLength: record.data?.byteLength
+              });
+            } catch (error) {
+              addEvent('NFC Record Error', { error: error.message });
+            }
+          }
         }
       });
 
