@@ -62,6 +62,12 @@ export default function LinkRFID() {
   }, [scanning, step]);
 
   useEffect(() => {
+    if (step === STEP.SCAN_RFID && nfcSupported && !nfcScanning) {
+      startNFCScan();
+    }
+  }, [step]);
+
+  useEffect(() => {
     if (step === STEP.SCAN_RFID || step === STEP.MANUAL_RFID) {
       // Capture scanner input at document level as fallback
       const handleGlobalKeyDown = (e) => {
