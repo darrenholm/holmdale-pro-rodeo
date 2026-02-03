@@ -267,18 +267,26 @@ export default function LinkRFID() {
   };
 
   const linkRFIDToTicket = async () => {
-    if (!ticket || !rfidTagId) return;
+    if (!ticket || !rfidTagId) {
+      console.error('Missing ticket or RFID:', { ticket, rfidTagId });
+      return;
+    }
 
     setLoading(true);
     try {
       const cleanRfidTagId = rfidTagId.trim();
-      console.log('Linking RFID:', { ticketId: ticket.id, rfidTagId: cleanRfidTagId });
-      
-      const updatedTicket = await base44.entities.TicketOrder.update(ticket.id, {
-        rfid_tag_id: cleanRfidTagId
+      console.log('Attempting to link RFID:', { 
+        ticketId: ticket.id, 
+        rfidTagId: cleanRfidTagId,
+        fullTicket: ticket 
       });
       
-      console.log('Updated ticket:', updatedTicket);
+      const updateData = { rfid_tag_id: cleanRfidTagId };
+      console.log('Update data:', updateData);
+      
+      const updatedTicket = await base44.entities.TicketOrder.update(ticket.id, updateData);
+      
+      console.log('Update successful! Updated ticket:', updatedTicket);
 
       setResult({
         success: true,
@@ -291,7 +299,6 @@ export default function LinkRFID() {
         success: false,
         message: 'Error linking RFID: ' + error.message
       });
-    } finally {
       setLoading(false);
     }
   };
