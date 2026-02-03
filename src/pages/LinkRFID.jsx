@@ -68,6 +68,22 @@ export default function LinkRFID() {
   }, [step]);
 
   useEffect(() => {
+    if (step === STEP.SUCCESS) {
+      const timer = setTimeout(() => {
+        setStep(STEP.SCAN_QR);
+        setConfirmationCode('');
+        setRfidTagId('');
+        setTicket(null);
+        setScanError(null);
+        setResult(null);
+        setScanning(true);
+      }, 3000);
+      
+      return () => clearTimeout(timer);
+    }
+  }, [step]);
+
+  useEffect(() => {
     if (step === STEP.SCAN_RFID || step === STEP.MANUAL_RFID) {
       // Capture scanner input at document level as fallback
       const handleGlobalKeyDown = (e) => {
