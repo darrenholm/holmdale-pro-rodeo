@@ -18,7 +18,7 @@ const STEP = {
 };
 
 export default function LinkRFID() {
-  const [step, setStep] = useState(STEP.CHOOSE_MODE);
+  const [step, setStep] = useState(STEP.SCAN_QR);
   const [confirmationCode, setConfirmationCode] = useState('');
   const [rfidTagId, setRfidTagId] = useState('');
   const [ticket, setTicket] = useState(null);
@@ -44,6 +44,9 @@ export default function LinkRFID() {
     if ('NDEFReader' in window) {
       setNfcSupported(true);
     }
+    
+    // Auto-start QR scanning
+    setScanning(true);
   }, []);
 
   useEffect(() => {
@@ -368,13 +371,27 @@ export default function LinkRFID() {
                   <div className="border-2 border-green-500 w-64 h-64 rounded-lg"></div>
                 </div>
               </div>
-              <Button
-                onClick={reset}
-                variant="outline"
-                className="w-full border-stone-700 text-white hover:bg-stone-800"
-              >
-                Cancel
-              </Button>
+              <div className="flex gap-3">
+                <Button
+                  onClick={() => {
+                    stopCamera();
+                    setScanning(false);
+                    setStep(STEP.MANUAL_QR);
+                  }}
+                  variant="outline"
+                  className="flex-1 border-stone-700 text-white hover:bg-stone-800"
+                >
+                  <Keyboard className="w-4 h-4 mr-2" />
+                  Manual Entry
+                </Button>
+                <Button
+                  onClick={reset}
+                  variant="outline"
+                  className="flex-1 border-stone-700 text-white hover:bg-stone-800"
+                >
+                  Cancel
+                </Button>
+              </div>
             </CardContent>
           </Card>
         )}
