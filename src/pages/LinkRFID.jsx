@@ -27,15 +27,23 @@ export default function LinkRFID() {
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState(null);
   const [formLoadTime, setFormLoadTime] = useState(new Date());
+  const [nfcSupported, setNfcSupported] = useState(false);
+  const [nfcScanning, setNfcScanning] = useState(false);
 
   const videoRef = useRef(null);
   const canvasRef = useRef(null);
   const streamRef = useRef(null);
   const animationRef = useRef(null);
   const rfidInputRef = useRef(null);
+  const nfcAbortControllerRef = useRef(null);
 
   useEffect(() => {
     setFormLoadTime(new Date());
+    
+    // Check NFC support
+    if ('NDEFReader' in window) {
+      setNfcSupported(true);
+    }
   }, []);
 
   useEffect(() => {
@@ -257,6 +265,42 @@ export default function LinkRFID() {
     }
   };
 
+  const startNFCScan = async () => {
+    if (!nfcSupported) return;
+
+    try {
+      const ndef = new NDEFReader();
+      nfcAbortControllerRef.current = new AbortController();
+      
+      await ndef.scan({ signal: nfcAbortControllerRef.current.signal });
+      
+      setNfcScanning(true);
+
+      ndef.addEventListener('reading', (event) => {
+        if (event.serialNumber) {
+          setRfidTagId(event.serialNumber);
+          stopNFCScan();
+          setTimeout(() => setStep(STEP.CONFIRM), 100);
+        }
+      });
+
+      ndef.addEventListener('readingerror', () => {
+        setNfcScanning(false);
+      });
+
+    } catch (error) {
+      setNfcScanning(false);
+    }
+  };
+
+  const stopNFCScan = () => {
+    if (nfcAbortControllerRef.current) {
+      nfcAbortControllerRef.current.abort();
+      nfcAbortControllerRef.current = null;
+    }
+    setNfcScanning(false);
+  };
+
   const reset = () => {
     setStep(STEP.CHOOSE_MODE);
     setConfirmationCode('');
@@ -265,6 +309,7 @@ export default function LinkRFID() {
     setScanning(false);
     setScanError(null);
     setResult(null);
+    stopNFCScan();
   };
 
   return (
@@ -430,7 +475,31 @@ export default function LinkRFID() {
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
-                <p className="text-gray-400 text-center">Present RFID wristband to scanner or enter tag ID below</p>
+                {nfcSupported && !nfcScanning && (
+                  <Button 
+                    onClick={startNFCScan}
+                    className="w-full bg-purple-600 hover:bg-purple-700 py-6 mb-4"
+                  >
+                    <Zap className="w-5 h-5 mr-2" />
+                    Scan NFC Wristband
+                  </Button>
+                )}
+
+                {nfcScanning && (
+                  <div className="bg-purple-900/20 border-2 border-purple-500 rounded-lg p-6 text-center mb-4">
+                    <Zap className="w-12 h-12 text-purple-400 mx-auto mb-2 animate-pulse" />
+                    <p className="text-purple-200 font-medium">Hold wristband near phone...</p>
+                    <Button
+                      onClick={stopNFCScan}
+                      variant="outline"
+                      className="mt-4 border-purple-600 text-purple-200 hover:bg-purple-900"
+                    >
+                      Cancel NFC Scan
+                    </Button>
+                  </div>
+                )}
+
+                <p className="text-gray-400 text-center text-sm">Or enter tag ID manually:</p>
                 <Input
                    ref={rfidInputRef}
                    type="text"
@@ -439,7 +508,7 @@ export default function LinkRFID() {
                    onKeyDown={handleRFIDKeyDown}
                    placeholder="Scan or enter RFID tag ID"
                    className="bg-stone-800 border-stone-700 text-white text-lg p-6 text-center focus:ring-2 focus:ring-green-500 focus:outline-none focus:border-green-500"
-                   autoFocus
+                   autoFocus={!nfcScanning}
                    spellCheck="false"
                    inputMode="none"
                    data-scanner="rfid"
