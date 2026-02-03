@@ -2,7 +2,7 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { Shield, Trophy, Users, Ticket, CreditCard } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { createPageUrl } from './utils';
+import { createPageUrl } from '@/utils';
 
 const features = [
     {
