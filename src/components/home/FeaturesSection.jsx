@@ -1,8 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Shield, Trophy, Users, Ticket, CreditCard } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { createPageUrl } from '@/utils';
+import { Shield, Trophy, Users, Ticket } from 'lucide-react';
 
 const features = [
     {
@@ -24,11 +22,6 @@ const features = [
         icon: Ticket,
         title: "Easy Ticketing",
         description: "Simple online booking with instant confirmation. Choose your seats and get ready for the ride."
-    },
-    {
-        icon: CreditCard,
-        title: "Bar Credits",
-        description: "Pre-purchase bar credits for seamless drink service at the event. No cash needed, just tap your wristband."
     }
 ];
 
@@ -75,7 +68,7 @@ export default function FeaturesSection() {
                 </div>
                 
                 {/* Features Grid */}
-                <div className="grid md:grid-cols-2 lg:grid-cols-5 gap-8">
+                <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
                     {features.map((feature, index) => (
                         <motion.div
                             key={feature.title}
@@ -94,16 +87,6 @@ export default function FeaturesSection() {
                             <p className="text-stone-400 leading-relaxed">
                                 {feature.description}
                             </p>
-                            {feature.title === "Bar Credits" && (
-                                <div className="mt-6">
-                                    <Button 
-                                        onClick={() => window.location.href = createPageUrl('BuyBarCredits')}
-                                        className="bg-green-600 hover:bg-green-700"
-                                    >
-                                        Buy Credits
-                                    </Button>
-                                </div>
-                            )}
                         </motion.div>
                     ))}
                 </div>
