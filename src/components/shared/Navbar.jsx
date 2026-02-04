@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from "@/components/ui/button";
-import { Menu, X, Ticket, ChevronDown } from 'lucide-react';
+import { Menu, X, Ticket } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 
@@ -10,15 +10,13 @@ const navLinks = [
 { name: 'About', page: 'About' },
 { name: 'Contact', page: 'Contact' },
 { name: 'Purchase Tickets', page: 'BuyTickets' },
-{ name: 'Staff', page: 'Staff', submenu: [
-  { name: 'Buy Bar Credits', page: 'BuyBarCredits' }
-] }];
+{ name: 'Buy Bar Credits', page: 'BuyBarCredits' },
+{ name: 'Staff', page: 'Staff' }];
 
 
 export default function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [openSubmenu, setOpenSubmenu] = useState(null);
   const location = useLocation();
 
   useEffect(() => {
@@ -77,47 +75,20 @@ export default function Navbar() {
           transition={{ duration: 0.3 }}>
 
                         <div className="flex flex-col gap-6">
-                            {navLinks.map((link) => (
-              <div key={link.page}>
-                {link.submenu ? (
-                  <div>
-                    <button
-                      onClick={() => setOpenSubmenu(openSubmenu === link.page ? null : link.page)}
-                      className="text-2xl font-semibold text-white flex items-center gap-2 w-full"
-                    >
-                      {link.name}
-                      <ChevronDown className={`w-5 h-5 transition-transform ${openSubmenu === link.page ? 'rotate-180' : ''}`} />
-                    </button>
-                    {openSubmenu === link.page && (
-                      <div className="ml-6 mt-4 flex flex-col gap-4">
-                        {link.submenu.map((sublink) => (
-                          <Link
-                            key={sublink.page}
-                            to={createPageUrl(sublink.page)}
-                            onClick={() => setIsMobileMenuOpen(false)}
-                            className={`text-xl font-medium ${
-                              isActivePage(sublink.page) ? 'text-green-400' : 'text-gray-300'
-                            }`}
-                          >
-                            {sublink.name}
-                          </Link>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-                ) : (
-                  <Link
-                    to={createPageUrl(link.page)}
-                    onClick={() => setIsMobileMenuOpen(false)}
-                    className={`text-2xl font-semibold ${
-                      isActivePage(link.page) ? 'text-green-400' : 'text-white'
-                    }`}
-                  >
-                    {link.name}
-                  </Link>
-                )}
-              </div>
-            ))}
+                            {navLinks.map((link) =>
+            <Link
+              key={link.page}
+              to={createPageUrl(link.page)}
+              onClick={() => setIsMobileMenuOpen(false)}
+              className={`text-2xl font-semibold ${
+              isActivePage(link.page) ?
+              'text-green-400' :
+              'text-white'}`
+              }>
+
+                                    {link.name}
+                                </Link>
+            )}
                         </div>
                     </motion.div>
         }
