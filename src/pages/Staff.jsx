@@ -139,6 +139,16 @@ export default function Staff() {
               </CardContent>
             </Card>
           </Link>
+
+          <Link to={createPageUrl('BuyTickets')}>
+            <Card className="bg-stone-900 border-stone-800 hover:border-green-600 transition-all cursor-pointer h-full">
+              <CardContent className="p-8 text-center">
+                <Ticket className="w-16 h-16 text-green-500 mx-auto mb-4" />
+                <h2 className="text-2xl font-bold text-white mb-2">Purchase Tickets</h2>
+                <p className="text-gray-400">Buy event tickets for customers</p>
+              </CardContent>
+            </Card>
+          </Link>
         </div>
 
         <Card className="bg-stone-900 border-stone-800 mt-8">
@@ -157,6 +167,9 @@ export default function Staff() {
             </a>
             <a href={createPageUrl('BuyBarCredits')} className="block text-green-500 hover:text-green-400">
               Buy Bar Credits
+            </a>
+            <a href={createPageUrl('BuyTickets')} className="block text-green-500 hover:text-green-400">
+              Purchase Tickets
             </a>
           </CardContent>
         </Card>
