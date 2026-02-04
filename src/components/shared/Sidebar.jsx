@@ -9,8 +9,8 @@ const navLinks = [
   { name: 'Home', page: 'Home' },
   { name: 'About', page: 'About' },
   { name: 'Contact', page: 'Contact' },
-  { name: 'Purchase Tickets', page: 'BuyTickets' },
   { name: 'Staff', page: 'Staff', submenu: [
+    { name: 'Purchase Tickets', page: 'BuyTickets' },
     { name: 'Buy Bar Credits', page: 'BuyBarCredits' }
   ] }
 ];
