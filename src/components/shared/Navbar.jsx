@@ -9,7 +9,6 @@ const navLinks = [
 { name: 'Home', page: 'Home' },
 { name: 'About', page: 'About' },
 { name: 'Contact', page: 'Contact' },
-{ name: 'Buy Bar Credits', page: 'BuyBarCredits' },
 { name: 'Staff', page: 'Staff' }];
 
 
