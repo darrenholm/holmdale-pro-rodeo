@@ -42,19 +42,9 @@ export default function CTASection() {
                      </h2>
                     
                     <p className="text-xl text-stone-300 mb-10 max-w-2xl mx-auto leading-relaxed">
-                        Secure your tickets now and be part of the most exciting rodeo event of the year. 
-                        Seats are selling fast!
+                        Be part of the most exciting rodeo event of the year. 
+                        Check out our upcoming events!
                     </p>
-                    
-                    <Link to={createPageUrl('Events')}>
-                        <Button 
-                            size="lg" 
-                            className="bg-green-500 hover:bg-green-600 text-white px-10 py-7 text-lg font-semibold shadow-2xl shadow-green-500/30 transition-all duration-300 hover:shadow-green-500/50 hover:scale-105"
-                        >
-                            Get Tickets Now
-                            <ArrowRight className="w-5 h-5 ml-2" />
-                        </Button>
-                    </Link>
                 </motion.div>
             </div>
         </section>

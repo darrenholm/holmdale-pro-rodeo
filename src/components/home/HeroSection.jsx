@@ -95,14 +95,6 @@ export default function HeroSection({ featuredEvent }) {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.4 }}>
 
-                    <Link to={createPageUrl('Events')}>
-                        <Button
-              size="lg"
-              className="bg-green-600 hover:bg-green-700 text-white px-8 py-6 text-lg font-semibold shadow-lg shadow-green-500/25 transition-all duration-300 hover:shadow-green-500/40 hover:scale-105">
-
-                            Get Your Tickets
-                        </Button>
-                    </Link>
                     <Link to={createPageUrl('About')}>
                         <Button
               size="lg"
