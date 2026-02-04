@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { QrCode, Ticket, CreditCard, LogOut, Radio } from 'lucide-react';
+import { QrCode, Ticket, CreditCard, LogOut, Radio, DollarSign } from 'lucide-react';
 import { createPageUrl } from '@/utils';
 
 const STAFF_PASSWORD = 'staff2026'; // Change this to your desired password
@@ -129,6 +129,16 @@ export default function Staff() {
               </CardContent>
             </Card>
           </Link>
+
+          <Link to={createPageUrl('BuyBarCredits')}>
+            <Card className="bg-stone-900 border-stone-800 hover:border-green-600 transition-all cursor-pointer h-full">
+              <CardContent className="p-8 text-center">
+                <DollarSign className="w-16 h-16 text-green-500 mx-auto mb-4" />
+                <h2 className="text-2xl font-bold text-white mb-2">Buy Bar Credits</h2>
+                <p className="text-gray-400">Purchase bar credits for customers</p>
+              </CardContent>
+            </Card>
+          </Link>
         </div>
 
         <Card className="bg-stone-900 border-stone-800 mt-8">
@@ -144,6 +154,9 @@ export default function Staff() {
             </a>
             <a href={createPageUrl('LinkRFID')} className="block text-green-500 hover:text-green-400">
               Link RFID
+            </a>
+            <a href={createPageUrl('BuyBarCredits')} className="block text-green-500 hover:text-green-400">
+              Buy Bar Credits
             </a>
           </CardContent>
         </Card>
