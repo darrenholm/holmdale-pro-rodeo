@@ -60,7 +60,6 @@ import GateScan from './pages/GateScan';
 import Home from './pages/Home';
 import ImportStaff from './pages/ImportStaff';
 import LinkRFID from './pages/LinkRFID';
-import RFIDDebug from './pages/RFIDDebug';
 import RFIDTest from './pages/RFIDTest';
 import Shop from './pages/Shop';
 import Staff from './pages/Staff';
@@ -84,7 +83,6 @@ export const PAGES = {
     "Home": Home,
     "ImportStaff": ImportStaff,
     "LinkRFID": LinkRFID,
-    "RFIDDebug": RFIDDebug,
     "RFIDTest": RFIDTest,
     "Shop": Shop,
     "Staff": Staff,
