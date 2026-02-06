@@ -48,9 +48,6 @@
  * The mainPage value must match a key in the PAGES object exactly.
  */
 import About from './pages/About';
-import AdminBarCredits from './pages/AdminBarCredits';
-import BarRedemption from './pages/BarRedemption';
-import BuyBarCredits from './pages/BuyBarCredits';
 import BuyTickets from './pages/BuyTickets';
 import CheckoutCancel from './pages/CheckoutCancel';
 import CheckoutSuccess from './pages/CheckoutSuccess';
@@ -71,9 +68,6 @@ import __Layout from './Layout.jsx';
 
 export const PAGES = {
     "About": About,
-    "AdminBarCredits": AdminBarCredits,
-    "BarRedemption": BarRedemption,
-    "BuyBarCredits": BuyBarCredits,
     "BuyTickets": BuyTickets,
     "CheckoutCancel": CheckoutCancel,
     "CheckoutSuccess": CheckoutSuccess,
