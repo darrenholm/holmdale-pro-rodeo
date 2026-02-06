@@ -4,7 +4,7 @@ import { base44 } from '@/api/base44Client';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { CheckCircle2, XCircle, AlertCircle, CreditCard, Minus, Camera, Keyboard } from 'lucide-react';
+import { CheckCircle2, XCircle, AlertCircle, CreditCard, Minus, Camera, Keyboard, Nfc } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 export default function BarRedemption() {
@@ -21,6 +21,7 @@ export default function BarRedemption() {
   const canvasRef = useRef(null);
   const streamRef = useRef(null);
   const animationRef = useRef(null);
+  const nfcAbortControllerRef = useRef(null);
 
   useEffect(() => {
     if (scanning) {
@@ -143,11 +144,72 @@ export default function BarRedemption() {
     await lookupCreditsDirectly(confirmationCode.trim());
   };
 
+  const startNFCScan = async () => {
+    if (!('NDEFReader' in window)) {
+      setScanError('NFC is not supported on this device/browser');
+      return;
+    }
+
+    try {
+      setScanning(true);
+      const ndef = new window.NDEFReader();
+      nfcAbortControllerRef.current = new AbortController();
+
+      await ndef.scan({ signal: nfcAbortControllerRef.current.signal });
+
+      ndef.addEventListener('reading', ({ serialNumber }) => {
+        lookupCreditsByRFID(serialNumber);
+        stopNFCScan();
+      });
+
+    } catch (error) {
+      console.error('NFC scan error:', error);
+      setScanError('Failed to scan NFC. Error: ' + error.message);
+      setScanning(false);
+    }
+  };
+
+  const stopNFCScan = () => {
+    if (nfcAbortControllerRef.current) {
+      nfcAbortControllerRef.current.abort();
+      nfcAbortControllerRef.current = null;
+    }
+    setScanning(false);
+  };
+
   const lookupCreditsByRFID = async (rfidTagId) => {
    setLoading(true);
    setResult(null);
 
    try {
+     // First check if there's a BarCredit directly linked to this RFID
+     const creditsByRFID = await base44.entities.BarCredit.filter({
+       rfid_tag_id: rfidTagId
+     });
+
+     if (creditsByRFID.length > 0) {
+       const credit = creditsByRFID[0];
+       if (credit.status !== 'confirmed') {
+         setResult({
+           success: false,
+           message: 'Credits not confirmed - payment may be pending'
+         });
+         setCredits(null);
+       } else if (credit.remaining_credits <= 0) {
+         setResult({
+           success: false,
+           message: 'No credits remaining'
+         });
+         setCredits(credit);
+       } else {
+         setCredits(credit);
+         setResult(null);
+       }
+       setLoading(false);
+       return;
+     }
+
+     // Fallback: check tickets linked to this RFID
      const tickets = await base44.entities.TicketOrder.filter({
        rfid_tag_id: rfidTagId
      });
@@ -155,7 +217,7 @@ export default function BarRedemption() {
      if (tickets.length === 0) {
        setResult({
          success: false,
-         message: 'RFID tag not linked to any ticket'
+         message: 'RFID tag not linked to any bar credits or tickets'
        });
        setCredits(null);
      } else {
@@ -291,6 +353,7 @@ export default function BarRedemption() {
    setManualMode(false);
    setRfidMode(false);
    stopCamera();
+   stopNFCScan();
   };
 
   return (
@@ -351,11 +414,11 @@ export default function BarRedemption() {
                 <Button 
                   onClick={() => {
                     setRfidMode(true);
-                    startScanning();
+                    startNFCScan();
                   }}
                   className="w-full bg-purple-600 hover:bg-purple-700 text-white px-8 py-4 text-lg"
                 >
-                  <Keyboard className="w-5 h-5 mr-2" />
+                  <Nfc className="w-5 h-5 mr-2" />
                   Scan RFID Wristband
                 </Button>
                 <Button 
@@ -377,13 +440,36 @@ export default function BarRedemption() {
               <CardTitle className="text-white">Manual Entry</CardTitle>
             </CardHeader>
             <CardContent>
-              <form onSubmit={lookupCredits} className="space-y-4">
+              <div className="space-y-4 mb-4">
+                <Button
+                  onClick={() => setRfidMode(false)}
+                  variant={!rfidMode ? "default" : "outline"}
+                  className={!rfidMode ? "w-full bg-green-600 hover:bg-green-700" : "w-full border-stone-700 text-white hover:bg-stone-800"}
+                >
+                  Confirmation Code
+                </Button>
+                <Button
+                  onClick={() => setRfidMode(true)}
+                  variant={rfidMode ? "default" : "outline"}
+                  className={rfidMode ? "w-full bg-purple-600 hover:bg-purple-700" : "w-full border-stone-700 text-white hover:bg-stone-800"}
+                >
+                  RFID Tag ID
+                </Button>
+              </div>
+              <form onSubmit={(e) => {
+                e.preventDefault();
+                if (rfidMode) {
+                  lookupCreditsByRFID(confirmationCode.trim());
+                } else {
+                  lookupCreditsDirectly(confirmationCode.trim());
+                }
+              }} className="space-y-4">
                 <div>
                   <Input
                     type="text"
                     value={confirmationCode}
                     onChange={(e) => setConfirmationCode(e.target.value)}
-                    placeholder="Enter confirmation code"
+                    placeholder={rfidMode ? "Enter RFID tag ID" : "Enter confirmation code"}
                     className="bg-stone-800 border-stone-700 text-white text-lg p-6"
                     autoFocus
                   />
@@ -418,18 +504,26 @@ export default function BarRedemption() {
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div className="relative bg-black rounded-lg overflow-hidden">
-                <video 
-                  ref={videoRef}
-                  className="w-full h-auto"
-                  playsInline
-                  muted
-                />
-                <canvas ref={canvasRef} className="hidden" />
-                <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                  <div className="border-2 border-green-500 w-64 h-64 rounded-lg"></div>
+              {rfidMode ? (
+                <div className="text-center py-12">
+                  <Nfc className="w-24 h-24 text-purple-500 mx-auto mb-6 animate-pulse" />
+                  <p className="text-white text-xl font-semibold mb-2">Hold wristband near device</p>
+                  <p className="text-gray-400">Waiting for NFC scan...</p>
                 </div>
-              </div>
+              ) : (
+                <div className="relative bg-black rounded-lg overflow-hidden">
+                  <video 
+                    ref={videoRef}
+                    className="w-full h-auto"
+                    playsInline
+                    muted
+                  />
+                  <canvas ref={canvasRef} className="hidden" />
+                  <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                    <div className="border-2 border-green-500 w-64 h-64 rounded-lg"></div>
+                  </div>
+                </div>
+              )}
               <Button 
                 onClick={reset}
                 variant="outline"
