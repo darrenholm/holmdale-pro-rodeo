@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { CreditCard, Plus, Minus, Check } from 'lucide-react';
+import { CreditCard, Plus, Minus, Check, Nfc } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 const PRICE_PER_CREDIT = 0.10; // $0.10 per credit
@@ -21,7 +21,10 @@ export default function BuyBarCredits() {
   const [confirmationCode, setConfirmationCode] = useState('');
   const [showCheckout, setShowCheckout] = useState(false);
   const [checkoutTicket, setCheckoutTicket] = useState(null);
+  const [rfidTagId, setRfidTagId] = useState('');
+  const [isScanning, setIsScanning] = useState(false);
   const monerisCheckoutRef = useRef(null);
+  const nfcAbortControllerRef = useRef(null);
 
   useEffect(() => {
     // Load Moneris Checkout script
@@ -122,6 +125,42 @@ export default function BuyBarCredits() {
     }
   };
 
+  const startNFCScan = async () => {
+    if (!('NDEFReader' in window)) {
+      alert('NFC is not supported on this device/browser');
+      return;
+    }
+
+    try {
+      setIsScanning(true);
+      const ndef = new window.NDEFReader();
+      nfcAbortControllerRef.current = new AbortController();
+
+      await ndef.scan({ signal: nfcAbortControllerRef.current.signal });
+
+      ndef.addEventListener('reading', ({ serialNumber }) => {
+        setRfidTagId(serialNumber);
+        setIsScanning(false);
+        if (nfcAbortControllerRef.current) {
+          nfcAbortControllerRef.current.abort();
+        }
+      });
+
+    } catch (error) {
+      console.error('NFC scan error:', error);
+      alert('Failed to scan NFC. Error: ' + error.message);
+      setIsScanning(false);
+    }
+  };
+
+  const stopNFCScan = () => {
+    if (nfcAbortControllerRef.current) {
+      nfcAbortControllerRef.current.abort();
+      nfcAbortControllerRef.current = null;
+    }
+    setIsScanning(false);
+  };
+
   const checkoutMutation = useMutation({
     mutationFn: async (data) => {
       if (window.self !== window.top) {
@@ -153,7 +192,8 @@ export default function BuyBarCredits() {
     checkoutMutation.mutate({
       quantity,
       price_per_credit: PRICE_PER_CREDIT,
-      customer_info: customerInfo
+      customer_info: customerInfo,
+      rfid_tag_id: rfidTagId || undefined
     });
   };
 
@@ -340,6 +380,30 @@ export default function BuyBarCredits() {
                     className="bg-stone-800 border-stone-700 text-white"
                     placeholder="(555) 123-4567"
                   />
+                </div>
+
+                <div>
+                  <Label className="text-gray-400">RFID Wristband (Optional)</Label>
+                  <div className="flex gap-2">
+                    <Input
+                      type="text"
+                      value={rfidTagId}
+                      onChange={(e) => setRfidTagId(e.target.value)}
+                      className="bg-stone-800 border-stone-700 text-white"
+                      placeholder="Scan or enter RFID tag"
+                    />
+                    <Button
+                      type="button"
+                      onClick={isScanning ? stopNFCScan : startNFCScan}
+                      variant="outline"
+                      className={`${isScanning ? 'bg-green-600 hover:bg-green-700' : 'bg-stone-800 hover:bg-stone-700'} border-stone-700 text-white`}
+                    >
+                      <Nfc className={`w-5 h-5 ${isScanning ? 'animate-pulse' : ''}`} />
+                    </Button>
+                  </div>
+                  <p className="text-xs text-gray-500 mt-1">
+                    {isScanning ? 'Hold wristband near device...' : 'Link a wristband for easy redemption'}
+                  </p>
                 </div>
 
                 <Button
