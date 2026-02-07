@@ -138,6 +138,11 @@ export default function Events() {
                                                                 General Available
                                                             </Badge>
                                                         )}
+                                                        {event.family_available > 0 && (
+                                                            <Badge variant="outline" className="border-green-500/50 text-green-400">
+                                                                Family Available
+                                                            </Badge>
+                                                        )}
                                                         {event.premium_available > 0 && (
                                                             <Badge variant="outline" className="border-blue-500/50 text-blue-400">
                                                                 Premium Available
