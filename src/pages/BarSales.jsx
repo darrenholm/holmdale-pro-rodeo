@@ -129,7 +129,7 @@ export default function BarSales() {
 
     const createCheckout = useMutation({
         mutationFn: async (checkoutData) => {
-            const response = await base44.functions.invoke('createBarTicketCheckout', checkoutData);
+            const response = await base44.functions.invoke('createBarTokenCheckout', checkoutData);
             return response.data;
         }
     });
