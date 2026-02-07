@@ -87,7 +87,7 @@ export default function RFIDRegistry() {
                             </span>
                           </TableCell>
                           <TableCell className="text-gray-400">
-                            {ticketGroup.length} / {firstTicket.quantity}
+                            {ticketGroup.length} / {firstTicket.quantityAdult}
                           </TableCell>
                           <TableCell>
                             <div className="space-y-1">

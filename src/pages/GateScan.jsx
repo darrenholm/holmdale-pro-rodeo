@@ -398,7 +398,7 @@ export default function GateScan() {
                     </div>
                     <div className="flex justify-between">
                       <span className="text-gray-400">Quantity:</span>
-                      <span className="text-white">{result.ticket.quantity}</span>
+                      <span className="text-white">{result.ticket.quantityAdult}</span>
                     </div>
                     <div className="flex justify-between">
                       <span className="text-gray-400">Confirmation:</span>

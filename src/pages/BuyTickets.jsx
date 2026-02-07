@@ -182,7 +182,7 @@ export default function BuyTickets() {
                 customer_email: customerInfo.email,
                 customer_phone: customerInfo.phone,
                 ticket_type: selectedType,
-                quantity: quantity,
+                quantityAdult: quantity,
                 total_price: totalPrice,
                 confirmation_code: code,
                 status: 'pending'
