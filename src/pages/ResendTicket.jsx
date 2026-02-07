@@ -39,13 +39,13 @@ export default function ResendTicket() {
         
         try {
             await base44.functions.invoke('sendTicketConfirmation', {
-                orderId: ticket.id
+                ticket_order_id: ticket.id
             });
             setSuccessId(ticket.id);
             setTimeout(() => setSuccessId(null), 3000);
         } catch (error) {
             console.error('Resend error:', error);
-            alert('Failed to resend ticket');
+            alert('Failed to resend ticket: ' + (error.response?.data?.error || error.message));
         } finally {
             setSendingId(null);
         }
