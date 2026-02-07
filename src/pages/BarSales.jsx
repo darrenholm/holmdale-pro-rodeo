@@ -72,15 +72,18 @@ export default function BarSales() {
             myCheckout.setCallback('payment_complete', async (data) => {
                 console.log('Payment complete:', data);
                 
-                // Save purchase record
-                await base44.entities.BarPurchase.create({
+                // Update the most recent pending purchase to completed
+                const purchases = await base44.entities.BarPurchase.filter({ 
                     rfid_tag_id: rfidTagId,
-                    customer_name: customerName,
-                    token_amount: selectedAmount,
-                    total_price: selectedAmount * 1.13,
-                    transaction_id: data.ticket,
-                    status: 'completed'
+                    status: 'pending'
                 });
+                
+                if (purchases.length > 0) {
+                    await base44.entities.BarPurchase.update(purchases[0].id, {
+                        transaction_id: data.ticket,
+                        status: 'completed'
+                    });
+                }
 
                 setShowCheckout(false);
                 setStep('success');
@@ -131,6 +134,15 @@ export default function BarSales() {
 
     const handlePurchase = async () => {
         try {
+            // Create pending purchase record first
+            const purchase = await base44.entities.BarPurchase.create({
+                rfid_tag_id: rfidTagId,
+                customer_name: customerName,
+                token_amount: selectedAmount,
+                total_price: selectedAmount * 1.13,
+                status: 'pending'
+            });
+
             const result = await createCheckout.mutateAsync({
                 rfidTagId,
                 tokenAmount: selectedAmount,
@@ -141,6 +153,8 @@ export default function BarSales() {
                 setCheckoutTicket(result.ticket);
                 setShowCheckout(true);
             } else {
+                // Mark as failed if checkout creation fails
+                await base44.entities.BarPurchase.update(purchase.id, { status: 'failed' });
                 alert('Failed to create checkout session');
             }
         } catch (error) {
