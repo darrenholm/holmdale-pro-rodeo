@@ -10,18 +10,20 @@ import { Scan, DollarSign, CheckCircle, ArrowLeft, Loader2 } from 'lucide-react'
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 
-const tokenOptions = [
-    { amount: 5, label: '$5 Tokens', color: 'bg-blue-500' },
-    { amount: 10, label: '$10 Tokens', color: 'bg-green-500' },
-    { amount: 20, label: '$20 Tokens', color: 'bg-purple-500' },
-    { amount: 50, label: '$50 Tokens', color: 'bg-orange-500' }
+const ticketOptions = [
+    { quantity: 10, label: '10 Tickets', color: 'bg-blue-500' },
+    { quantity: 25, label: '25 Tickets', color: 'bg-green-500' },
+    { quantity: 50, label: '50 Tickets', color: 'bg-purple-500' },
+    { quantity: 100, label: '100 Tickets', color: 'bg-orange-500' }
 ];
+
+const TICKET_PRICE = 0.07; // $0.07 per ticket including tax
 
 export default function BarSales() {
     const [step, setStep] = useState('scan'); // scan, select, checkout, success
     const [rfidTagId, setRfidTagId] = useState('');
     const [customerName, setCustomerName] = useState('');
-    const [selectedAmount, setSelectedAmount] = useState(null);
+    const [selectedQuantity, setSelectedQuantity] = useState(null);
     const [isScanning, setIsScanning] = useState(false);
     const [showCheckout, setShowCheckout] = useState(false);
     const [checkoutTicket, setCheckoutTicket] = useState(null);
@@ -127,25 +129,27 @@ export default function BarSales() {
 
     const createCheckout = useMutation({
         mutationFn: async (checkoutData) => {
-            const response = await base44.functions.invoke('createBarTokenCheckout', checkoutData);
+            const response = await base44.functions.invoke('createBarTicketCheckout', checkoutData);
             return response.data;
         }
     });
 
     const handlePurchase = async () => {
         try {
+            const totalPrice = selectedQuantity * TICKET_PRICE;
+            
             // Create pending purchase record first
             const purchase = await base44.entities.BarPurchase.create({
                 rfid_tag_id: rfidTagId,
                 customer_name: customerName,
-                token_amount: selectedAmount,
-                total_price: selectedAmount * 1.13,
+                ticket_quantity: selectedQuantity,
+                total_price: totalPrice,
                 status: 'pending'
             });
 
             const result = await createCheckout.mutateAsync({
                 rfidTagId,
-                tokenAmount: selectedAmount,
+                ticketQuantity: selectedQuantity,
                 customerName
             });
 
@@ -167,7 +171,7 @@ export default function BarSales() {
         setStep('scan');
         setRfidTagId('');
         setCustomerName('');
-        setSelectedAmount(null);
+        setSelectedQuantity(null);
         setShowCheckout(false);
         setCheckoutTicket(null);
     };
@@ -202,8 +206,8 @@ export default function BarSales() {
                             <CheckCircle className="w-10 h-10 text-green-500" />
                         </div>
                         <h2 className="text-3xl font-bold text-white mb-2">Purchase Complete!</h2>
-                        <p className="text-stone-400 mb-6">${selectedAmount} in tokens added to wristband</p>
-                        
+                        <p className="text-stone-400 mb-6">{selectedQuantity} bar tickets added to wristband</p>
+
                         <div className="bg-stone-800/50 rounded-xl p-4 mb-6 text-left space-y-2">
                             <div className="flex justify-between">
                                 <span className="text-stone-400">RFID Tag</span>
@@ -216,8 +220,12 @@ export default function BarSales() {
                                 </div>
                             )}
                             <div className="flex justify-between">
-                                <span className="text-stone-400">Tokens</span>
-                                <span className="text-green-400 font-bold">${selectedAmount}</span>
+                                <span className="text-stone-400">Tickets</span>
+                                <span className="text-green-400 font-bold">{selectedQuantity} tickets</span>
+                            </div>
+                            <div className="flex justify-between">
+                                <span className="text-stone-400">Total</span>
+                                <span className="text-green-400 font-bold">${(selectedQuantity * TICKET_PRICE).toFixed(2)}</span>
                             </div>
                         </div>
                         
@@ -248,7 +256,7 @@ export default function BarSales() {
                     <CardHeader>
                         <CardTitle className="text-white flex items-center gap-2">
                             <DollarSign className="w-6 h-6 text-green-500" />
-                            Bar Token Sales
+                            Bar Ticket Sales
                         </CardTitle>
                     </CardHeader>
                     <CardContent className="space-y-6">
@@ -322,14 +330,15 @@ export default function BarSales() {
                                     )}
                                 </div>
 
-                                <h3 className="text-xl font-bold text-white mb-4">Select Token Amount</h3>
+                                <h3 className="text-xl font-bold text-white mb-4">Select Ticket Quantity</h3>
+                                <p className="text-stone-400 text-sm mb-4">$0.07 per ticket (tax included)</p>
                                 <div className="grid grid-cols-2 gap-4 mb-6">
-                                    {tokenOptions.map((option) => (
+                                    {ticketOptions.map((option) => (
                                         <button
-                                            key={option.amount}
-                                            onClick={() => setSelectedAmount(option.amount)}
+                                            key={option.quantity}
+                                            onClick={() => setSelectedQuantity(option.quantity)}
                                             className={`p-6 rounded-xl border-2 transition-all ${
-                                                selectedAmount === option.amount
+                                                selectedQuantity === option.quantity
                                                     ? 'border-green-500 bg-green-500/10'
                                                     : 'border-stone-700 bg-stone-800/50 hover:border-stone-600'
                                             }`}
@@ -338,25 +347,25 @@ export default function BarSales() {
                                                 <DollarSign className="w-6 h-6 text-white" />
                                             </div>
                                             <p className="text-2xl font-bold text-white">{option.label}</p>
-                                            <p className="text-stone-400 text-sm mt-1">+ HST</p>
+                                            <p className="text-stone-400 text-sm mt-1">${(option.quantity * TICKET_PRICE).toFixed(2)}</p>
                                         </button>
                                     ))}
                                 </div>
 
-                                {selectedAmount && (
+                                {selectedQuantity && (
                                     <div className="bg-stone-800 rounded-lg p-4 mb-6">
                                         <div className="flex justify-between text-stone-300 mb-2">
-                                            <span>Token Amount</span>
-                                            <span>${selectedAmount.toFixed(2)}</span>
+                                            <span>Ticket Quantity</span>
+                                            <span>{selectedQuantity} tickets</span>
                                         </div>
                                         <div className="flex justify-between text-stone-300 mb-2">
-                                            <span>HST (13%)</span>
-                                            <span>${(selectedAmount * 0.13).toFixed(2)}</span>
+                                            <span>Price per Ticket</span>
+                                            <span>${TICKET_PRICE.toFixed(2)}</span>
                                         </div>
                                         <div className="border-t border-stone-700 pt-2 mt-2">
                                             <div className="flex justify-between text-lg font-bold">
-                                                <span className="text-white">Total</span>
-                                                <span className="text-green-400">${(selectedAmount * 1.13).toFixed(2)}</span>
+                                                <span className="text-white">Total (tax included)</span>
+                                                <span className="text-green-400">${(selectedQuantity * TICKET_PRICE).toFixed(2)}</span>
                                             </div>
                                         </div>
                                     </div>
@@ -372,7 +381,7 @@ export default function BarSales() {
                                     </Button>
                                     <Button
                                         onClick={handlePurchase}
-                                        disabled={!selectedAmount || createCheckout.isPending}
+                                        disabled={!selectedQuantity || createCheckout.isPending}
                                         className="flex-1 bg-green-500 hover:bg-green-600 text-stone-900"
                                     >
                                         {createCheckout.isPending ? (

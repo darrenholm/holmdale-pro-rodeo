@@ -60,12 +60,12 @@ import ImportStaff from './pages/ImportStaff';
 import LinkRFID from './pages/LinkRFID';
 import RFIDRegistry from './pages/RFIDRegistry';
 import RFIDTest from './pages/RFIDTest';
+import ResendTicket from './pages/ResendTicket';
 import Shop from './pages/Shop';
 import Staff from './pages/Staff';
 import StaffList from './pages/StaffList';
 import StaffScheduling from './pages/StaffScheduling';
 import TrackOrder from './pages/TrackOrder';
-import ResendTicket from './pages/ResendTicket';
 import __Layout from './Layout.jsx';
 
 
@@ -83,12 +83,12 @@ export const PAGES = {
     "LinkRFID": LinkRFID,
     "RFIDRegistry": RFIDRegistry,
     "RFIDTest": RFIDTest,
+    "ResendTicket": ResendTicket,
     "Shop": Shop,
     "Staff": Staff,
     "StaffList": StaffList,
     "StaffScheduling": StaffScheduling,
     "TrackOrder": TrackOrder,
-    "ResendTicket": ResendTicket,
 }
 
 export const pagesConfig = {
