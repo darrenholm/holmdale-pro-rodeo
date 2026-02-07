@@ -11,7 +11,10 @@ import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 
 const tokenOptions = [
-    { amount: 0.01, label: '$0.01 Tokens', color: 'bg-green-500' }
+    { amount: 5, label: '$5 Tokens', color: 'bg-blue-500' },
+    { amount: 10, label: '$10 Tokens', color: 'bg-green-500' },
+    { amount: 20, label: '$20 Tokens', color: 'bg-purple-500' },
+    { amount: 50, label: '$50 Tokens', color: 'bg-orange-500' }
 ];
 
 export default function BarSales() {
