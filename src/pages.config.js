@@ -48,9 +48,11 @@
  * The mainPage value must match a key in the PAGES object exactly.
  */
 import About from './pages/About';
+import BuyTickets from './pages/BuyTickets';
 import CheckoutCancel from './pages/CheckoutCancel';
 import CheckoutSuccess from './pages/CheckoutSuccess';
 import Contact from './pages/Contact';
+import Events from './pages/Events';
 import GateScan from './pages/GateScan';
 import Home from './pages/Home';
 import ImportStaff from './pages/ImportStaff';
@@ -62,16 +64,17 @@ import Staff from './pages/Staff';
 import StaffList from './pages/StaffList';
 import StaffScheduling from './pages/StaffScheduling';
 import TrackOrder from './pages/TrackOrder';
-import Events from './pages/Events';
-import BuyTickets from './pages/BuyTickets';
+import BarSales from './pages/BarSales';
 import __Layout from './Layout.jsx';
 
 
 export const PAGES = {
     "About": About,
+    "BuyTickets": BuyTickets,
     "CheckoutCancel": CheckoutCancel,
     "CheckoutSuccess": CheckoutSuccess,
     "Contact": Contact,
+    "Events": Events,
     "GateScan": GateScan,
     "Home": Home,
     "ImportStaff": ImportStaff,
@@ -83,8 +86,7 @@ export const PAGES = {
     "StaffList": StaffList,
     "StaffScheduling": StaffScheduling,
     "TrackOrder": TrackOrder,
-    "Events": Events,
-    "BuyTickets": BuyTickets,
+    "BarSales": BarSales,
 }
 
 export const pagesConfig = {
