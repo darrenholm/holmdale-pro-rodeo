@@ -9,11 +9,15 @@ Deno.serve(async (req) => {
             return Response.json({ error: 'Forbidden: Admin access required' }, { status: 403 });
         }
 
-        const { rfidTagId, tokenAmount, customerName } = await req.json();
+        const { rfidTagId, tokenAmount } = await req.json();
 
         if (!rfidTagId || !tokenAmount) {
             return Response.json({ error: 'Missing required fields' }, { status: 400 });
         }
+
+        // Fetch customer name from ticket order
+        const tickets = await base44.asServiceRole.entities.TicketOrder.filter({ rfid_tag_id: rfidTagId });
+        const customerName = tickets.length > 0 ? tickets[0].customer_name : 'Bar Customer';
 
         const subtotal = tokenAmount;
         const hst = subtotal * 0.13;
