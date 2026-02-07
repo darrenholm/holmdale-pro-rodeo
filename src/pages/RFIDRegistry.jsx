@@ -15,6 +15,16 @@ export default function RFIDRegistry() {
     initialData: [],
   });
 
+  // Group tickets by confirmation code
+  const groupedByCode = tickets.reduce((acc, ticket) => {
+    const code = ticket.confirmation_code;
+    if (!acc[code]) {
+      acc[code] = [];
+    }
+    acc[code].push(ticket);
+    return acc;
+  }, {});
+
   return (
     <div className="min-h-screen bg-stone-950 p-4 pt-20">
       <div className="max-w-6xl mx-auto">
@@ -27,7 +37,7 @@ export default function RFIDRegistry() {
           <CardHeader>
             <CardTitle className="text-white flex items-center gap-2">
               <Radio className="w-5 h-5 text-green-500" />
-              Linked RFID Bracelets ({tickets.length})
+              Linked RFID Bracelets ({tickets.length}) • {Object.keys(groupedByCode).length} Unique Orders
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -42,45 +52,62 @@ export default function RFIDRegistry() {
                 <Table>
                   <TableHeader>
                     <TableRow className="border-stone-800 hover:bg-stone-800/50">
-                      <TableHead className="text-gray-400">RFID Bracelet #</TableHead>
                       <TableHead className="text-gray-400">Confirmation Code</TableHead>
-                      <TableHead className="text-gray-400">Customer Name</TableHead>
-                      <TableHead className="text-gray-400">Email</TableHead>
-                      <TableHead className="text-gray-400">Ticket Type</TableHead>
+                      <TableHead className="text-gray-400">RFID Bracelets</TableHead>
+                      <TableHead className="text-gray-400">Customer</TableHead>
+                      <TableHead className="text-gray-400">Type</TableHead>
+                      <TableHead className="text-gray-400">Quantity</TableHead>
                       <TableHead className="text-gray-400">Status</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {tickets.map((ticket) => (
-                      <TableRow key={ticket.id} className="border-stone-800 hover:bg-stone-800/50">
-                        <TableCell className="font-mono text-green-400 font-semibold">
-                          {ticket.rfid_tag_id}
-                        </TableCell>
-                        <TableCell className="font-mono text-white">
-                          {ticket.confirmation_code}
-                        </TableCell>
-                        <TableCell className="text-gray-300">
-                          {ticket.customer_name}
-                        </TableCell>
-                        <TableCell className="text-gray-400 text-sm">
-                          {ticket.customer_email}
-                        </TableCell>
-                        <TableCell>
-                          <span className="text-gray-300 capitalize">
-                            {ticket.ticket_type}
-                          </span>
-                        </TableCell>
-                        <TableCell>
-                          <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
-                            ticket.scanned 
-                              ? 'bg-green-900/30 text-green-400' 
-                              : 'bg-blue-900/30 text-blue-400'
-                          }`}>
-                            {ticket.scanned ? 'Scanned' : 'Not Scanned'}
-                          </span>
-                        </TableCell>
-                      </TableRow>
-                    ))}
+                    {Object.entries(groupedByCode).map(([code, ticketGroup]) => {
+                      const firstTicket = ticketGroup[0];
+                      return (
+                        <TableRow key={code} className="border-stone-800 hover:bg-stone-800/50">
+                          <TableCell className="font-mono text-white font-semibold">
+                            {code}
+                          </TableCell>
+                          <TableCell>
+                            <div className="space-y-1">
+                              {ticketGroup.map((ticket, idx) => (
+                                <div key={ticket.id} className="font-mono text-green-400 text-sm">
+                                  {ticket.rfid_tag_id}
+                                </div>
+                              ))}
+                            </div>
+                          </TableCell>
+                          <TableCell>
+                            <div className="text-gray-300">{firstTicket.customer_name}</div>
+                            <div className="text-gray-500 text-xs">{firstTicket.customer_email}</div>
+                          </TableCell>
+                          <TableCell>
+                            <span className="text-gray-300 capitalize text-sm">
+                              {firstTicket.ticket_type}
+                            </span>
+                          </TableCell>
+                          <TableCell className="text-gray-400">
+                            {ticketGroup.length} / {firstTicket.quantity}
+                          </TableCell>
+                          <TableCell>
+                            <div className="space-y-1">
+                              {ticketGroup.map((ticket) => (
+                                <span 
+                                  key={ticket.id}
+                                  className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${
+                                    ticket.scanned 
+                                      ? 'bg-green-900/30 text-green-400' 
+                                      : 'bg-blue-900/30 text-blue-400'
+                                  }`}
+                                >
+                                  {ticket.scanned ? 'Scanned' : 'Ready'}
+                                </span>
+                              ))}
+                            </div>
+                          </TableCell>
+                        </TableRow>
+                      );
+                    })}
                   </TableBody>
                 </Table>
               </div>
