@@ -9,9 +9,9 @@ Deno.serve(async (req) => {
             return Response.json({ error: 'Forbidden: Admin access required' }, { status: 403 });
         }
 
-        const { rfidTagId, tokenAmount } = await req.json();
+        const { rfidTagId, ticketQuantity } = await req.json();
 
-        if (!rfidTagId || !tokenAmount) {
+        if (!rfidTagId || !ticketQuantity) {
             return Response.json({ error: 'Missing required fields' }, { status: 400 });
         }
 
@@ -19,9 +19,8 @@ Deno.serve(async (req) => {
         const tickets = await base44.asServiceRole.entities.TicketOrder.filter({ rfid_tag_id: rfidTagId });
         const customerName = tickets.length > 0 ? tickets[0].customer_name : 'Bar Customer';
 
-        const subtotal = tokenAmount;
-        const hst = subtotal * 0.13;
-        const totalPrice = subtotal + hst;
+        // Price is $0.07 per ticket including tax
+        const totalPrice = ticketQuantity * 0.07;
 
         // Create Moneris checkout
         const monerisResponse = await fetch('https://gateway.moneris.com/chktv2/request/request.php', {
@@ -54,7 +53,7 @@ Deno.serve(async (req) => {
             return Response.json({ error: 'Failed to create checkout' }, { status: 500 });
         }
     } catch (error) {
-        console.error('Bar token checkout error:', error);
+        console.error('Bar ticket checkout error:', error);
         return Response.json({ error: error.message }, { status: 500 });
     }
 });
