@@ -129,12 +129,12 @@ Deno.serve(async (req) => {
       </html>
     `;
 
-    // Send email using Core.SendEmail
-    await base44.asServiceRole.integrations.Core.SendEmail({
-      from_name: 'Holmdale Rodeo',
+    // Send email using Resend
+    await resend.emails.send({
+      from: 'Holmdale Pro Rodeo <onboarding@resend.dev>',
       to: ticketOrder.customer_email,
       subject: `Your Tickets for ${event.title} - Confirmation #${ticketOrder.confirmation_code}`,
-      body: emailHtml
+      html: emailHtml
     });
 
     console.log('Ticket confirmation email sent:', ticketOrder.confirmation_code);
