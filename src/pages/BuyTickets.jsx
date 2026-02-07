@@ -23,6 +23,14 @@ const ticketTypes = [
         color: 'border-green-500/50 bg-green-500/10'
     },
     {
+        id: 'family',
+        name: 'Family Ticket',
+        description: '2 adults + 2 children - Perfect for families',
+        priceKey: 'family_price',
+        availableKey: 'family_available',
+        color: 'border-green-500/50 bg-green-500/10'
+    },
+    {
         id: 'vip',
         name: 'VIP Box',
         description: 'Private box seating with complimentary refreshments and meet & greet',
