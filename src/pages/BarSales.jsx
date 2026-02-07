@@ -5,6 +5,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Input } from "@/components/ui/input";
 import { Scan, DollarSign, CheckCircle, ArrowLeft, Loader2 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
@@ -261,6 +262,34 @@ export default function BarSales() {
                                         </>
                                     )}
                                 </Button>
+                                
+                                <div className="mt-8 pt-8 border-t border-stone-800">
+                                    <p className="text-stone-400 mb-4">Or enter RFID tag manually:</p>
+                                    <div className="flex gap-3 max-w-md mx-auto">
+                                        <Input
+                                            type="text"
+                                            placeholder="Enter RFID tag ID"
+                                            value={rfidTagId}
+                                            onChange={(e) => setRfidTagId(e.target.value)}
+                                            className="bg-stone-800 border-stone-700 text-white"
+                                        />
+                                        <Button
+                                            onClick={async () => {
+                                                if (rfidTagId.trim()) {
+                                                    const tickets = await base44.entities.TicketOrder.filter({ rfid_tag_id: rfidTagId });
+                                                    if (tickets.length > 0) {
+                                                        setCustomerName(tickets[0].customer_name);
+                                                    }
+                                                    setStep('select');
+                                                }
+                                            }}
+                                            disabled={!rfidTagId.trim()}
+                                            className="bg-green-500 hover:bg-green-600 text-stone-900"
+                                        >
+                                            Continue
+                                        </Button>
+                                    </div>
+                                </div>
                             </div>
                         )}
 
