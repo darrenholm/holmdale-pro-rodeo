@@ -3,7 +3,6 @@ import { useQuery } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 
 import HeroSection from '../components/home/HeroSection';
-import EventsShowcase from '../components/home/EventsShowcase';
 import FeaturesSection from '../components/home/FeaturesSection';
 import GallerySection from '../components/home/GallerySection';
 import CTASection from '../components/home/CTASection';
@@ -19,7 +18,6 @@ export default function Home() {
     return (
         <div className="min-h-screen bg-stone-950">
             <HeroSection featuredEvent={featuredEvent} />
-            <EventsShowcase events={events} isLoading={isLoading} />
             <FeaturesSection />
             <GallerySection />
             <CTASection />
