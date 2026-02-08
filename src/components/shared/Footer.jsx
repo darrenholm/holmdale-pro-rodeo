@@ -1,22 +1,13 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { MapPin, Phone, Mail, Facebook, Instagram, Twitter, Youtube } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
-import { base44 } from '@/api/base44Client';
 
 export default function Footer() {
-    const [upcomingEvents, setUpcomingEvents] = useState([]);
-
-    useEffect(() => {
-        base44.entities.Event.list('date', 3)
-            .then(setUpcomingEvents)
-            .catch(() => setUpcomingEvents([]));
-    }, []);
-
     return (
         <footer className="bg-stone-950 border-t border-stone-800">
             <div className="max-w-7xl mx-auto px-6 py-16">
-                <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-12">
+                <div className="grid md:grid-cols-3 gap-12">
                     {/* Brand */}
                     <div>
                         <h3 className="text-2xl font-bold text-white mb-4">
@@ -66,26 +57,6 @@ export default function Footer() {
                                     Contact
                                 </Link>
                             </li>
-                        </ul>
-                    </div>
-                    
-                    {/* Events */}
-                    <div>
-                        <h4 className="text-white font-semibold mb-6">Upcoming Events</h4>
-                        <ul className="space-y-3">
-                            {upcomingEvents.length > 0 ? (
-                                upcomingEvents.map((event) => (
-                                    <li key={event.id}>
-                                        <Link to={`${createPageUrl('Events')}`} className="text-stone-400 hover:text-green-400 transition-colors text-sm">
-                                            {event.title}
-                                        </Link>
-                                    </li>
-                                ))
-                            ) : (
-                                <li>
-                                    <span className="text-stone-500 text-sm">Check back soon</span>
-                                </li>
-                            )}
                         </ul>
                     </div>
                     
