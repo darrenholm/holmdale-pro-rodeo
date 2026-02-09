@@ -14,7 +14,7 @@ Deno.serve(async (req) => {
 
     // Send email via Resend
     const result = await resend.emails.send({
-      from: from || 'Holmdale Pro Rodeo <onboarding@resend.dev>', // Change to your verified domain
+      from: from || 'Holmdale Pro Rodeo <info@holmdalerodeo.ca>', // Change to your verified domain
       to: to,
       subject: subject,
       html: html
