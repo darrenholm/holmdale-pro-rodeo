@@ -17,7 +17,7 @@ const contactInfo = [
     {
         icon: Phone,
         title: 'Phone',
-        details: ['(555) 123-4567', '(555) 987-6543']
+        details: ['519-881-6575', '519-889-1343']
     },
     {
         icon: Mail,
