@@ -131,7 +131,7 @@ Deno.serve(async (req) => {
 
     // Send email using Resend
     await resend.emails.send({
-      from: 'Holmdale Pro Rodeo <info@holmdalerodeo.ca>',
+      from: 'Holmdale Pro Rodeo <onboarding@holmdalerodeo.ca>',
       to: ticketOrder.customer_email,
       subject: `Your Tickets for ${event.title} - Confirmation #${ticketOrder.confirmation_code}`,
       html: emailHtml
