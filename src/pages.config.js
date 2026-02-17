@@ -65,6 +65,7 @@ import StaffList from './pages/StaffList';
 import StaffScheduling from './pages/StaffScheduling';
 import TrackOrder from './pages/TrackOrder';
 import GateScan from './pages/GateScan';
+import IDCheck from './pages/IDCheck';
 import __Layout from './Layout.jsx';
 
 
@@ -87,6 +88,7 @@ export const PAGES = {
     "StaffScheduling": StaffScheduling,
     "TrackOrder": TrackOrder,
     "GateScan": GateScan,
+    "IDCheck": IDCheck,
 }
 
 export const pagesConfig = {
