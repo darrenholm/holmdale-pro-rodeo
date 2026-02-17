@@ -95,7 +95,7 @@ export default function Staff() {
               <CardContent className="p-8 text-center">
                 <QrCode className="w-16 h-16 text-green-500 mx-auto mb-4" />
                 <h2 className="text-2xl font-bold text-white mb-2">Gate Scanner</h2>
-                <p className="text-gray-400">Scan and validate event tickets</p>
+                <p className="text-gray-400">Scan QR codes & link RFID wristbands</p>
               </CardContent>
             </Card>
           </Link>
@@ -106,16 +106,6 @@ export default function Staff() {
                 <Ticket className="w-16 h-16 text-green-500 mx-auto mb-4" />
                 <h2 className="text-2xl font-bold text-white mb-2">Scheduling</h2>
                 <p className="text-gray-400">Manage staff shifts</p>
-              </CardContent>
-            </Card>
-          </Link>
-
-          <Link to={createPageUrl('LinkRFID')}>
-            <Card className="bg-stone-900 border-stone-800 hover:border-green-600 transition-all cursor-pointer h-full">
-              <CardContent className="p-8 text-center">
-                <Radio className="w-16 h-16 text-green-500 mx-auto mb-4" />
-                <h2 className="text-2xl font-bold text-white mb-2">Link RFID</h2>
-                <p className="text-gray-400">Associate RFID wristbands with tickets</p>
               </CardContent>
             </Card>
           </Link>
@@ -168,9 +158,6 @@ export default function Staff() {
           <CardContent className="space-y-2">
             <a href={createPageUrl('GateScan')} className="block text-green-500 hover:text-green-400">
               Gate Scanner
-            </a>
-            <a href={createPageUrl('LinkRFID')} className="block text-green-500 hover:text-green-400">
-              Link RFID
             </a>
             <a href={createPageUrl('BuyTickets')} className="block text-green-500 hover:text-green-400">
               Purchase Tickets
