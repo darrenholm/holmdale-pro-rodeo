@@ -94,18 +94,25 @@ export default function GateScan() {
     }
 
     if (step === STEP.SCAN_WRISTBANDS) {
-      const preventNavigation = (e) => {
-        if (e.key === 'Enter') {
-          e.preventDefault();
-          e.stopPropagation();
-        }
+      const blockAllNavigation = (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        e.stopImmediatePropagation();
+        return false;
       };
       
-      document.addEventListener('keydown', preventNavigation, true);
+      document.addEventListener('keydown', blockAllNavigation, true);
+      document.addEventListener('keypress', blockAllNavigation, true);
+      document.addEventListener('keyup', blockAllNavigation, true);
+      window.addEventListener('beforeunload', blockAllNavigation, true);
+      
       rfidInputRef.current?.focus();
       
       return () => {
-        document.removeEventListener('keydown', preventNavigation, true);
+        document.removeEventListener('keydown', blockAllNavigation, true);
+        document.removeEventListener('keypress', blockAllNavigation, true);
+        document.removeEventListener('keyup', blockAllNavigation, true);
+        window.removeEventListener('beforeunload', blockAllNavigation, true);
       };
     }
   }, [step, rfidTagId, wristbandsScanned]);
@@ -628,13 +635,15 @@ export default function GateScan() {
                   type="text"
                   value={rfidTagId}
                   onChange={(e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
                     const value = e.target.value.replace(/[\n\r]/g, '').trim();
 
                     if (value && value.length > 3 && !wristbandsScanned.includes(value)) {
+                      e.target.blur();
                       setRfidTagId('');
-                      handleWristbandScan(null, value);
+                      setTimeout(() => {
+                        handleWristbandScan(null, value);
+                        setTimeout(() => rfidInputRef.current?.focus(), 100);
+                      }, 10);
                     } else {
                       setRfidTagId(value);
                     }
@@ -642,16 +651,27 @@ export default function GateScan() {
                   onKeyDown={(e) => {
                     e.preventDefault();
                     e.stopPropagation();
+                    e.stopImmediatePropagation();
+                    return false;
                   }}
                   onKeyPress={(e) => {
                     e.preventDefault();
                     e.stopPropagation();
+                    e.stopImmediatePropagation();
+                    return false;
+                  }}
+                  onKeyUp={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    e.stopImmediatePropagation();
+                    return false;
                   }}
                   placeholder="Scan wristband RFID..."
                   className="bg-stone-800 border-stone-700 text-white text-lg p-6 text-center"
                   autoFocus
                   autoComplete="off"
                   spellCheck="false"
+                  readOnly={false}
                 />
               </div>
 
