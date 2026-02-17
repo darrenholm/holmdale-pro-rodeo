@@ -94,7 +94,19 @@ export default function GateScan() {
     }
 
     if (step === STEP.SCAN_WRISTBANDS) {
+      const preventNavigation = (e) => {
+        if (e.key === 'Enter') {
+          e.preventDefault();
+          e.stopPropagation();
+        }
+      };
+      
+      document.addEventListener('keydown', preventNavigation, true);
       rfidInputRef.current?.focus();
+      
+      return () => {
+        document.removeEventListener('keydown', preventNavigation, true);
+      };
     }
   }, [step, rfidTagId, wristbandsScanned]);
 
