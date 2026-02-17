@@ -305,46 +305,7 @@ export default function BarSales() {
                                         </>
                                     )}
                                 </Button>
-                                
-                                <div className="mt-8 pt-8 border-t border-stone-800">
-                                    <p className="text-stone-400 mb-4">Or enter RFID tag manually:</p>
-                                    <div className="flex gap-3 max-w-md mx-auto">
-                                        <Input
-                                            type="text"
-                                            placeholder="Enter RFID tag ID"
-                                            value={rfidTagId}
-                                            onChange={(e) => setRfidTagId(e.target.value)}
-                                            className="bg-stone-800 border-stone-700 text-white"
-                                        />
-                                        <Button
-                                            onClick={async () => {
-                                                if (rfidTagId.trim()) {
-                                                    const allTickets = await base44.entities.TicketOrder.list();
-                                                    const tickets = allTickets.filter(t => 
-                                                        t.rfid_wristbands && t.rfid_wristbands.some(w => w.tag_id === rfidTagId)
-                                                    );
-                                                    if (tickets.length > 0) {
-                                                        const ticket = tickets[0];
-                                                        const wristband = ticket.rfid_wristbands.find(w => w.tag_id === rfidTagId);
-                                                        
-                                                        // Check if wristband is verified for 19+
-                                                        if (!wristband.is_19_plus) {
-                                                            setError('This wristband is not verified for 19+. Please visit ID check station first.');
-                                                            return;
-                                                        }
-                                                        
-                                                        setCustomerName(ticket.customer_name);
-                                                    }
-                                                    setStep('select');
-                                                }
-                                            }}
-                                            disabled={!rfidTagId.trim()}
-                                            className="bg-green-500 hover:bg-green-600 text-stone-900"
-                                        >
-                                            Continue
-                                        </Button>
-                                    </div>
-                                </div>
+
                             </div>
                         )}
 
