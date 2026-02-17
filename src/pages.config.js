@@ -54,7 +54,6 @@ import CheckoutCancel from './pages/CheckoutCancel';
 import CheckoutSuccess from './pages/CheckoutSuccess';
 import Contact from './pages/Contact';
 import Events from './pages/Events';
-import GateScan from './pages/GateScan';
 import Home from './pages/Home';
 import ImportStaff from './pages/ImportStaff';
 import LinkRFID from './pages/LinkRFID';
@@ -77,7 +76,6 @@ export const PAGES = {
     "CheckoutSuccess": CheckoutSuccess,
     "Contact": Contact,
     "Events": Events,
-    "GateScan": GateScan,
     "Home": Home,
     "ImportStaff": ImportStaff,
     "LinkRFID": LinkRFID,
