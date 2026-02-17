@@ -4,6 +4,7 @@ import { base44 } from '@/api/base44Client';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { Badge } from '@/components/ui/badge';
 import { CheckCircle2, XCircle, AlertCircle, Camera, Keyboard, QrCode, Users, Zap } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { format } from 'date-fns';
