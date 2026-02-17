@@ -108,7 +108,10 @@ export default function BarSales() {
                     setRfidTagId(tagId);
                     
                     // Look up customer from linked ticket
-                    const tickets = await base44.entities.TicketOrder.filter({ rfid_tag_id: tagId });
+                    const allTickets = await base44.entities.TicketOrder.list();
+                    const tickets = allTickets.filter(t => 
+                        t.rfid_wristbands && t.rfid_wristbands.some(w => w.tag_id === tagId)
+                    );
                     if (tickets.length > 0) {
                         setCustomerName(tickets[0].customer_name);
                     }
@@ -298,7 +301,10 @@ export default function BarSales() {
                                         <Button
                                             onClick={async () => {
                                                 if (rfidTagId.trim()) {
-                                                    const tickets = await base44.entities.TicketOrder.filter({ rfid_tag_id: rfidTagId });
+                                                    const allTickets = await base44.entities.TicketOrder.list();
+                                                    const tickets = allTickets.filter(t => 
+                                                        t.rfid_wristbands && t.rfid_wristbands.some(w => w.tag_id === rfidTagId)
+                                                    );
                                                     if (tickets.length > 0) {
                                                         setCustomerName(tickets[0].customer_name);
                                                     }

@@ -195,7 +195,7 @@ export default function GateScan() {
         // Likely RFID
         const allTickets = await base44.entities.TicketOrder.list();
         tickets = allTickets.filter(t => 
-          t.rfid_tag_ids && t.rfid_tag_ids.includes(identifier)
+          t.rfid_wristbands && t.rfid_wristbands.some(w => w.tag_id === identifier)
         );
       }
 
