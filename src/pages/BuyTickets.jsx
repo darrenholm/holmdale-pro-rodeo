@@ -37,14 +37,6 @@ const ticketTypes = [
         priceKey: 'family_price',
         availableKey: 'family_available',
         color: 'border-green-500/50 bg-green-500/10'
-    },
-    {
-        id: 'vip',
-        name: 'VIP Box',
-        description: 'Private box seating with complimentary refreshments and meet & greet',
-        priceKey: 'vip_price',
-        availableKey: 'vip_available',
-        color: 'border-green-500/50 bg-green-500/10'
     }
 ];
 
