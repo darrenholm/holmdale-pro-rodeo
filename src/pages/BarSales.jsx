@@ -27,6 +27,7 @@ export default function BarSales() {
     const [isScanning, setIsScanning] = useState(false);
     const [showCheckout, setShowCheckout] = useState(false);
     const [checkoutTicket, setCheckoutTicket] = useState(null);
+    const [error, setError] = useState('');
     const monerisCheckoutRef = useRef(null);
     const queryClient = useQueryClient();
 
@@ -187,6 +188,7 @@ export default function BarSales() {
         setSelectedQuantity(null);
         setShowCheckout(false);
         setCheckoutTicket(null);
+        setError('');
     };
 
     if (showCheckout) {
@@ -273,6 +275,12 @@ export default function BarSales() {
                         </CardTitle>
                     </CardHeader>
                     <CardContent className="space-y-6">
+                        {error && (
+                            <div className="bg-red-950/50 border border-red-700 rounded-lg p-4 text-red-300">
+                                {error}
+                                <button onClick={() => setError('')} className="ml-2 underline">Dismiss</button>
+                            </div>
+                        )}
                         {step === 'scan' && (
                             <div className="text-center py-12">
                                 <div className="w-24 h-24 rounded-full bg-green-500/20 flex items-center justify-center mx-auto mb-6">
