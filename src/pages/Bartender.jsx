@@ -22,6 +22,10 @@ export default function Bartender() {
 
     const availableCredits = ticketsPurchased - drinksRedeemed;
 
+    useEffect(() => {
+        window.scrollTo(0, 0);
+    }, [step]);
+
     const scanRFID = async () => {
         setIsScanning(true);
         setError('');
