@@ -94,7 +94,7 @@ export default function BarSales() {
 
             myCheckout.startCheckout(checkoutTicket);
         }
-    }, [showCheckout, checkoutTicket, rfidTagId, customerName, selectedAmount, queryClient]);
+    }, [showCheckout, checkoutTicket, rfidTagId, queryClient]);
 
     const scanRFID = async () => {
         setIsScanning(true);
