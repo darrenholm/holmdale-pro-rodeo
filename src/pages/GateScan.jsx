@@ -327,7 +327,12 @@ export default function GateScan() {
     setNfcScanning(false);
   };
 
-  const handleWristbandScan = async (scannedRfidTag) => {
+  const handleWristbandScan = async (e, scannedRfidTag) => {
+    if (e) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+    
     // Check for duplicates
     if (wristbandsScanned.includes(scannedRfidTag)) {
       alert('This wristband has already been scanned for this ticket');
@@ -601,9 +606,11 @@ export default function GateScan() {
 
               <form onSubmit={(e) => {
                 e.preventDefault();
+                e.stopPropagation();
                 if (rfidTagId.trim()) {
-                  handleWristbandScan(rfidTagId.trim());
+                  handleWristbandScan(e, rfidTagId.trim());
                 }
+                return false;
               }}>
                 <div className="bg-purple-900/20 border-2 border-purple-500 rounded-lg p-6">
                   <p className="text-purple-200 font-semibold text-center mb-4">
