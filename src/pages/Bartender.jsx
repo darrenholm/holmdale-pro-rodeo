@@ -89,9 +89,26 @@ export default function Bartender() {
         
         setIsProcessing(true);
         try {
-            await base44.entities.BarPurchase.update(barPurchaseId, {
-                drinks_redeemed: drinksRedeemed + drinks
-            });
+            // Update all bar purchases proportionally
+            const purchaseIds = barPurchaseId.split(',');
+            const purchasesToUpdate = await Promise.all(
+                purchaseIds.map(id => base44.entities.BarPurchase.filter({ id }))
+            );
+            
+            let drinksToDistribute = drinks;
+            for (const purchaseArray of purchasesToUpdate) {
+                if (purchaseArray.length === 0) continue;
+                const purchase = purchaseArray[0];
+                const available = (purchase.ticket_quantity || 0) - (purchase.drinks_redeemed || 0);
+                const drinksForThisPurchase = Math.min(available, drinksToDistribute);
+                
+                await base44.entities.BarPurchase.update(purchase.id, {
+                    drinks_redeemed: (purchase.drinks_redeemed || 0) + drinksForThisPurchase
+                });
+                
+                drinksToDistribute -= drinksForThisPurchase;
+                if (drinksToDistribute === 0) break;
+            }
             
             setStep('success');
             setIsProcessing(false);
