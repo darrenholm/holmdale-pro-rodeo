@@ -29,6 +29,7 @@ export default function LinkRFID() {
   const [formLoadTime, setFormLoadTime] = useState(new Date());
   const [nfcSupported, setNfcSupported] = useState(false);
   const [nfcScanning, setNfcScanning] = useState(false);
+  const [linkedRfids, setLinkedRfids] = useState([]);
 
   const videoRef = useRef(null);
   const canvasRef = useRef(null);
@@ -281,18 +282,53 @@ export default function LinkRFID() {
         fullTicket: ticket 
       });
       
-      const updateData = { rfid_tag_id: cleanRfidTagId };
+      const existingRfids = ticket.rfid_tag_ids || [];
+      const maxWristbands = ticket.ticket_type === 'family' ? 4 : 1;
+      
+      if (existingRfids.includes(cleanRfidTagId)) {
+        setResult({
+          success: false,
+          message: 'This RFID is already linked to this ticket'
+        });
+        setLoading(false);
+        return;
+      }
+      
+      if (existingRfids.length >= maxWristbands) {
+        setResult({
+          success: false,
+          message: `Maximum ${maxWristbands} wristband(s) already linked`
+        });
+        setLoading(false);
+        return;
+      }
+      
+      const newRfids = [...existingRfids, cleanRfidTagId];
+      const updateData = { rfid_tag_ids: newRfids };
       console.log('Update data:', updateData);
       
       const updatedTicket = await base44.entities.TicketOrder.update(ticket.id, updateData);
       
       console.log('Update successful! Updated ticket:', updatedTicket);
 
-      setResult({
-        success: true,
-        message: 'RFID linked successfully!'
-      });
-      setStep(STEP.SUCCESS);
+      setLinkedRfids(newRfids);
+      const remaining = maxWristbands - newRfids.length;
+      
+      if (remaining > 0) {
+        setResult({
+          success: true,
+          message: `RFID linked! ${remaining} more wristband(s) can be added.`
+        });
+        setTicket({ ...ticket, rfid_tag_ids: newRfids });
+        setRfidTagId('');
+        setStep(STEP.SCAN_RFID);
+      } else {
+        setResult({
+          success: true,
+          message: 'All wristbands linked successfully!'
+        });
+        setStep(STEP.SUCCESS);
+      }
     } catch (error) {
       console.error('RFID linking error:', error);
       setResult({
@@ -347,6 +383,7 @@ export default function LinkRFID() {
     setScanning(false);
     setScanError(null);
     setResult(null);
+    setLinkedRfids([]);
     stopNFCScan();
   };
 
@@ -515,7 +552,26 @@ export default function LinkRFID() {
                     <span className="text-gray-400">Ticket Type:</span>
                     <span className="text-white capitalize">{ticket.ticket_type}</span>
                   </div>
+                  {ticket.ticket_type === 'family' && (
+                    <div className="flex justify-between">
+                      <span className="text-gray-400">Wristbands Linked:</span>
+                      <span className="text-white font-medium">{(ticket.rfid_tag_ids || []).length} / 4</span>
+                    </div>
+                  )}
                 </div>
+                {(ticket.rfid_tag_ids || []).length > 0 && (
+                  <div className="bg-green-900/20 border border-green-700 rounded-lg p-3">
+                    <p className="text-green-400 text-sm font-medium mb-2">Linked Wristbands:</p>
+                    <div className="space-y-1">
+                      {ticket.rfid_tag_ids.map((rfid, index) => (
+                        <div key={index} className="flex items-center gap-2 text-xs">
+                          <CheckCircle2 className="w-3 h-3 text-green-500" />
+                          <span className="text-green-200 font-mono">{rfid}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
               </CardContent>
             </Card>
 
@@ -652,7 +708,18 @@ export default function LinkRFID() {
                   <h2 className="text-2xl font-bold text-green-100">Success!</h2>
                   <p className="text-green-300">RFID wristband linked to ticket</p>
                   <div className="bg-green-900/30 rounded-lg p-4 text-sm text-green-200 mt-4">
-                    <p className="font-mono">{rfidTagId}</p>
+                    {linkedRfids.length > 0 ? (
+                      <div className="space-y-2">
+                        {linkedRfids.map((rfid, index) => (
+                          <div key={index} className="flex items-center gap-2">
+                            <CheckCircle2 className="w-4 h-4" />
+                            <p className="font-mono">{rfid}</p>
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <p className="font-mono">{rfidTagId}</p>
+                    )}
                   </div>
                   <Button
                     onClick={reset}

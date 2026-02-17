@@ -141,6 +141,17 @@ export default function GateScan() {
       }
 
       const ticket = tickets[0];
+      
+      // Check if RFID wristbands are required but not linked
+      if (ticket.ticket_type === 'family' && (!ticket.rfid_tag_ids || ticket.rfid_tag_ids.length === 0)) {
+        setResult({
+          success: false,
+          message: 'Family ticket requires RFID wristbands to be linked first',
+          type: 'no_rfid',
+          ticket
+        });
+        return;
+      }
 
       // Check if already scanned
       if (ticket.scanned) {
@@ -400,6 +411,12 @@ export default function GateScan() {
                       <span className="text-gray-400">Quantity:</span>
                       <span className="text-white">{result.ticket.quantityAdult}</span>
                     </div>
+                    {result.ticket.ticket_type === 'family' && result.ticket.rfid_tag_ids && (
+                      <div className="flex justify-between">
+                        <span className="text-gray-400">Wristbands:</span>
+                        <span className="text-white">{result.ticket.rfid_tag_ids.length} linked</span>
+                      </div>
+                    )}
                     <div className="flex justify-between">
                       <span className="text-gray-400">Confirmation:</span>
                       <span className="text-white font-mono">{result.ticket.confirmation_code}</span>
