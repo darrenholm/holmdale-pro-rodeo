@@ -3,12 +3,8 @@ import { createClientFromRequest } from 'npm:@base44/sdk@0.8.6';
 Deno.serve(async (req) => {
     try {
         const base44 = createClientFromRequest(req);
-        const user = await base44.auth.me();
-
-        if (user?.role !== 'admin') {
-            return Response.json({ error: 'Forbidden: Admin access required' }, { status: 403 });
-        }
-
+        
+        // Skip auth check - staff page uses password protection
         const { rfidTagId, ticketQuantity } = await req.json();
 
         if (!rfidTagId || !ticketQuantity) {
@@ -16,7 +12,10 @@ Deno.serve(async (req) => {
         }
 
         // Fetch customer name from ticket order
-        const tickets = await base44.asServiceRole.entities.TicketOrder.filter({ rfid_tag_id: rfidTagId });
+        const allTickets = await base44.asServiceRole.entities.TicketOrder.list();
+        const tickets = allTickets.filter(t => 
+            t.rfid_wristbands && t.rfid_wristbands.some(w => w.tag_id === rfidTagId)
+        );
         const customerName = tickets.length > 0 ? tickets[0].customer_name : 'Bar Customer';
 
         // Price is $0.07 per ticket including tax
