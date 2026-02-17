@@ -113,7 +113,16 @@ export default function BarSales() {
                         t.rfid_wristbands && t.rfid_wristbands.some(w => w.tag_id === tagId)
                     );
                     if (tickets.length > 0) {
-                        setCustomerName(tickets[0].customer_name);
+                        const ticket = tickets[0];
+                        setCustomerName(ticket.customer_name);
+                        
+                        // Update is_19_plus flag to true for this wristband
+                        const updatedWristbands = ticket.rfid_wristbands.map(w => 
+                            w.tag_id === tagId ? { ...w, is_19_plus: true } : w
+                        );
+                        await base44.entities.TicketOrder.update(ticket.id, {
+                            rfid_wristbands: updatedWristbands
+                        });
                     }
                     
                     setStep('select');
@@ -306,7 +315,16 @@ export default function BarSales() {
                                                         t.rfid_wristbands && t.rfid_wristbands.some(w => w.tag_id === rfidTagId)
                                                     );
                                                     if (tickets.length > 0) {
-                                                        setCustomerName(tickets[0].customer_name);
+                                                        const ticket = tickets[0];
+                                                        setCustomerName(ticket.customer_name);
+                                                        
+                                                        // Update is_19_plus flag to true for this wristband
+                                                        const updatedWristbands = ticket.rfid_wristbands.map(w => 
+                                                            w.tag_id === rfidTagId ? { ...w, is_19_plus: true } : w
+                                                        );
+                                                        await base44.entities.TicketOrder.update(ticket.id, {
+                                                            rfid_wristbands: updatedWristbands
+                                                        });
                                                     }
                                                     setStep('select');
                                                 }
