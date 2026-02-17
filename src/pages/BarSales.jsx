@@ -11,10 +11,10 @@ import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 
 const ticketOptions = [
-    { quantity: 10, label: '10 Tickets', color: 'bg-blue-500' },
-    { quantity: 25, label: '25 Tickets', color: 'bg-green-500' },
-    { quantity: 50, label: '50 Tickets', color: 'bg-purple-500' },
-    { quantity: 100, label: '100 Tickets', color: 'bg-orange-500' }
+    { quantity: 1, label: '1 Ticket', color: 'bg-blue-500' },
+    { quantity: 2, label: '2 Tickets', color: 'bg-green-500' },
+    { quantity: 3, label: '3 Tickets', color: 'bg-purple-500' },
+    { quantity: 4, label: '4 Tickets', color: 'bg-orange-500' }
 ];
 
 const TICKET_PRICE = 0.07; // $0.07 per ticket including tax
