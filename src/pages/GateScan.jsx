@@ -94,26 +94,7 @@ export default function GateScan() {
     }
 
     if (step === STEP.SCAN_WRISTBANDS) {
-      const blockAllNavigation = (e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        e.stopImmediatePropagation();
-        return false;
-      };
-      
-      document.addEventListener('keydown', blockAllNavigation, true);
-      document.addEventListener('keypress', blockAllNavigation, true);
-      document.addEventListener('keyup', blockAllNavigation, true);
-      window.addEventListener('beforeunload', blockAllNavigation, true);
-      
       rfidInputRef.current?.focus();
-      
-      return () => {
-        document.removeEventListener('keydown', blockAllNavigation, true);
-        document.removeEventListener('keypress', blockAllNavigation, true);
-        document.removeEventListener('keyup', blockAllNavigation, true);
-        window.removeEventListener('beforeunload', blockAllNavigation, true);
-      };
     }
   }, [step, rfidTagId, wristbandsScanned]);
 
@@ -630,48 +611,27 @@ export default function GateScan() {
                     : `Scan Child Wristband #${currentWristbandIndex - (ticket.quantityAdult || 0) + 1}`
                   }
                 </p>
-                <Input
+                <input
                   ref={rfidInputRef}
                   type="text"
                   value={rfidTagId}
                   onChange={(e) => {
-                    const value = e.target.value.replace(/[\n\r]/g, '').trim();
+                    const rawValue = e.target.value;
+                    const cleanValue = rawValue.replace(/[\n\r]/g, '').trim();
 
-                    if (value && value.length > 3 && !wristbandsScanned.includes(value)) {
-                      e.target.blur();
+                    setRfidTagId(cleanValue);
+
+                    // Process immediately when we have a valid tag (8+ chars)
+                    if (cleanValue && cleanValue.length >= 8 && !wristbandsScanned.includes(cleanValue)) {
                       setRfidTagId('');
-                      setTimeout(() => {
-                        handleWristbandScan(null, value);
-                        setTimeout(() => rfidInputRef.current?.focus(), 100);
-                      }, 10);
-                    } else {
-                      setRfidTagId(value);
+                      handleWristbandScan(null, cleanValue);
                     }
                   }}
-                  onKeyDown={(e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    e.stopImmediatePropagation();
-                    return false;
-                  }}
-                  onKeyPress={(e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    e.stopImmediatePropagation();
-                    return false;
-                  }}
-                  onKeyUp={(e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    e.stopImmediatePropagation();
-                    return false;
-                  }}
                   placeholder="Scan wristband RFID..."
-                  className="bg-stone-800 border-stone-700 text-white text-lg p-6 text-center"
+                  className="flex h-9 w-full rounded-md border border-stone-700 bg-stone-800 px-3 py-6 text-lg shadow-sm transition-colors placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 text-white text-center"
                   autoFocus
                   autoComplete="off"
                   spellCheck="false"
-                  readOnly={false}
                 />
               </div>
 
