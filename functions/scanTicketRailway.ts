@@ -1,4 +1,4 @@
-const RAILWAY_API_URL = 'https://rodeo-fresh-production.up.railway.app';
+import { railwayRequest, ADMIN_ENDPOINTS } from './railwayConfig.js';
 
 Deno.serve(async (req) => {
   try {
@@ -13,20 +13,12 @@ Deno.serve(async (req) => {
       return Response.json({ error: 'Authentication token required' }, { status: 401 });
     }
 
-    const response = await fetch(`${RAILWAY_API_URL}/api/ticket-orders/${id}/scan`, {
+    const result = await railwayRequest(ADMIN_ENDPOINTS.SCAN_TICKET, {
       method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`,
-      },
-      body: JSON.stringify(scanData || {}),
+      token,
+      body: scanData || {},
+      params: { id }
     });
-
-    if (!response.ok) {
-      return Response.json({ error: `Railway API error: ${response.status}` }, { status: response.status });
-    }
-
-    const result = await response.json();
     return Response.json({ success: true, data: result });
   } catch (error) {
     return Response.json({ error: error.message }, { status: 500 });

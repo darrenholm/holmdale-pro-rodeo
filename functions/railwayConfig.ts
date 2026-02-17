@@ -1,73 +1,56 @@
-// Railway Backend Configuration
-const RAILWAY_API_URL = 'https://rodeo-fresh-production.up.railway.app';
+const BASE_URL = 'https://rodeo-fresh-production.up.railway.app/api';
 
-// Public endpoints (no auth required)
-export const PUBLIC_ENDPOINTS = {
-  events: '/api/events',
-  eventById: (id) => `/api/events/${id}`,
-  products: '/api/products',
-  productById: (id) => `/api/products/${id}`,
-  createTicketOrder: '/api/ticket-orders',
-  getTicketByConfirmation: (code) => `/api/ticket-orders/confirmation/${code}`,
-  createOrder: '/api/orders',
-  login: '/api/auth/login',
+const PUBLIC_ENDPOINTS = {
+  GET_EVENTS: '/events',
+  GET_PRODUCTS: '/products',
+  GET_PRODUCT_BY_ID: '/products/:id',
+  CREATE_TICKET_ORDER: '/ticket-orders',
+  GET_TICKET_BY_CONFIRMATION: '/ticket-orders/confirmation/:code',
+  CREATE_ORDER: '/orders',
+  LOGIN: '/auth/login',
 };
 
-// Admin endpoints (require authentication)
-export const ADMIN_ENDPOINTS = {
-  staff: '/api/staff',
-  shifts: '/api/shifts',
-  dashboardStats: '/api/dashboard/stats',
-  scanTicket: (id) => `/api/ticket-orders/${id}/scan`,
+const ADMIN_ENDPOINTS = {
+  GET_STAFF: '/staff',
+  GET_SHIFTS: '/shifts',
+  GET_DASHBOARD_STATS: '/dashboard/stats',
+  SCAN_TICKET: '/ticket-orders/:id/scan',
 };
 
-// Make a request to Railway API
-export const railwayRequest = async (endpoint, options = {}) => {
-  const url = `${RAILWAY_API_URL}${endpoint}`;
-  const {
-    method = 'GET',
-    body = null,
-    token = null,
-    headers = {},
-  } = options;
+async function railwayRequest(endpoint, options = {}) {
+  const { method = 'GET', body = null, token = null, params = {} } = options;
 
-  const requestHeaders = {
+  let url = `${BASE_URL}${endpoint}`;
+  
+  // Replace path parameters
+  Object.keys(params).forEach(key => {
+    url = url.replace(`:${key}`, params[key]);
+  });
+
+  const headers = {
     'Content-Type': 'application/json',
-    ...headers,
   };
 
-  // Add auth token if provided
   if (token) {
-    requestHeaders['Authorization'] = `Bearer ${token}`;
+    headers['Authorization'] = `Bearer ${token}`;
   }
 
   const config = {
     method,
-    headers: requestHeaders,
+    headers,
   };
 
   if (body) {
     config.body = JSON.stringify(body);
   }
 
-  try {
-    const response = await fetch(url, config);
-    
-    if (!response.ok) {
-      throw new Error(`Railway API error: ${response.status} ${response.statusText}`);
-    }
+  const response = await fetch(url, config);
 
-    const data = await response.json();
-    return { success: true, data };
-  } catch (error) {
-    console.error(`Railway request failed: ${error.message}`);
-    return { success: false, error: error.message };
+  if (!response.ok) {
+    throw new Error(`Railway API error: ${response.status}`);
   }
-};
 
-export default {
-  RAILWAY_API_URL,
-  PUBLIC_ENDPOINTS,
-  ADMIN_ENDPOINTS,
-  railwayRequest,
-};
+  return await response.json();
+}
+
+export { BASE_URL, PUBLIC_ENDPOINTS, ADMIN_ENDPOINTS, railwayRequest };

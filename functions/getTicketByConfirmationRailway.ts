@@ -1,4 +1,4 @@
-const RAILWAY_API_URL = 'https://rodeo-fresh-production.up.railway.app';
+import { railwayRequest, PUBLIC_ENDPOINTS } from './railwayConfig.js';
 
 Deno.serve(async (req) => {
   try {
@@ -9,16 +9,9 @@ Deno.serve(async (req) => {
       return Response.json({ error: 'Confirmation code is required' }, { status: 400 });
     }
 
-    const response = await fetch(`${RAILWAY_API_URL}/api/ticket-orders/confirmation/${code}`, {
-      method: 'GET',
-      headers: { 'Content-Type': 'application/json' },
+    const ticket = await railwayRequest(PUBLIC_ENDPOINTS.GET_TICKET_BY_CONFIRMATION, {
+      params: { code }
     });
-
-    if (!response.ok) {
-      return Response.json({ error: `Railway API error: ${response.status}` }, { status: response.status });
-    }
-
-    const ticket = await response.json();
     return Response.json({ success: true, data: ticket });
   } catch (error) {
     return Response.json({ error: error.message }, { status: 500 });
