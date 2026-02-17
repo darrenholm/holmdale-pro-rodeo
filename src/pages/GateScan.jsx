@@ -94,18 +94,7 @@ export default function GateScan() {
     }
 
     if (step === STEP.SCAN_WRISTBANDS) {
-      const handleWristbandKeyDown = (e) => {
-        if (e.key === 'Enter' && rfidTagId.trim()) {
-          handleWristbandScan(rfidTagId.trim());
-        }
-      };
-
-      document.addEventListener('keydown', handleWristbandKeyDown);
       rfidInputRef.current?.focus();
-
-      return () => {
-        document.removeEventListener('keydown', handleWristbandKeyDown);
-      };
     }
   }, [step, rfidTagId, wristbandsScanned]);
 
@@ -610,32 +599,31 @@ export default function GateScan() {
                 </div>
               )}
 
-              <div className="bg-purple-900/20 border-2 border-purple-500 rounded-lg p-6">
-                <p className="text-purple-200 font-semibold text-center mb-4">
-                  {currentWristbandIndex < (ticket.quantityAdult || 0)
-                    ? `Scan Adult Wristband #${currentWristbandIndex + 1} (19+)`
-                    : `Scan Child Wristband #${currentWristbandIndex - (ticket.quantityAdult || 0) + 1}`
-                  }
-                </p>
-                <Input
-                  ref={rfidInputRef}
-                  type="text"
-                  value={rfidTagId}
-                  onChange={(e) => setRfidTagId(e.target.value)}
-                  onKeyDown={(e) => {
-                    if (e.key === 'Enter') {
-                      e.preventDefault();
-                      if (rfidTagId.trim()) {
-                        handleWristbandScan(rfidTagId.trim());
-                      }
+              <form onSubmit={(e) => {
+                e.preventDefault();
+                if (rfidTagId.trim()) {
+                  handleWristbandScan(rfidTagId.trim());
+                }
+              }}>
+                <div className="bg-purple-900/20 border-2 border-purple-500 rounded-lg p-6">
+                  <p className="text-purple-200 font-semibold text-center mb-4">
+                    {currentWristbandIndex < (ticket.quantityAdult || 0)
+                      ? `Scan Adult Wristband #${currentWristbandIndex + 1} (19+)`
+                      : `Scan Child Wristband #${currentWristbandIndex - (ticket.quantityAdult || 0) + 1}`
                     }
-                  }}
-                  placeholder="Scan wristband RFID..."
-                  className="bg-stone-800 border-stone-700 text-white text-lg p-6 text-center"
-                  autoFocus
-                  spellCheck="false"
-                />
-              </div>
+                  </p>
+                  <Input
+                    ref={rfidInputRef}
+                    type="text"
+                    value={rfidTagId}
+                    onChange={(e) => setRfidTagId(e.target.value)}
+                    placeholder="Scan wristband RFID..."
+                    className="bg-stone-800 border-stone-700 text-white text-lg p-6 text-center"
+                    autoFocus
+                    spellCheck="false"
+                  />
+                </div>
+              </form>
 
               <Button
                 onClick={reset}
