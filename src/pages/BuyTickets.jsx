@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Calendar, Clock, MapPin, Ticket, Users, CheckCircle, ArrowLeft, Minus, Plus, Loader2, AlertCircle } from 'lucide-react';
+import { Calendar, Clock, MapPin, Ticket, Users, CheckCircle, ArrowLeft, Minus, Plus, Loader2, AlertCircle, AlertTriangle } from 'lucide-react';
 import { format } from 'date-fns';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
@@ -440,6 +440,16 @@ export default function BuyTickets() {
                                                 </Button>
                                             </div>
                                         </div>
+                                        
+                                        {(selectedType === 'family' || (selectedType !== 'family' && quantity > 1)) && (
+                                            <div className="bg-amber-950/50 border border-amber-700/50 rounded-lg p-4 flex gap-3">
+                                                <AlertTriangle className="w-5 h-5 text-amber-500 flex-shrink-0 mt-0.5" />
+                                                <div className="text-sm text-amber-300">
+                                                    <p className="font-semibold mb-1">Important Notice</p>
+                                                    <p>All people covered by this ticket must present themselves together at the gate. If you need to attend separately, please purchase individual tickets instead.</p>
+                                                </div>
+                                            </div>
+                                        )}
                                         
                                         {/* Customer Info */}
                                         <div className="grid md:grid-cols-2 gap-4">
