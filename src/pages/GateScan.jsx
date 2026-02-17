@@ -611,24 +611,26 @@ export default function GateScan() {
                     : `Scan Child Wristband #${currentWristbandIndex - (ticket.quantityAdult || 0) + 1}`
                   }
                 </p>
-                <input
+                <Input
                   ref={rfidInputRef}
                   type="text"
                   value={rfidTagId}
                   onChange={(e) => {
-                    const rawValue = e.target.value;
-                    const cleanValue = rawValue.replace(/[\n\r]/g, '').trim();
-
-                    setRfidTagId(cleanValue);
-
-                    // Process immediately when we have a valid tag (8+ chars)
-                    if (cleanValue && cleanValue.length >= 8 && !wristbandsScanned.includes(cleanValue)) {
-                      setRfidTagId('');
-                      handleWristbandScan(null, cleanValue);
+                    const value = e.target.value;
+                    setRfidTagId(value);
+                  }}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') {
+                      e.preventDefault();
+                      const cleanValue = rfidTagId.replace(/[\n\r]/g, '').trim();
+                      if (cleanValue && !wristbandsScanned.includes(cleanValue)) {
+                        setRfidTagId('');
+                        handleWristbandScan(null, cleanValue);
+                      }
                     }
                   }}
                   placeholder="Scan wristband RFID..."
-                  className="flex h-9 w-full rounded-md border border-stone-700 bg-stone-800 px-3 py-6 text-lg shadow-sm transition-colors placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 text-white text-center"
+                  className="bg-stone-800 border-stone-700 text-white text-lg p-6 text-center"
                   autoFocus
                   autoComplete="off"
                   spellCheck="false"
