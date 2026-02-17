@@ -114,15 +114,16 @@ export default function BarSales() {
                     );
                     if (tickets.length > 0) {
                         const ticket = tickets[0];
-                        setCustomerName(ticket.customer_name);
+                        const wristband = ticket.rfid_wristbands.find(w => w.tag_id === tagId);
                         
-                        // Update is_19_plus flag to true for this wristband
-                        const updatedWristbands = ticket.rfid_wristbands.map(w => 
-                            w.tag_id === tagId ? { ...w, is_19_plus: true } : w
-                        );
-                        await base44.entities.TicketOrder.update(ticket.id, {
-                            rfid_wristbands: updatedWristbands
-                        });
+                        // Check if wristband is verified for 19+
+                        if (!wristband.is_19_plus) {
+                            setError('This wristband is not verified for 19+. Please visit ID check station first.');
+                            setIsScanning(false);
+                            return;
+                        }
+                        
+                        setCustomerName(ticket.customer_name);
                     }
                     
                     setStep('select');
@@ -316,15 +317,15 @@ export default function BarSales() {
                                                     );
                                                     if (tickets.length > 0) {
                                                         const ticket = tickets[0];
-                                                        setCustomerName(ticket.customer_name);
+                                                        const wristband = ticket.rfid_wristbands.find(w => w.tag_id === rfidTagId);
                                                         
-                                                        // Update is_19_plus flag to true for this wristband
-                                                        const updatedWristbands = ticket.rfid_wristbands.map(w => 
-                                                            w.tag_id === rfidTagId ? { ...w, is_19_plus: true } : w
-                                                        );
-                                                        await base44.entities.TicketOrder.update(ticket.id, {
-                                                            rfid_wristbands: updatedWristbands
-                                                        });
+                                                        // Check if wristband is verified for 19+
+                                                        if (!wristband.is_19_plus) {
+                                                            setError('This wristband is not verified for 19+. Please visit ID check station first.');
+                                                            return;
+                                                        }
+                                                        
+                                                        setCustomerName(ticket.customer_name);
                                                     }
                                                     setStep('select');
                                                 }
