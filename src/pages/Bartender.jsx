@@ -38,24 +38,27 @@ export default function Bartender() {
                     const tagId = serialNumber;
                     setRfidTagId(tagId);
                     
-                    // Look up bar purchase by RFID tag
+                    // Look up all active bar purchases by RFID tag
                     const purchases = await base44.entities.BarPurchase.filter({ 
                         rfid_tag_id: tagId
                     });
                     
-                    const activePurchase = purchases.find(p => p.status !== 'failed');
+                    const activePurchases = purchases.filter(p => p.status !== 'failed');
                     
-                    if (!activePurchase) {
+                    if (activePurchases.length === 0) {
                         setError('No active bar purchase found for this wristband.');
                         setIsScanning(false);
                         return;
                     }
                     
-                    const purchase = activePurchase;
-                    setBarPurchaseId(purchase.id);
-                    setCustomerName(purchase.customer_name);
-                    setTicketsPurchased(purchase.ticket_quantity);
-                    setDrinksRedeemed(purchase.drinks_redeemed || 0);
+                    // Sum all tickets and drinks across multiple purchases
+                    const totalTickets = activePurchases.reduce((sum, p) => sum + (p.ticket_quantity || 0), 0);
+                    const totalRedeemed = activePurchases.reduce((sum, p) => sum + (p.drinks_redeemed || 0), 0);
+                    
+                    setBarPurchaseId(activePurchases.map(p => p.id).join(',')); // Store all IDs
+                    setCustomerName(activePurchases[0].customer_name);
+                    setTicketsPurchased(totalTickets);
+                    setDrinksRedeemed(totalRedeemed);
                     setDrinksToRedeem('');
                     setStep('redeem');
                     setIsScanning(false);
