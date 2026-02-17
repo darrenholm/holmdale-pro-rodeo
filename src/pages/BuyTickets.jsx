@@ -23,6 +23,14 @@ const ticketTypes = [
         color: 'border-green-500/50 bg-green-500/10'
     },
     {
+        id: 'child',
+        name: 'Child Ticket (5-12 years)',
+        description: 'Discounted ticket for children ages 5 to 12 years',
+        priceKey: 'child_price',
+        availableKey: 'child_available',
+        color: 'border-green-500/50 bg-green-500/10'
+    },
+    {
         id: 'vip',
         name: 'VIP Box',
         description: 'Private box seating with complimentary refreshments and meet & greet',
