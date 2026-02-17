@@ -31,7 +31,8 @@ Deno.serve(async (req) => {
       confirmation_code: ticketOrder.confirmation_code,
       event_id: ticketOrder.event_id,
       ticket_type: ticketOrder.ticket_type,
-      quantity: ticketOrder.quantity,
+      quantityAdult: ticketOrder.quantityAdult,
+      quantityChild: ticketOrder.quantityChild,
       customer_email: ticketOrder.customer_email
     });
     
@@ -102,7 +103,7 @@ Deno.serve(async (req) => {
                 </tr>
                 <tr>
                   <td class="label">Quantity:</td>
-                  <td>${ticketOrder.quantity}</td>
+                  <td>${ticketOrder.quantityAdult || 0} Adult${(ticketOrder.quantityAdult || 0) !== 1 ? 's' : ''}${ticketOrder.quantityChild ? `, ${ticketOrder.quantityChild} Child${ticketOrder.quantityChild !== 1 ? 'ren' : ''}` : ''}</td>
                 </tr>
               </table>
             </div>
