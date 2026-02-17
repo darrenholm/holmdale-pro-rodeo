@@ -366,9 +366,9 @@ export default function GateScan() {
 
     if (newScanned.length >= totalWristbandsNeeded) {
       // All wristbands scanned, update ticket
-      const updatedWristbands = newScanned.map((tag_id, index) => ({
+      const updatedWristbands = newScanned.map((tag_id) => ({
         tag_id,
-        is_19_plus: index < (ticket.quantityAdult || 0) // Adults are first
+        is_19_plus: false // Age verification happens at bar/ID check, not gate
       }));
 
       await base44.entities.TicketOrder.update(ticket.id, {
