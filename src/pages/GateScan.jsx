@@ -623,7 +623,25 @@ export default function GateScan() {
                     ref={rfidInputRef}
                     type="text"
                     value={rfidTagId}
-                    onChange={(e) => setRfidTagId(e.target.value)}
+                    onChange={(e) => {
+                      const value = e.target.value;
+                      setRfidTagId(value);
+                      
+                      if (value.includes('\n') || value.includes('\r')) {
+                        e.preventDefault();
+                        const cleanValue = value.replace(/[\n\r]/g, '').trim();
+                        if (cleanValue && !wristbandsScanned.includes(cleanValue)) {
+                          setRfidTagId(cleanValue);
+                          setTimeout(() => handleWristbandScan(null, cleanValue), 50);
+                        }
+                      }
+                    }}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') {
+                        e.preventDefault();
+                        e.stopPropagation();
+                      }
+                    }}
                     placeholder="Scan wristband RFID..."
                     className="bg-stone-800 border-stone-700 text-white text-lg p-6 text-center"
                     autoFocus
