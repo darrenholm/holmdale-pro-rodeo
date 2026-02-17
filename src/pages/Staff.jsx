@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { QrCode, Ticket, CreditCard, LogOut, Radio, DollarSign, Mail } from 'lucide-react';
+import { QrCode, Ticket, CreditCard, LogOut, Radio, DollarSign, Mail, BadgeCheck } from 'lucide-react';
 import { createPageUrl } from '@/utils';
 
 const STAFF_PASSWORD = 'staff2026'; // Change this to your desired password
@@ -146,6 +146,16 @@ export default function Staff() {
                 <Mail className="w-16 h-16 text-green-500 mx-auto mb-4" />
                 <h2 className="text-2xl font-bold text-white mb-2">Resend Ticket</h2>
                 <p className="text-gray-400">Resend QR codes via email</p>
+              </CardContent>
+            </Card>
+          </Link>
+
+          <Link to={createPageUrl('IDCheck')}>
+            <Card className="bg-stone-900 border-stone-800 hover:border-green-600 transition-all cursor-pointer h-full">
+              <CardContent className="p-8 text-center">
+                <BadgeCheck className="w-16 h-16 text-purple-500 mx-auto mb-4" />
+                <h2 className="text-2xl font-bold text-white mb-2">ID Check</h2>
+                <p className="text-gray-400">Verify 19+ for wristbands</p>
               </CardContent>
             </Card>
           </Link>
