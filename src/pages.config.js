@@ -56,7 +56,6 @@ import Contact from './pages/Contact';
 import Events from './pages/Events';
 import Home from './pages/Home';
 import ImportStaff from './pages/ImportStaff';
-import LinkRFID from './pages/LinkRFID';
 import RFIDRegistry from './pages/RFIDRegistry';
 import RFIDTest from './pages/RFIDTest';
 import ResendTicket from './pages/ResendTicket';
@@ -65,6 +64,7 @@ import Staff from './pages/Staff';
 import StaffList from './pages/StaffList';
 import StaffScheduling from './pages/StaffScheduling';
 import TrackOrder from './pages/TrackOrder';
+import GateScan from './pages/GateScan';
 import __Layout from './Layout.jsx';
 
 
@@ -78,7 +78,6 @@ export const PAGES = {
     "Events": Events,
     "Home": Home,
     "ImportStaff": ImportStaff,
-    "LinkRFID": LinkRFID,
     "RFIDRegistry": RFIDRegistry,
     "RFIDTest": RFIDTest,
     "ResendTicket": ResendTicket,
@@ -87,6 +86,7 @@ export const PAGES = {
     "StaffList": StaffList,
     "StaffScheduling": StaffScheduling,
     "TrackOrder": TrackOrder,
+    "GateScan": GateScan,
 }
 
 export const pagesConfig = {
