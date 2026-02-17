@@ -49,6 +49,7 @@
  */
 import About from './pages/About';
 import BarSales from './pages/BarSales';
+import Bartender from './pages/Bartender';
 import BuyTickets from './pages/BuyTickets';
 import CheckoutCancel from './pages/CheckoutCancel';
 import CheckoutSuccess from './pages/CheckoutSuccess';
@@ -66,13 +67,13 @@ import Staff from './pages/Staff';
 import StaffList from './pages/StaffList';
 import StaffScheduling from './pages/StaffScheduling';
 import TrackOrder from './pages/TrackOrder';
-import Bartender from './pages/Bartender';
 import __Layout from './Layout.jsx';
 
 
 export const PAGES = {
     "About": About,
     "BarSales": BarSales,
+    "Bartender": Bartender,
     "BuyTickets": BuyTickets,
     "CheckoutCancel": CheckoutCancel,
     "CheckoutSuccess": CheckoutSuccess,
@@ -90,7 +91,6 @@ export const PAGES = {
     "StaffList": StaffList,
     "StaffScheduling": StaffScheduling,
     "TrackOrder": TrackOrder,
-    "Bartender": Bartender,
 }
 
 export const pagesConfig = {

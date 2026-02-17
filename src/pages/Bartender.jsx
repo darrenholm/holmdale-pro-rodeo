@@ -36,17 +36,18 @@ export default function Bartender() {
                     
                     // Look up bar purchase by RFID tag
                     const purchases = await base44.entities.BarPurchase.filter({ 
-                        rfid_tag_id: tagId,
-                        status: 'completed'
+                        rfid_tag_id: tagId
                     });
                     
-                    if (purchases.length === 0) {
+                    const activePurchase = purchases.find(p => p.status !== 'failed');
+                    
+                    if (!activePurchase) {
                         setError('No active bar purchase found for this wristband.');
                         setIsScanning(false);
                         return;
                     }
                     
-                    const purchase = purchases[0];
+                    const purchase = activePurchase;
                     setBarPurchaseId(purchase.id);
                     setCustomerName(purchase.customer_name);
                     setTicketsPurchased(purchase.ticket_quantity);
