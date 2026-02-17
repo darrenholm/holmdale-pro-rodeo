@@ -292,17 +292,19 @@ export default function GateScan() {
   };
 
   const startNFCScan = async () => {
-    if (!nfcSupported) return;
+    if (!nfcSupported) {
+      console.log('NFC not supported');
+      return;
+    }
 
     try {
+      console.log('Starting NFC scan...');
       const ndef = new NDEFReader();
       nfcAbortControllerRef.current = new AbortController();
       
-      await ndef.scan({ signal: nfcAbortControllerRef.current.signal });
-      
-      setNfcScanning(true);
-
+      // Add event listeners BEFORE starting scan
       ndef.addEventListener('reading', (event) => {
+        console.log('NFC tag detected:', event.serialNumber);
         if (event.serialNumber) {
           setRfidTagId(event.serialNumber);
           stopNFCScan();
@@ -310,11 +312,18 @@ export default function GateScan() {
         }
       });
 
-      ndef.addEventListener('readingerror', () => {
+      ndef.addEventListener('readingerror', (error) => {
+        console.error('NFC read error:', error);
         setNfcScanning(false);
       });
 
+      await ndef.scan({ signal: nfcAbortControllerRef.current.signal });
+      console.log('NFC scan started successfully');
+      setNfcScanning(true);
+
     } catch (error) {
+      console.error('NFC scan failed:', error);
+      alert(`NFC Error: ${error.message}. Make sure NFC is enabled in your phone settings.`);
       setNfcScanning(false);
     }
   };
