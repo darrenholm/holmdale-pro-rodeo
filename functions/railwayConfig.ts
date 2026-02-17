@@ -44,10 +44,14 @@ async function railwayRequest(endpoint, options = {}) {
     config.body = JSON.stringify(body);
   }
 
+  console.log(`[Railway Request] ${method} ${url}`);
+
   const response = await fetch(url, config);
 
   if (!response.ok) {
-    throw new Error(`Railway API error: ${response.status}`);
+    const errorText = await response.text();
+    console.error(`[Railway Error] ${response.status}: ${errorText}`);
+    throw new Error(`Railway API error: ${response.status} - ${errorText}`);
   }
 
   return await response.json();
