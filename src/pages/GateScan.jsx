@@ -14,6 +14,7 @@ const STEP = {
   MANUAL_QR: 'manual_qr',
   MANUAL_RFID: 'manual_rfid',
   VERIFY: 'verify',
+  SCAN_WRISTBANDS: 'scan_wristbands',
   SUCCESS: 'success',
   ERROR: 'error'
 };
@@ -29,6 +30,9 @@ export default function GateScan() {
   const [result, setResult] = useState(null);
   const [nfcSupported, setNfcSupported] = useState(false);
   const [nfcScanning, setNfcScanning] = useState(false);
+  const [wristbandsScanned, setWristbandsScanned] = useState([]);
+  const [currentWristbandIndex, setCurrentWristbandIndex] = useState(0);
+  const [totalWristbandsNeeded, setTotalWristbandsNeeded] = useState(0);
 
   const videoRef = useRef(null);
   const canvasRef = useRef(null);
@@ -87,7 +91,22 @@ export default function GateScan() {
         document.removeEventListener('keydown', handleGlobalKeyDown);
       };
     }
-  }, [step, rfidTagId]);
+
+    if (step === STEP.SCAN_WRISTBANDS) {
+      const handleWristbandKeyDown = (e) => {
+        if (e.key === 'Enter' && rfidTagId.trim()) {
+          handleWristbandScan(rfidTagId.trim());
+        }
+      };
+
+      document.addEventListener('keydown', handleWristbandKeyDown);
+      rfidInputRef.current?.focus();
+
+      return () => {
+        document.removeEventListener('keydown', handleWristbandKeyDown);
+      };
+    }
+  }, [step, rfidTagId, wristbandsScanned]);
 
   const startCamera = async () => {
     try {
@@ -225,12 +244,25 @@ export default function GateScan() {
           });
           
           setTicket(foundTicket);
-          setResult({
-            success: true,
-            message: 'Entry approved!',
-            ticket: foundTicket
-          });
-          setStep(STEP.SUCCESS);
+          
+          // Calculate total wristbands needed
+          const totalWristbands = (foundTicket.quantityAdult || 0) + (foundTicket.quantityChild || 0);
+          
+          if (totalWristbands > 0) {
+            // Need to scan wristbands
+            setTotalWristbandsNeeded(totalWristbands);
+            setWristbandsScanned([]);
+            setCurrentWristbandIndex(0);
+            setStep(STEP.SCAN_WRISTBANDS);
+          } else {
+            // No wristbands needed, go straight to success
+            setResult({
+              success: true,
+              message: 'Entry approved!',
+              ticket: foundTicket
+            });
+            setStep(STEP.SUCCESS);
+          }
         }
       }
     } catch (error) {
@@ -305,6 +337,40 @@ export default function GateScan() {
     setNfcScanning(false);
   };
 
+  const handleWristbandScan = async (scannedRfidTag) => {
+    // Check for duplicates
+    if (wristbandsScanned.includes(scannedRfidTag)) {
+      alert('This wristband has already been scanned for this ticket');
+      setRfidTagId('');
+      return;
+    }
+
+    const newScanned = [...wristbandsScanned, scannedRfidTag];
+    setWristbandsScanned(newScanned);
+    setRfidTagId('');
+
+    if (newScanned.length >= totalWristbandsNeeded) {
+      // All wristbands scanned, update ticket
+      const updatedWristbands = newScanned.map((tag_id, index) => ({
+        tag_id,
+        is_19_plus: index < (ticket.quantityAdult || 0) // Adults are first
+      }));
+
+      await base44.entities.TicketOrder.update(ticket.id, {
+        rfid_wristbands: updatedWristbands
+      });
+
+      setResult({
+        success: true,
+        message: 'Entry approved!',
+        ticket: { ...ticket, rfid_wristbands: updatedWristbands }
+      });
+      setStep(STEP.SUCCESS);
+    } else {
+      setCurrentWristbandIndex(newScanned.length);
+    }
+  };
+
   const reset = () => {
     setStep(STEP.SCAN_QR);
     setConfirmationCode('');
@@ -313,6 +379,9 @@ export default function GateScan() {
     setScanning(true);
     setScanError(null);
     setResult(null);
+    setWristbandsScanned([]);
+    setCurrentWristbandIndex(0);
+    setTotalWristbandsNeeded(0);
     stopNFCScan();
   };
 
@@ -478,6 +547,102 @@ export default function GateScan() {
                   Cancel
                 </Button>
               </div>
+            </CardContent>
+          </Card>
+        )}
+
+        {step === STEP.SCAN_WRISTBANDS && (
+          <Card className="bg-stone-900 border-stone-800">
+            <CardHeader>
+              <CardTitle className="text-white flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <Zap className="w-5 h-5 text-purple-500" />
+                  Scan RFID Wristbands
+                </div>
+                <Badge className="bg-purple-600 text-white">
+                  {currentWristbandIndex + 1} / {totalWristbandsNeeded}
+                </Badge>
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="bg-stone-800/50 rounded-lg p-6 space-y-3">
+                <div className="flex justify-between items-center">
+                  <span className="text-stone-300">Customer:</span>
+                  <span className="text-white font-semibold">{ticket.customer_name}</span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-stone-300">Ticket Type:</span>
+                  <span className="text-white font-semibold capitalize">{ticket.ticket_type}</span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-stone-300">Total Wristbands:</span>
+                  <span className="text-white font-semibold">{totalWristbandsNeeded}</span>
+                </div>
+                {ticket.quantityAdult > 0 && (
+                  <div className="flex justify-between items-center">
+                    <span className="text-stone-300">Adults:</span>
+                    <span className="text-white font-semibold">{ticket.quantityAdult}</span>
+                  </div>
+                )}
+                {ticket.quantityChild > 0 && (
+                  <div className="flex justify-between items-center">
+                    <span className="text-stone-300">Children:</span>
+                    <span className="text-white font-semibold">{ticket.quantityChild}</span>
+                  </div>
+                )}
+              </div>
+
+              {wristbandsScanned.length > 0 && (
+                <div className="bg-green-900/20 border border-green-800 rounded-lg p-4">
+                  <p className="text-green-300 font-semibold mb-2">Scanned Wristbands:</p>
+                  <div className="space-y-1">
+                    {wristbandsScanned.map((tag, idx) => (
+                      <div key={idx} className="flex items-center gap-2 text-sm">
+                        <CheckCircle2 className="w-4 h-4 text-green-400" />
+                        <span className="text-green-100 font-mono">{tag}</span>
+                        <Badge className="ml-auto bg-green-700 text-white text-xs">
+                          {idx < (ticket.quantityAdult || 0) ? '19+' : 'Child'}
+                        </Badge>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              <div className="bg-purple-900/20 border-2 border-purple-500 rounded-lg p-6">
+                <p className="text-purple-200 font-semibold text-center mb-4">
+                  {currentWristbandIndex < (ticket.quantityAdult || 0)
+                    ? `Scan Adult Wristband #${currentWristbandIndex + 1} (19+)`
+                    : `Scan Child Wristband #${currentWristbandIndex - (ticket.quantityAdult || 0) + 1}`
+                  }
+                </p>
+                <Input
+                  ref={rfidInputRef}
+                  type="text"
+                  value={rfidTagId}
+                  onChange={(e) => setRfidTagId(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') {
+                      e.preventDefault();
+                      if (rfidTagId.trim()) {
+                        handleWristbandScan(rfidTagId.trim());
+                      }
+                    }
+                  }}
+                  placeholder="Scan wristband RFID..."
+                  className="bg-stone-800 border-stone-700 text-white text-lg p-6 text-center"
+                  autoFocus
+                  spellCheck="false"
+                />
+              </div>
+
+              <Button
+                onClick={reset}
+                variant="outline"
+                className="w-full border-stone-700 text-white hover:bg-stone-800"
+              >
+                Cancel
+              </Button>
             </CardContent>
           </Card>
         )}
