@@ -62,7 +62,7 @@ export default function GateScan() {
   }, [scanning, step]);
 
   useEffect(() => {
-    if (step === STEP.SCAN_RFID && nfcSupported && !nfcScanning) {
+    if ((step === STEP.SCAN_RFID || step === STEP.SCAN_WRISTBANDS) && nfcSupported && !nfcScanning) {
       startNFCScan();
     }
   }, [step]);
@@ -306,9 +306,24 @@ export default function GateScan() {
       ndef.addEventListener('reading', (event) => {
         console.log('NFC tag detected:', event.serialNumber);
         if (event.serialNumber) {
-          setRfidTagId(event.serialNumber);
-          stopNFCScan();
-          setTimeout(() => verifyTicket(event.serialNumber), 100);
+          const tagId = event.serialNumber;
+          
+          if (step === STEP.SCAN_WRISTBANDS) {
+            // Handle wristband scanning
+            if (!wristbandsScanned.includes(tagId)) {
+              stopNFCScan();
+              handleWristbandScan(null, tagId);
+              // Restart scan for next wristband
+              if (wristbandsScanned.length + 1 < totalWristbandsNeeded) {
+                setTimeout(() => startNFCScan(), 500);
+              }
+            }
+          } else {
+            // Handle regular RFID verification
+            setRfidTagId(tagId);
+            stopNFCScan();
+            setTimeout(() => verifyTicket(tagId), 100);
+          }
         }
       });
 
@@ -610,6 +625,18 @@ export default function GateScan() {
                       </div>
                     ))}
                   </div>
+                </div>
+              )}
+
+              {nfcScanning && (
+                <div className="bg-purple-900/20 border-2 border-purple-500 rounded-lg p-6 text-center mb-4">
+                  <Zap className="w-12 h-12 text-purple-400 mx-auto mb-2 animate-pulse" />
+                  <p className="text-purple-200 font-medium">
+                    {currentWristbandIndex < (ticket.quantityAdult || 0)
+                      ? `Hold Adult Wristband #${currentWristbandIndex + 1} near phone...`
+                      : `Hold Child Wristband #${currentWristbandIndex - (ticket.quantityAdult || 0) + 1} near phone...`
+                    }
+                  </p>
                 </div>
               )}
 
