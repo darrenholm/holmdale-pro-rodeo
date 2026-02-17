@@ -61,11 +61,7 @@ export default function GateScan() {
     };
   }, [scanning, step]);
 
-  useEffect(() => {
-    if ((step === STEP.SCAN_RFID || step === STEP.SCAN_WRISTBANDS) && nfcSupported && !nfcScanning) {
-      startNFCScan();
-    }
-  }, [step]);
+  // NFC must be triggered by user gesture, not auto-started
 
   useEffect(() => {
     if (step === STEP.SUCCESS || step === STEP.ERROR) {
@@ -628,6 +624,16 @@ export default function GateScan() {
                 </div>
               )}
 
+              {nfcSupported && !nfcScanning && (
+                <Button 
+                  onClick={startNFCScan}
+                  className="w-full bg-purple-600 hover:bg-purple-700 py-6 mb-4"
+                >
+                  <Zap className="w-5 h-5 mr-2" />
+                  Tap to Scan NFC Wristband
+                </Button>
+              )}
+
               {nfcScanning && (
                 <div className="bg-purple-900/20 border-2 border-purple-500 rounded-lg p-6 text-center mb-4">
                   <Zap className="w-12 h-12 text-purple-400 mx-auto mb-2 animate-pulse" />
@@ -637,6 +643,13 @@ export default function GateScan() {
                       : `Hold Child Wristband #${currentWristbandIndex - (ticket.quantityAdult || 0) + 1} near phone...`
                     }
                   </p>
+                  <Button
+                    onClick={stopNFCScan}
+                    variant="outline"
+                    className="mt-4 border-purple-600 text-purple-200 hover:bg-purple-900"
+                  >
+                    Cancel NFC Scan
+                  </Button>
                 </div>
               )}
 
