@@ -5,10 +5,9 @@ import { Button } from "@/components/ui/button";
 import { Loader2 } from 'lucide-react';
 
 export default function TestRailway() {
-  const [events, setEvents] = useState(null);
-  const [products, setProducts] = useState(null);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
+  const [results, setResults] = useState({});
+  const [loading, setLoading] = useState({});
+  const [error, setError] = useState({});
 
   const testGetEvents = async () => {
     setLoading(true);
