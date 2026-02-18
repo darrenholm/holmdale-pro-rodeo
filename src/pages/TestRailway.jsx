@@ -9,35 +9,27 @@ export default function TestRailway() {
   const [loading, setLoading] = useState({});
   const [error, setError] = useState({});
 
-  const testGetEvents = async () => {
-    setLoading(true);
-    setError(null);
+  const testEndpoint = async (name, functionName) => {
+    setLoading(prev => ({ ...prev, [name]: true }));
+    setError(prev => ({ ...prev, [name]: null }));
     try {
-      const response = await base44.functions.invoke('getEventsFromRailway');
-      console.log('Events from Railway:', response.data);
-      setEvents(response.data);
+      const response = await base44.functions.invoke(functionName);
+      console.log(`${name} from Railway:`, response.data);
+      setResults(prev => ({ ...prev, [name]: response.data }));
     } catch (err) {
-      console.error('Error fetching events:', err);
-      setError(err.message);
+      console.error(`Error fetching ${name}:`, err);
+      setError(prev => ({ ...prev, [name]: err.message }));
     } finally {
-      setLoading(false);
+      setLoading(prev => ({ ...prev, [name]: false }));
     }
   };
 
-  const testGetProducts = async () => {
-    setLoading(true);
-    setError(null);
-    try {
-      const response = await base44.functions.invoke('getProductsFromRailway');
-      console.log('Products from Railway:', response.data);
-      setProducts(response.data);
-    } catch (err) {
-      console.error('Error fetching products:', err);
-      setError(err.message);
-    } finally {
-      setLoading(false);
-    }
-  };
+  const endpoints = [
+    { name: 'Events', functionName: 'getEventsFromRailway' },
+    { name: 'Products', functionName: 'getProductsFromRailway' },
+    { name: 'Staff', functionName: 'getStaffFromRailway', requiresAuth: true },
+    { name: 'Shifts', functionName: 'getShiftsFromRailway', requiresAuth: true },
+  ];
 
   return (
     <div className="min-h-screen bg-stone-950 pt-24 pb-20 px-6">
