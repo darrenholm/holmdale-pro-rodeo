@@ -66,8 +66,8 @@ import Shop from './pages/Shop';
 import Staff from './pages/Staff';
 import StaffList from './pages/StaffList';
 import StaffScheduling from './pages/StaffScheduling';
-import TrackOrder from './pages/TrackOrder';
 import TestRailway from './pages/TestRailway';
+import TrackOrder from './pages/TrackOrder';
 import __Layout from './Layout.jsx';
 
 
@@ -91,8 +91,8 @@ export const PAGES = {
     "Staff": Staff,
     "StaffList": StaffList,
     "StaffScheduling": StaffScheduling,
-    "TrackOrder": TrackOrder,
     "TestRailway": TestRailway,
+    "TrackOrder": TrackOrder,
 }
 
 export const pagesConfig = {

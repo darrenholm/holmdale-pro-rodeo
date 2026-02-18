@@ -37,79 +37,48 @@ export default function TestRailway() {
         <h1 className="text-3xl font-bold text-white mb-8">Railway API Test</h1>
 
         <div className="grid gap-6">
-          {/* Events Test */}
-          <Card className="bg-stone-900 border-stone-800">
-            <CardHeader>
-              <CardTitle className="text-white">Test Get Events</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <Button 
-                onClick={testGetEvents} 
-                disabled={loading}
-                className="bg-green-500 hover:bg-green-600 text-stone-900"
-              >
-                {loading ? (
-                  <>
-                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                    Loading...
-                  </>
-                ) : (
-                  'Get Events from Railway'
+          {endpoints.map(endpoint => (
+            <Card key={endpoint.name} className="bg-stone-900 border-stone-800">
+              <CardHeader>
+                <CardTitle className="text-white">
+                  Test {endpoint.name}
+                  {endpoint.requiresAuth && (
+                    <span className="ml-2 text-xs text-yellow-500">(Requires Auth Token)</span>
+                  )}
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <Button 
+                  onClick={() => testEndpoint(endpoint.name, endpoint.functionName)} 
+                  disabled={loading[endpoint.name]}
+                  className="bg-green-500 hover:bg-green-600 text-stone-900"
+                >
+                  {loading[endpoint.name] ? (
+                    <>
+                      <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                      Loading...
+                    </>
+                  ) : (
+                    `Get ${endpoint.name}`
+                  )}
+                </Button>
+
+                {error[endpoint.name] && (
+                  <div className="bg-red-950 border border-red-700 rounded p-3 text-red-300">
+                    {error[endpoint.name]}
+                  </div>
                 )}
-              </Button>
 
-              {error && (
-                <div className="bg-red-950 border border-red-700 rounded p-3 text-red-300">
-                  {error}
-                </div>
-              )}
-
-              {events && (
-                <div className="bg-stone-800 rounded p-4">
-                  <pre className="text-stone-300 text-sm overflow-auto max-h-96">
-                    {JSON.stringify(events, null, 2)}
-                  </pre>
-                </div>
-              )}
-            </CardContent>
-          </Card>
-
-          {/* Products Test */}
-          <Card className="bg-stone-900 border-stone-800">
-            <CardHeader>
-              <CardTitle className="text-white">Test Get Products</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <Button 
-                onClick={testGetProducts} 
-                disabled={loading}
-                className="bg-green-500 hover:bg-green-600 text-stone-900"
-              >
-                {loading ? (
-                  <>
-                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                    Loading...
-                  </>
-                ) : (
-                  'Get Products from Railway'
+                {results[endpoint.name] && (
+                  <div className="bg-stone-800 rounded p-4">
+                    <pre className="text-stone-300 text-sm overflow-auto max-h-96">
+                      {JSON.stringify(results[endpoint.name], null, 2)}
+                    </pre>
+                  </div>
                 )}
-              </Button>
-
-              {error && (
-                <div className="bg-red-950 border border-red-700 rounded p-3 text-red-300">
-                  {error}
-                </div>
-              )}
-
-              {products && (
-                <div className="bg-stone-800 rounded p-4">
-                  <pre className="text-stone-300 text-sm overflow-auto max-h-96">
-                    {JSON.stringify(products, null, 2)}
-                  </pre>
-                </div>
-              )}
-            </CardContent>
-          </Card>
+              </CardContent>
+            </Card>
+          ))}
         </div>
       </div>
     </div>
