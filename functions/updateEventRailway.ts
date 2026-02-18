@@ -1,0 +1,29 @@
+Deno.serve(async (req) => {
+  try {
+    const { token, eventId, ...updateData } = await req.json();
+    
+    const headers = {
+      'Content-Type': 'application/json',
+    };
+    
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`;
+    }
+    
+    const response = await fetch(`https://rodeo-fresh-production-7348.up.railway.app/api/events/${eventId}`, {
+      method: 'PUT',
+      headers,
+      body: JSON.stringify(updateData)
+    });
+    
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(`Railway API error: ${response.status} - ${errorText}`);
+    }
+    
+    const event = await response.json();
+    return Response.json({ success: true, data: event });
+  } catch (error) {
+    return Response.json({ error: error.message }, { status: 500 });
+  }
+});
