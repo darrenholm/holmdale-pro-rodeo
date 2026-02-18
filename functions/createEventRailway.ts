@@ -1,13 +1,19 @@
 Deno.serve(async (req) => {
   try {
-    const body = await req.json();
+    const { token, ...eventData } = await req.json();
+    
+    const headers = {
+      'Content-Type': 'application/json',
+    };
+    
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`;
+    }
     
     const response = await fetch('https://rodeo-fresh-production-7348.up.railway.app/api/events', {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(body)
+      headers,
+      body: JSON.stringify(eventData)
     });
     
     if (!response.ok) {
