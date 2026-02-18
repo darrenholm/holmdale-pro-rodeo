@@ -14,7 +14,10 @@ import { createPageUrl } from '@/utils';
 export default function Events() {
     const { data: events = [], isLoading } = useQuery({
         queryKey: ['events'],
-        queryFn: () => base44.entities.Event.list('date', 50)
+        queryFn: async () => {
+            const response = await base44.functions.invoke('getEventsFromRailway');
+            return response.data?.data || [];
+        }
     });
     
     return (

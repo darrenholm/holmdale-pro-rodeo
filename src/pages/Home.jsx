@@ -10,7 +10,10 @@ import CTASection from '../components/home/CTASection';
 export default function Home() {
     const { data: events = [], isLoading } = useQuery({
         queryKey: ['events'],
-        queryFn: () => base44.entities.Event.list('date', 10)
+        queryFn: async () => {
+            const response = await base44.functions.invoke('getEventsFromRailway');
+            return response.data?.data || [];
+        }
     });
     
     const featuredEvent = events.find(e => e.is_featured) || events[0];
