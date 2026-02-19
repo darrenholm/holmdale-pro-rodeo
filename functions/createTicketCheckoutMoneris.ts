@@ -83,7 +83,6 @@ Deno.serve(async (req) => {
       action: 'preload',
       order_no: confirmationCode,
       cust_id: customerEmail,
-      dynamic_descriptor: event.title,
       contact_details: {
         email: customerEmail,
         first_name: customerName.split(' ')[0] || customerName,
