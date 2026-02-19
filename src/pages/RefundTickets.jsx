@@ -21,9 +21,21 @@ export default function RefundTickets() {
     queryKey: ['ticketSearch', searchCode],
     queryFn: async () => {
       if (!searchCode) return [];
-      return await base44.asServiceRole.entities.TicketOrder.filter({
-        confirmation_code: searchCode.toUpperCase()
+      const code = searchCode.trim().toUpperCase();
+      // Try exact match first
+      let results = await base44.asServiceRole.entities.TicketOrder.filter({
+        confirmation_code: code
       });
+      
+      // If no results, try all tickets and filter client-side for partial matches
+      if (!results || results.length === 0) {
+        const allTickets = await base44.asServiceRole.entities.TicketOrder.list();
+        results = allTickets.filter(t => 
+          t.confirmation_code && t.confirmation_code.includes(code)
+        );
+      }
+      
+      return results || [];
     },
     enabled: searchCode.length > 0
   });
