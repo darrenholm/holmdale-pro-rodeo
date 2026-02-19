@@ -54,6 +54,11 @@ export default function RefundTickets() {
       return;
     }
 
+    if (selectedOrder.status !== 'confirmed' && selectedOrder.status !== 'paid') {
+      alert(`Cannot refund tickets with status "${selectedOrder.status}". Only confirmed/paid tickets can be refunded.`);
+      return;
+    }
+
     const amount = parseFloat(refundAmount);
     if (amount <= 0 || amount > Number(selectedOrder.total_price)) {
       alert('Invalid refund amount');
