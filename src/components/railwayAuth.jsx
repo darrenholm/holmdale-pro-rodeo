@@ -22,8 +22,18 @@ export const railwayAuth = {
       });
       
       console.log('Login response:', response);
-      const token = response.data.token;
+      console.log('Login response.data:', response.data);
+      console.log('Login response.data.data:', response.data.data);
+      
+      // The loginRailway function returns { success: true, data: result }
+      // where result contains the token
+      const token = response.data.data?.token;
       console.log('Token received:', token ? 'Yes' : 'No');
+      
+      if (!token) {
+        throw new Error('No token received from Railway login');
+      }
+      
       localStorage.setItem(TOKEN_KEY, token);
       return token;
     } catch (error) {
