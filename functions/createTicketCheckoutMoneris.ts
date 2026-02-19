@@ -32,7 +32,12 @@ Deno.serve(async (req) => {
     console.log('Found event:', event.title);
 
     // Calculate price with HST
-    const priceKey = ticketType === 'vip' ? 'vip_price' : 'general_price';
+    const priceKeyMap = {
+      'general': 'general_price',
+      'child': 'child_price',
+      'family': 'family_price'
+    };
+    const priceKey = priceKeyMap[ticketType] || 'general_price';
     const unitPrice = event[priceKey] || 0;
     const subtotal = unitPrice * parseInt(quantity);
     const hst = subtotal * 0.13;
