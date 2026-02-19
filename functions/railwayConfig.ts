@@ -47,12 +47,17 @@ async function railwayRequest(endpoint, options = {}) {
   console.log(`[Railway Request] ${method} ${url}`);
   console.log('[Auth Header]', headers['Authorization']);
   console.log('[Token Received]', token);
+  console.log('[Full Headers]', JSON.stringify(headers));
 
   const response = await fetch(url, config);
+
+  console.log('[Response Status]', response.status);
+  console.log('[Response OK]', response.ok);
 
   if (!response.ok) {
     const errorText = await response.text();
     console.error(`[Railway Error] ${response.status}: ${errorText}`);
+    console.error('[Full URL Called]', url);
     throw new Error(`Railway API error: ${response.status} - ${errorText}`);
   }
 
