@@ -77,22 +77,27 @@ export default function BuyTickets() {
     const { data: event, isLoading, error } = useQuery({
         queryKey: ['event', eventId],
         queryFn: async () => {
+            console.log('[BuyTickets] Fetching event with ID:', eventId);
             try {
                 const result = await railwayAuth.callWithAuth('getEventsFromRailway');
+                console.log('[BuyTickets] Railway API result:', result);
                 const events = result?.data || [];
+                console.log('[BuyTickets] Found events:', events.length);
                 const foundEvent = events.find(e => e.id === eventId);
                 if (!foundEvent) {
-                    console.error('Event not found with ID:', eventId);
-                    console.log('Available events:', events.map(e => ({ id: e.id, title: e.title })));
+                    console.error('[BuyTickets] Event not found with ID:', eventId);
+                    console.log('[BuyTickets] Available event IDs:', events.map(e => e.id));
+                    throw new Error(`Event not found: ${eventId}`);
                 }
+                console.log('[BuyTickets] Found event:', foundEvent.title);
                 return foundEvent;
             } catch (error) {
-                console.error('Error fetching event:', error);
+                console.error('[BuyTickets] Error fetching event:', error);
                 throw error;
             }
         },
         enabled: !!eventId,
-        retry: 1
+        retry: false
     });
     
     useEffect(() => {
