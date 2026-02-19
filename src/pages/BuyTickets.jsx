@@ -191,7 +191,7 @@ export default function BuyTickets() {
     
     const handleSubmit = async (e) => {
         e.preventDefault();
-        
+
         if (isInIframe) {
             alert('Checkout is only available from the published app. Please open this in a new window.');
             return;
@@ -207,25 +207,10 @@ export default function BuyTickets() {
                 customerPhone: customerInfo.phone
             };
 
-            // Create order record first
-            const code = `CONF-${Date.now().toString().slice(-8)}`;
-            await base44.entities.TicketOrder.create({
-                event_id: eventId,
-                customer_name: customerInfo.name,
-                customer_email: customerInfo.email,
-                customer_phone: customerInfo.phone,
-                ticket_type: selectedType,
-                quantityAdult: quantity,
-                total_price: totalPrice,
-                confirmation_code: code,
-                status: 'pending'
-            });
-
-            setConfirmationCode(code);
-
             // Get Moneris checkout ticket
             const result = await createCheckout.mutateAsync(checkoutData);
             if (result.ticket) {
+                setConfirmationCode(result.confirmation_code);
                 setCheckoutTicket(result.ticket);
                 setShowCheckout(true);
             } else {
