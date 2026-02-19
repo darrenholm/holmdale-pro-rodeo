@@ -45,6 +45,13 @@ export default function CTASection() {
                         Be part of the most exciting rodeo event of the year. 
                         Check out our upcoming events!
                     </p>
+                    
+                    <Link to={createPageUrl('Events')}>
+                        <Button className="bg-green-500 hover:bg-green-600 text-stone-900 font-semibold px-8 py-6 text-lg">
+                            View Events
+                            <ArrowRight className="w-5 h-5 ml-2" />
+                        </Button>
+                    </Link>
                 </motion.div>
             </div>
         </section>
