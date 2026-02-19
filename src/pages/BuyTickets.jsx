@@ -419,8 +419,8 @@ export default function BuyTickets() {
                                 </CardHeader>
                                 <CardContent className="space-y-4">
                                     {ticketTypes.map((type) => {
-                                        const price = eventId === '696b7bdc81676e7ff80617a1' ? 0 : (event?.[type.priceKey]);
-                                        const available = event?.[type.availableKey] || 0;
+                                        const price = eventId === '696b7bdc81676e7ff80617a1' ? 0 : Number(event?.[type.priceKey]);
+                                        const available = Number(event?.[type.availableKey]) || 0;
                                         const isSelected = selectedType === type.id;
                                         const isAvailable = available > 0;
                                         
