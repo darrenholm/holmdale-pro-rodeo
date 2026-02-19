@@ -59,7 +59,7 @@ Deno.serve(async (req) => {
       customer_email: customerEmail,
       customer_phone: customerPhone,
       ticket_type: ticketType,
-      quantity: parseInt(quantity),
+      quantityAdult: parseInt(quantity),
       total_price: total,
       status: 'pending',
       confirmation_code: confirmationCode
