@@ -1,8 +1,5 @@
-import { createClientFromRequest } from 'npm:@base44/sdk@0.8.6';
-
 Deno.serve(async (req) => {
   try {
-    const base44 = createClientFromRequest(req);
     const body = await req.json();
     const { ticketType, quantity, eventId, customerEmail, customerName, customerPhone } = body;
 
@@ -10,9 +7,21 @@ Deno.serve(async (req) => {
       return Response.json({ error: 'Missing required fields' }, { status: 400 });
     }
 
-    // Fetch actual event with current pricing
-    const event = await base44.asServiceRole.entities.Event.get(eventId);
-    
+    // Fetch event from Railway to get pricing
+    const railwayToken = Deno.env.get('RAILWAY_AUTH_TOKEN');
+    const eventResponse = await fetch('http://localhost:3000/api/events', {
+      headers: {
+        'Authorization': `Bearer ${railwayToken}`
+      }
+    });
+
+    if (!eventResponse.ok) {
+      return Response.json({ error: 'Failed to fetch event data' }, { status: 500 });
+    }
+
+    const events = await eventResponse.json();
+    const event = events.find(e => e.id === eventId);
+
     if (!event) {
       return Response.json({ error: 'Event not found' }, { status: 404 });
     }
@@ -42,21 +51,6 @@ Deno.serve(async (req) => {
 
     const orderId = `TICKET-${Date.now()}`;
     const confirmationCode = `CONF-${Date.now().toString().slice(-8)}`;
-
-    // Create pending ticket order
-    const ticketOrder = await base44.asServiceRole.entities.TicketOrder.create({
-      event_id: event.id,
-      customer_name: customerName,
-      customer_email: customerEmail,
-      customer_phone: customerPhone,
-      ticket_type: ticketType,
-      quantityAdult: parseInt(quantity),
-      total_price: total,
-      status: 'pending',
-      confirmation_code: confirmationCode
-    });
-
-    console.log('Created pending ticket order:', ticketOrder.id);
 
     // Create Moneris Checkout ticket
     const checkoutData = {
