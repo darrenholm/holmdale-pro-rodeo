@@ -15,7 +15,8 @@ export default function Events() {
     const { data: events = [], isLoading } = useQuery({
         queryKey: ['events'],
         queryFn: async () => {
-            const response = await base44.functions.invoke('getEventsFromRailway');
+            const token = await railwayAuth.getToken();
+            const response = await base44.functions.invoke('getEventsFromRailway', { token });
             return response.data?.data || [];
         }
     });
