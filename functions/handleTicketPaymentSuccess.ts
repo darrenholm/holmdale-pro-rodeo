@@ -44,7 +44,7 @@ Deno.serve(async (req) => {
     const ticketOrder = await ticketResponse.json();
 
     // Update status to confirmed
-    await fetch(`http://localhost:3000/api/ticket-orders/${ticketOrder.id}`, {
+    await fetch(`https://rodeo-fresh-production-7348.up.railway.app/api/ticket-orders/${ticketOrder.id}`, {
       method: 'PATCH',
       headers: {
         'Authorization': `Bearer ${railwayToken}`,
@@ -56,7 +56,7 @@ Deno.serve(async (req) => {
     // Get event details from Railway
     let event;
     try {
-      const eventResponse = await fetch(`http://localhost:3000/api/events/${ticketOrder.event_id}`, {
+      const eventResponse = await fetch(`https://rodeo-fresh-production-7348.up.railway.app/api/events/${ticketOrder.event_id}`, {
         headers: { 'Authorization': `Bearer ${railwayToken}` }
       });
       event = await eventResponse.json();
