@@ -15,16 +15,20 @@ export const railwayAuth = {
 
   async login() {
     try {
+      console.log('Attempting Railway login...');
       const response = await base44.functions.invoke('loginRailway', {
         email: 'darren@holmgraphics.ca',
         password: 'changeme123'
       });
       
+      console.log('Login response:', response);
       const token = response.data.token;
+      console.log('Token received:', token ? 'Yes' : 'No');
       localStorage.setItem(TOKEN_KEY, token);
       return token;
     } catch (error) {
       console.error('Railway login failed:', error);
+      console.error('Login error details:', error.response);
       throw error;
     }
   },
