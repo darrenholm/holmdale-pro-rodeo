@@ -17,22 +17,30 @@ export default function RefundTickets() {
   const queryClient = useQueryClient();
 
   // Search for ticket by confirmation code
-  const { data: searchResults, isLoading: isSearching } = useQuery({
+  const { data: searchResults, isLoading: isSearching, error: searchError } = useQuery({
     queryKey: ['ticketSearch', searchCode],
     queryFn: async () => {
       if (!searchCode) return [];
-      const code = searchCode.trim().toUpperCase();
-      // Try exact match first
+      const code = searchCode.trim();
+      console.log('Searching for code:', code);
+      
+      // Try exact match first (case-insensitive)
       let results = await base44.asServiceRole.entities.TicketOrder.filter({
         confirmation_code: code
       });
       
-      // If no results, try all tickets and filter client-side for partial matches
+      console.log('Exact match results:', results);
+      
+      // If no results, try all tickets and filter client-side
       if (!results || results.length === 0) {
         const allTickets = await base44.asServiceRole.entities.TicketOrder.list();
+        console.log('Total tickets in database:', allTickets.length);
+        console.log('All confirmation codes:', allTickets.map(t => t.confirmation_code));
+        
         results = allTickets.filter(t => 
-          t.confirmation_code && t.confirmation_code.includes(code)
+          t.confirmation_code && t.confirmation_code.toUpperCase().includes(code.toUpperCase())
         );
+        console.log('Filtered results:', results);
       }
       
       return results || [];
