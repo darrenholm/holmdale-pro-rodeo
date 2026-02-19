@@ -2,14 +2,20 @@ Deno.serve(async (req) => {
   try {
     const body = await req.json();
     
-    console.log('Moneris webhook received:', JSON.stringify(body, null, 2));
+    console.log('=== MONERIS WEBHOOK RECEIVED ===');
+    console.log('Raw request body:', JSON.stringify(body, null, 2));
+    console.log('Request headers:', Object.fromEntries(req.headers));
+    console.log('Request method:', req.method);
+    console.log('Request URL:', req.url);
 
     // Moneris sends transaction data when payment is successful
     const { order_no, txn_num, response_code } = body;
 
+    console.log('Extracted data - order_no:', order_no, 'txn_num:', txn_num, 'response_code:', response_code);
+
     // Check if payment was successful (response_code < 50 means approved)
     if (!order_no || !response_code || parseInt(response_code) >= 50) {
-      console.log('Payment not approved or missing data');
+      console.log('Payment not approved or missing data. Order_no:', order_no, 'Response code:', response_code);
       return Response.json({ received: true });
     }
 
