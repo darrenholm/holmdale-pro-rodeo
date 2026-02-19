@@ -21,17 +21,8 @@ export default function RefundTickets() {
     queryKey: ['ticketSearch', searchCode],
     queryFn: async () => {
       if (!searchCode) return [];
-      const code = searchCode.trim().toUpperCase();
-      
-      // Get all tickets and search client-side
-      const allTickets = await base44.asServiceRole.entities.TicketOrder.list();
-      console.log('All tickets in database:', allTickets.map(t => ({ id: t.id, code: t.confirmation_code, customer: t.customer_name })));
-      
-      const results = allTickets.filter(t => 
-        t.confirmation_code && t.confirmation_code.toUpperCase() === code
-      );
-      
-      return results || [];
+      const response = await base44.functions.invoke('searchTickets', { code: searchCode });
+      return response.data?.results || [];
     },
     enabled: searchCode.length > 0
   });
