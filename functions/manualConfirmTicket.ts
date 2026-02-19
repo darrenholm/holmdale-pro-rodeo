@@ -76,13 +76,13 @@ Deno.serve(async (req) => {
     
     const updateResponse3 = updateResponse2;
 
-    if (!updateResponse.ok) {
-      const errorText = await updateResponse.text();
+    if (!updateResponse3.ok) {
+      const errorText = await updateResponse3.text();
       console.error('Failed to update ticket order:', errorText);
       return Response.json({ error: 'Failed to update ticket order', details: errorText }, { status: 500 });
     }
 
-    const updatedTicket = await updateResponse.json();
+    const updatedTicket = await updateResponse3.json();
     console.log('✓ Ticket manually confirmed:', confirmationCode, 'with transaction:', transactionReference);
     
     return Response.json({ 
