@@ -15,13 +15,29 @@ Deno.serve(async (req) => {
 
     console.log('Processing successful payment for order:', order_no);
 
-    const railwayToken = Deno.env.get('RAILWAY_AUTH_TOKEN');
+    // Authenticate with Railway backend
+    const loginResponse = await fetch('https://rodeo-fresh-production-7348.up.railway.app/api/auth/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        email: 'darren@holmgraphics.ca',
+        password: 'changeme123'
+      })
+    });
+
+    if (!loginResponse.ok) {
+      console.error('Failed to authenticate with Railway');
+      return Response.json({ received: true });
+    }
+
+    const authData = await loginResponse.json();
+    const railwayToken = authData.token;
 
     // Handle ticket orders (order_no is the CONF- prefixed confirmation code)
     if (order_no.startsWith('CONF-')) {
       try {
         // Update ticket order in Railway
-        const updateResponse = await fetch(`http://localhost:3000/api/ticket-orders/by-confirmation/${order_no}`, {
+        const updateResponse = await fetch(`https://rodeo-fresh-production-7348.up.railway.app/api/ticket-orders/by-confirmation/${order_no}`, {
           method: 'PATCH',
           headers: {
             'Authorization': `Bearer ${railwayToken}`,
