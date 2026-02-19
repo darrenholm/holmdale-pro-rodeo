@@ -120,7 +120,7 @@ export default function RefundTickets() {
           <div className="space-y-4 mb-8">
             {isSearching ? (
               <Skeleton className="h-32 rounded-xl" />
-            ) : searchResults?.length > 0 ? (
+            ) : Array.isArray(searchResults) && searchResults.length > 0 ? (
               searchResults.map((order) => (
                 <Card 
                   key={order.id}
