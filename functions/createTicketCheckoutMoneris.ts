@@ -10,33 +10,14 @@ Deno.serve(async (req) => {
       return Response.json({ error: 'Missing required fields' }, { status: 400 });
     }
 
-    // For free test events, create minimal event object
-    const testEventId = '696b7bdc81676e7ff80617a1';
-    let event = {
+    // Use a default event object with dynamic pricing based on type
+    const event = {
       id: eventId,
       title: 'Holmdale Pro Rodeo 2026',
-      general_price: 0,
-      child_price: 0,
-      family_price: 0
+      general_price: 50.00,
+      child_price: 25.00,
+      family_price: 100.00
     };
-    
-    // Only fetch from Railway if not the test event
-    if (eventId !== testEventId) {
-      try {
-        console.log('Fetching event details for:', eventId);
-        // Try calling the getEventsFromRailway function directly with a simple approach
-        const eventsResult = await fetch('https://api.example.com/events', {
-          headers: { 'Authorization': `Bearer ${Deno.env.get('RAILWAY_TOKEN')}` }
-        }).catch(() => null);
-        
-        if (eventsResult?.ok) {
-          const data = await eventsResult.json();
-          event = data.events?.find((e: any) => e.id === eventId) || event;
-        }
-      } catch (e) {
-        console.log('Could not fetch event details, using defaults');
-      }
-    }
 
     // Calculate price with HST
     const priceKeyMap = {
