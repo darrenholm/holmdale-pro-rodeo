@@ -69,6 +69,38 @@ Deno.serve(async (req) => {
     const orderId = `TICKET-${Date.now()}`;
     const confirmationCode = `CONF-${Date.now().toString().slice(-8)}`;
 
+    // Create ticket order in Railway
+    console.log('Creating ticket order in Railway:', confirmationCode);
+    const createOrderResponse = await fetch('https://rodeo-fresh-production-7348.up.railway.app/api/ticket-orders', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${railwayToken}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        event_id: eventId,
+        ticket_type: ticketType,
+        quantity: parseInt(quantity),
+        quantityAdult: ticketType === 'family' ? 2 : (ticketType === 'general' ? parseInt(quantity) : 0),
+        quantityChild: ticketType === 'family' ? 2 : (ticketType === 'child' ? parseInt(quantity) : 0),
+        customer_name: customerName,
+        customer_email: customerEmail,
+        customer_phone: customerPhone || '',
+        confirmation_code: confirmationCode,
+        status: 'pending',
+        total_price: total.toFixed(2)
+      })
+    });
+
+    if (!createOrderResponse.ok) {
+      const errorText = await createOrderResponse.text();
+      console.error('Failed to create ticket order in Railway:', errorText);
+      return Response.json({ error: 'Failed to create ticket order', details: errorText }, { status: 500 });
+    }
+
+    const ticketOrderData = await createOrderResponse.json();
+    console.log('Ticket order created in Railway:', ticketOrderData);
+
     // Create Moneris Checkout ticket
     const checkoutData = {
       store_id: storeId,
