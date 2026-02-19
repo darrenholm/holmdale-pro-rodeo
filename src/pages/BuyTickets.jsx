@@ -208,7 +208,7 @@ export default function BuyTickets() {
             };
 
             // Create order record first
-            const code = `WW-${Date.now().toString(36).toUpperCase()}`;
+            const code = `CONF-${Date.now().toString().slice(-8)}`;
             await base44.entities.TicketOrder.create({
                 event_id: eventId,
                 customer_name: customerInfo.name,
