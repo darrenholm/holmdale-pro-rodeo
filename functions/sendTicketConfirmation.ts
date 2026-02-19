@@ -20,33 +20,10 @@ Deno.serve(async (req) => {
       return Response.json({ error: 'Ticket order not found' }, { status: 404 });
     }
 
-    // Get event details from Railway
-    let event;
-    try {
-      const loginResult = await base44.asServiceRole.functions.invoke('loginRailway', {
-        email: 'darren@holmgraphics.ca',
-        password: 'changeme123'
-      });
-      
-      const token = loginResult.data?.data?.token;
-      if (!token) {
-        throw new Error('Failed to get Railway token');
-      }
-      
-      const eventsResult = await base44.asServiceRole.functions.invoke('getEventsFromRailway', {
-        token: token
-      });
-      
-      const events = eventsResult.data?.data || [];
-      event = events.find(e => e.id === ticketOrder.event_id);
-      
-      if (!event) {
-        console.error('Event not found in Railway:', ticketOrder.event_id);
-        throw new Error('Event not found');
-      }
-    } catch (railwayError) {
-      console.error('Railway API error:', railwayError);
-      throw railwayError;
+    // Get event details from Base44 Event entity
+    let event = await base44.asServiceRole.entities.Event.get(ticketOrder.event_id);
+    if (!event) {
+      throw new Error('Event not found');
     }
 
     // Generate QR code as data URL for embedding directly in email
