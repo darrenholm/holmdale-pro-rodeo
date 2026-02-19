@@ -136,8 +136,7 @@ Deno.serve(async (req) => {
       url: checkoutUrl,
       ticket: result.response.ticket,
       order_id: orderId,
-      confirmation_code: confirmationCode,
-      ticket_order_id: ticketOrder.id
+      confirmation_code: confirmationCode
     });
 
   } catch (error) {
