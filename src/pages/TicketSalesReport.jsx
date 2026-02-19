@@ -160,7 +160,8 @@ export default function TicketSalesReport() {
                           <th className="text-left py-3 px-4 text-stone-400">Time</th>
                           <th className="text-left py-3 px-4 text-stone-400">Customer</th>
                           <th className="text-left py-3 px-4 text-stone-400">Type</th>
-                          <th className="text-center py-3 px-4 text-stone-400">Qty</th>
+                          <th className="text-center py-3 px-4 text-stone-400">Adults</th>
+                          <th className="text-center py-3 px-4 text-stone-400">Children</th>
                           <th className="text-right py-3 px-4 text-stone-400">Revenue</th>
                           <th className="text-left py-3 px-4 text-stone-400">Code</th>
                         </tr>
