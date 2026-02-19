@@ -174,7 +174,7 @@ Deno.serve(async (req) => {
     }
 
     const appUrl = Deno.env.get('BASE44_APP_URL') || 'https://holmdalerodeo.app.base44.com';
-    const successUrl = `${appUrl}/checkout-success?confirmation_code=${railwayConfirmationCode}`;
+    const successUrl = `${appUrl}/checkout-success?confirmation_code=${railwayConfirmationCode}&ticket_id=${ticketOrderData.id}`;
     const checkoutUrl = `https://gateway.moneris.com/chkt/index.php?ticket=${result.response.ticket}&redirect=${encodeURIComponent(successUrl)}`;
     
     console.log('Moneris checkout created:', { orderId, confirmationCode: railwayConfirmationCode, ticket: result.response.ticket, checkoutUrl });
