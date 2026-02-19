@@ -25,6 +25,8 @@ export default function RefundTickets() {
       
       // Get all tickets and search client-side
       const allTickets = await base44.asServiceRole.entities.TicketOrder.list();
+      console.log('All tickets in database:', allTickets.map(t => ({ id: t.id, code: t.confirmation_code, customer: t.customer_name })));
+      
       const results = allTickets.filter(t => 
         t.confirmation_code && t.confirmation_code.toUpperCase() === code
       );
