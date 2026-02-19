@@ -76,8 +76,9 @@ export default function BuyTickets() {
     const { data: event, isLoading } = useQuery({
         queryKey: ['event', eventId],
         queryFn: async () => {
-            const events = await base44.entities.Event.filter({ id: eventId });
-            return events[0];
+            const response = await base44.functions.invoke('getEventsFromRailway');
+            const events = response.data?.data || [];
+            return events.find(e => e.id === eventId);
         },
         enabled: !!eventId
     });
