@@ -1,42 +1,23 @@
-import sql from 'npm:mssql@10.0.0';
+import { createClientFromRequest } from 'npm:@base44/sdk@0.8.6';
 
 Deno.serve(async (req) => {
-  let pool;
   try {
+    const base44 = createClientFromRequest(req);
     const { code } = await req.json();
 
     if (!code) {
       return Response.json({ error: 'Code required' }, { status: 400 });
     }
 
-    const password = Deno.env.get('SQL_SERVER_PASSWORD');
-    if (!password) {
-      return Response.json({ error: 'SQL_SERVER_PASSWORD not set in environment' }, { status: 500 });
-    }
+    // Search Base44 TicketOrder by confirmation code
+    const results = await base44.asServiceRole.entities.TicketOrder.filter({
+      confirmation_code: code.trim().toUpperCase()
+    });
 
-    const config = {
-      server: 'roundhouse.proxy.rlwy.net',
-      port: 20151,
-      user: 'sa',
-      password: password,
-      database: 'master',
-      authentication: { type: 'default' },
-      options: { encrypt: true, trustServerCertificate: true }
-    };
+    return Response.json({ results });
 
-    pool = new sql.ConnectionPool(config);
-    await pool.connect();
-
-    const searchCode = code.trim().toUpperCase();
-    const result = await pool.request()
-      .input('code', sql.NVarChar(255), searchCode)
-      .query('SELECT * FROM ticket_orders WHERE UPPER(confirmation_code) = @code');
-
-    return Response.json({ results: result.recordset || [] });
   } catch (error) {
     console.error('Search error:', error);
     return Response.json({ error: error.message }, { status: 500 });
-  } finally {
-    if (pool) await pool.close();
   }
 });
