@@ -365,13 +365,13 @@ export default function BuyTickets() {
                                 </CardHeader>
                                 <CardContent className="space-y-4">
                                     {ticketTypes.map((type) => {
-                                        const price = eventId === '696b7bdc81676e7ff80617a1' ? 0 : (event?.[type.priceKey] || 0);
+                                        const price = eventId === '696b7bdc81676e7ff80617a1' ? 0 : (event?.[type.priceKey]);
                                         const available = event?.[type.availableKey] || 0;
                                         const isSelected = selectedType === type.id;
                                         const isAvailable = available > 0;
                                         
                                         // Skip ticket types that don't have pricing set for this event
-                                        if (!price && price !== 0) return null;
+                                        if (price === null || price === undefined) return null;
                                         
                                         return (
                                             <button
