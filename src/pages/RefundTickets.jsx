@@ -223,7 +223,7 @@ export default function RefundTickets() {
                   placeholder="0.00"
                 />
                 <p className="text-stone-500 text-sm mt-2">
-                  Maximum refundable: ${selectedOrder.total_price.toFixed(2)}
+                  Maximum refundable: ${Number(selectedOrder.total_price).toFixed(2)}
                 </p>
               </div>
 
