@@ -27,23 +27,13 @@ Deno.serve(async (req) => {
       if (ticketOrders.length > 0) {
         const ticketOrder = ticketOrders[0];
         
-        // Update ticket order status
+        // Update ticket order status - this triggers the automation to send email
         await base44.asServiceRole.entities.TicketOrder.update(ticketOrder.id, {
           status: 'confirmed',
           moneris_transaction_id: txn_num
         });
 
-        console.log('Ticket order confirmed, sending email...');
-
-        // Send confirmation email with QR code
-        try {
-          await base44.asServiceRole.functions.invoke('sendTicketConfirmation', {
-            ticket_order_id: ticketOrder.id
-          });
-          console.log('Ticket confirmation email sent for:', order_no);
-        } catch (emailError) {
-          console.error('Error sending ticket confirmation email:', emailError);
-        }
+        console.log('Ticket order confirmed - automation will send email');
       }
     }
     
