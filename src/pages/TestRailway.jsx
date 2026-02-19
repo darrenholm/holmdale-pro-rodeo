@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { base44 } from '@/api/base44Client';
+import { railwayAuth } from '../utils/railwayAuth';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Loader2 } from 'lucide-react';
@@ -9,13 +10,19 @@ export default function TestRailway() {
   const [loading, setLoading] = useState({});
   const [error, setError] = useState({});
 
-  const testEndpoint = async (name, functionName) => {
+  const testEndpoint = async (name, functionName, requiresAuth) => {
     setLoading(prev => ({ ...prev, [name]: true }));
     setError(prev => ({ ...prev, [name]: null }));
     try {
-      const response = await base44.functions.invoke(functionName);
-      console.log(`${name} from Railway:`, response.data);
-      setResults(prev => ({ ...prev, [name]: response.data }));
+      let data;
+      if (requiresAuth) {
+        data = await railwayAuth.callWithAuth(functionName);
+      } else {
+        const response = await base44.functions.invoke(functionName);
+        data = response.data;
+      }
+      console.log(`${name} from Railway:`, data);
+      setResults(prev => ({ ...prev, [name]: data }));
     } catch (err) {
       console.error(`Error fetching ${name}:`, err);
       setError(prev => ({ ...prev, [name]: err.message }));
@@ -49,7 +56,7 @@ export default function TestRailway() {
               </CardHeader>
               <CardContent className="space-y-4">
                 <Button 
-                  onClick={() => testEndpoint(endpoint.name, endpoint.functionName)} 
+                  onClick={() => testEndpoint(endpoint.name, endpoint.functionName, endpoint.requiresAuth)} 
                   disabled={loading[endpoint.name]}
                   className="bg-green-500 hover:bg-green-600 text-stone-900"
                 >
