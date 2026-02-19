@@ -1,12 +1,11 @@
+import { railwayRequest } from './railwayConfig.js';
+
 Deno.serve(async (req) => {
   try {
-    const response = await fetch('https://rodeo-fresh-production-7348.up.railway.app/api/events');
+    const body = await req.json().catch(() => ({}));
+    const token = body.token;
     
-    if (!response.ok) {
-      throw new Error(`Railway API error: ${response.status}`);
-    }
-    
-    const events = await response.json();
+    const events = await railwayRequest('/api/events', 'GET', null, token);
     return Response.json({ success: true, data: events });
   } catch (error) {
     return Response.json({ error: error.message }, { status: 500 });
