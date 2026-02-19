@@ -152,7 +152,7 @@ export default function RefundTickets() {
                             {order.ticket_type.toUpperCase()} × {order.quantityAdult || 0}
                           </span>
                           <span className="text-green-400 font-semibold">
-                            ${order.total_price.toFixed(2)}
+                            ${Number(order.total_price).toFixed(2)}
                           </span>
                         </div>
                       </div>
