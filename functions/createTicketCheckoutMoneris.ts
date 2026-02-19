@@ -132,12 +132,15 @@ Deno.serve(async (req) => {
     
     console.log('Moneris checkout created:', { orderId, confirmationCode, ticket: result.response.ticket, checkoutUrl });
     
-    return Response.json({ 
+    const response = { 
       url: checkoutUrl,
       ticket: result.response.ticket,
       order_id: orderId,
       confirmation_code: confirmationCode
-    });
+    };
+    
+    console.log('Returning response:', JSON.stringify(response));
+    return Response.json(response);
 
   } catch (error) {
     console.error('Moneris checkout error:', error);
