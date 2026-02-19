@@ -16,8 +16,8 @@ export const railwayAuth = {
   async login() {
     try {
       const response = await base44.functions.invoke('loginRailway', {
-        email: 'admin@rodeo.com',
-        password: 'admin123'
+        email: 'darren@holmgraphics.ca',
+        password: 'changeme123'
       });
       
       const token = response.data.token;
