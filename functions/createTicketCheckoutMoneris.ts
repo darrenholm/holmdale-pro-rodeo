@@ -11,25 +11,42 @@ Deno.serve(async (req) => {
     }
 
     // Get event details from Railway
-    const token = await base44.asServiceRole.functions.invoke('loginRailway', {
-      email: 'darren@holmgraphics.ca',
-      password: 'changeme123'
-    });
-    
-    const eventsResult = await base44.asServiceRole.functions.invoke('getEventsFromRailway', {
-      token: token.data.data.token
-    });
-    
-    const events = eventsResult.data.data || [];
-    const event = events.find(e => e.id === eventId);
-    
-    if (!event) {
-      console.error('Event not found:', eventId);
-      console.log('Available events:', events.map(e => ({ id: e.id, title: e.title })));
-      return Response.json({ error: 'Event not found' }, { status: 404 });
+    let event;
+    try {
+      console.log('Logging into Railway...');
+      const loginResult = await base44.asServiceRole.functions.invoke('loginRailway', {
+        email: 'darren@holmgraphics.ca',
+        password: 'changeme123'
+      });
+      
+      const token = loginResult.data?.data?.token;
+      console.log('Got Railway token:', token ? 'yes' : 'no');
+      
+      if (!token) {
+        throw new Error('Failed to get Railway token');
+      }
+      
+      console.log('Fetching events from Railway...');
+      const eventsResult = await base44.asServiceRole.functions.invoke('getEventsFromRailway', {
+        token: token
+      });
+      
+      const events = eventsResult.data?.data || [];
+      console.log('Found events:', events.length);
+      
+      event = events.find(e => e.id === eventId);
+      
+      if (!event) {
+        console.error('Event not found:', eventId);
+        console.log('Available events:', events.map(e => ({ id: e.id, title: e.title })));
+        return Response.json({ error: 'Event not found' }, { status: 404 });
+      }
+      
+      console.log('Found event:', event.title);
+    } catch (railwayError) {
+      console.error('Railway API error:', railwayError.message || railwayError);
+      return Response.json({ error: 'Failed to fetch event details: ' + (railwayError.message || railwayError) }, { status: 500 });
     }
-    
-    console.log('Found event:', event.title);
 
     // Calculate price with HST
     const priceKeyMap = {
