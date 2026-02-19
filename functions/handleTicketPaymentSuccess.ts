@@ -1,4 +1,3 @@
-import { createClientFromRequest } from 'npm:@base44/sdk@0.8.6';
 import QRCode from 'npm:qrcode';
 import { Resend } from 'npm:resend@4.0.0';
 
@@ -6,7 +5,6 @@ const resend = new Resend(Deno.env.get('RESEND_API_KEY'));
 
 Deno.serve(async (req) => {
   try {
-    const base44 = createClientFromRequest(req);
     const body = await req.json();
     const { confirmation_code } = body;
 
@@ -16,29 +14,39 @@ Deno.serve(async (req) => {
 
     console.log('Processing payment success for:', confirmation_code);
 
-    // Find and update the ticket order
-    const ticketOrders = await base44.asServiceRole.entities.TicketOrder.filter({
-      confirmation_code: confirmation_code
+    const railwayToken = Deno.env.get('RAILWAY_AUTH_TOKEN');
+
+    // Find and update the ticket order in Railway
+    const ticketResponse = await fetch(`http://localhost:3000/api/ticket-orders/by-confirmation/${confirmation_code}`, {
+      headers: { 'Authorization': `Bearer ${railwayToken}` }
     });
 
-    if (ticketOrders.length === 0) {
+    if (!ticketResponse.ok) {
       console.log('No ticket order found for:', confirmation_code);
       return Response.json({ error: 'Ticket order not found' }, { status: 404 });
     }
 
-    const ticketOrder = ticketOrders[0];
+    const ticketOrder = await ticketResponse.json();
 
     // Update status to confirmed
-    await base44.asServiceRole.entities.TicketOrder.update(ticketOrder.id, {
-      status: 'confirmed'
+    await fetch(`http://localhost:3000/api/ticket-orders/${ticketOrder.id}`, {
+      method: 'PATCH',
+      headers: {
+        'Authorization': `Bearer ${railwayToken}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ status: 'confirmed' })
     });
 
-    // Get event details or use defaults
+    // Get event details from Railway
     let event;
     try {
-      event = await base44.asServiceRole.entities.Event.get(ticketOrder.event_id);
+      const eventResponse = await fetch(`http://localhost:3000/api/events/${ticketOrder.event_id}`, {
+        headers: { 'Authorization': `Bearer ${railwayToken}` }
+      });
+      event = await eventResponse.json();
     } catch (e) {
-      console.log('Event not found in Base44, using defaults');
+      console.log('Event not found in Railway, using defaults');
       event = {
         id: ticketOrder.event_id,
         title: 'Holmdale Pro Rodeo 2026',
