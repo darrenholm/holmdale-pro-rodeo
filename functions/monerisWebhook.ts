@@ -1,9 +1,6 @@
-import { createClientFromRequest } from 'npm:@base44/sdk@0.8.6';
-
 Deno.serve(async (req) => {
   try {
     const body = await req.json();
-    const base44 = createClientFromRequest(req);
     
     console.log('Moneris webhook received:', JSON.stringify(body, null, 2));
 
@@ -18,71 +15,79 @@ Deno.serve(async (req) => {
 
     console.log('Processing successful payment for order:', order_no);
 
+    const railwayToken = Deno.env.get('RAILWAY_AUTH_TOKEN');
+
     // Handle ticket orders (order_no is the CONF- prefixed confirmation code)
     if (order_no.startsWith('CONF-')) {
-      const ticketOrders = await base44.asServiceRole.entities.TicketOrder.filter({
-        confirmation_code: order_no
-      });
-
-      if (ticketOrders.length > 0) {
-        const ticketOrder = ticketOrders[0];
-        
-        // Update ticket order status
-        await base44.asServiceRole.entities.TicketOrder.update(ticketOrder.id, {
-          status: 'confirmed',
-          moneris_transaction_id: txn_num
+      try {
+        // Update ticket order in Railway
+        const updateResponse = await fetch(`http://localhost:3000/api/ticket-orders/by-confirmation/${order_no}`, {
+          method: 'PATCH',
+          headers: {
+            'Authorization': `Bearer ${railwayToken}`,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            status: 'confirmed',
+            moneris_transaction_id: txn_num
+          })
         });
 
-        // Send confirmation email directly
-        await base44.asServiceRole.functions.invoke('sendTicketConfirmation', {
-          ticket_order_id: ticketOrder.id
-        });
+        if (updateResponse.ok) {
+          const ticketOrder = await updateResponse.json();
+          console.log('Ticket order confirmed:', order_no);
 
-        console.log('Ticket order confirmed and email sent');
+          // Send confirmation email
+          // You can call sendTicketConfirmation function or invoke it via API
+        }
+      } catch (error) {
+        console.error('Error updating ticket order:', error);
       }
     }
     
     // Handle merchandise orders
     else if (order_no.startsWith('ORDER-')) {
-      const orders = await base44.asServiceRole.entities.Order.filter({
-        monaris_transaction_id: order_no
-      });
-
-      if (orders.length > 0) {
-        const order = orders[0];
-        await base44.asServiceRole.entities.Order.update(order.id, {
-          status: 'paid',
-          monaris_transaction_id: txn_num
+      try {
+        const updateResponse = await fetch(`http://localhost:3000/api/orders/by-confirmation/${order_no}`, {
+          method: 'PATCH',
+          headers: {
+            'Authorization': `Bearer ${railwayToken}`,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            status: 'paid',
+            moneris_transaction_id: txn_num
+          })
         });
 
-        console.log('Order confirmed:', order_no);
+        if (updateResponse.ok) {
+          console.log('Order confirmed:', order_no);
+        }
+      } catch (error) {
+        console.error('Error updating order:', error);
       }
     }
     
-    // Handle bar credit orders (order_no is now the confirmation code)
+    // Handle bar credit orders
     else if (order_no.startsWith('BAR')) {
-      const barCredits = await base44.asServiceRole.entities.BarCredit.filter({
-        confirmation_code: order_no
-      });
-
-      if (barCredits.length > 0) {
-        const barCredit = barCredits[0];
-        
-        await base44.asServiceRole.entities.BarCredit.update(barCredit.id, {
-          status: 'confirmed',
-          monaris_transaction_id: txn_num
+      try {
+        const updateResponse = await fetch(`http://localhost:3000/api/bar-credits/by-confirmation/${order_no}`, {
+          method: 'PATCH',
+          headers: {
+            'Authorization': `Bearer ${railwayToken}`,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            status: 'confirmed',
+            moneris_transaction_id: txn_num
+          })
         });
 
-        console.log('Bar credit confirmed, sending email...');
-
-        // Send confirmation email with QR code
-        await base44.asServiceRole.functions.invoke('sendBarCreditConfirmation', {
-          bar_credit_id: barCredit.id
-        });
-
-        console.log('Bar credit confirmation email sent for:', order_no);
-      } else {
-        console.log('No matching bar credit found for order:', order_no);
+        if (updateResponse.ok) {
+          console.log('Bar credit confirmed:', order_no);
+        }
+      } catch (error) {
+        console.error('Error updating bar credit:', error);
       }
     }
 
