@@ -49,10 +49,25 @@ Deno.serve(async (req) => {
     if (!ticketOrder.moneris_transaction_id) {
       console.error('Missing moneris_transaction_id for ticket:', ticket_order_id);
       console.error('Ticket order data:', JSON.stringify(ticketOrder, null, 2));
-      return Response.json({ 
-        error: 'No transaction ID found for this ticket', 
-        details: 'This ticket may not have been paid with Moneris or the payment was not completed' 
-      }, { status: 400 });
+
+      // Try to find the transaction ID by confirmation code
+      const txnResponse = await fetch(`https://rodeo-fresh-production-7348.up.railway.app/api/ticket-orders/by-confirmation/${ticketOrder.confirmation_code}`, {
+        headers: { 'Authorization': `Bearer ${railwayToken}` }
+      });
+
+      if (txnResponse.ok) {
+        const updatedOrder = await txnResponse.json();
+        if (updatedOrder.moneris_transaction_id) {
+          ticketOrder.moneris_transaction_id = updatedOrder.moneris_transaction_id;
+        }
+      }
+
+      if (!ticketOrder.moneris_transaction_id) {
+        return Response.json({ 
+          error: 'No transaction ID found for this ticket', 
+          details: 'Payment may still be processing. Please wait a moment and try again.' 
+        }, { status: 400 });
+      }
     }
 
     // Get Moneris credentials
