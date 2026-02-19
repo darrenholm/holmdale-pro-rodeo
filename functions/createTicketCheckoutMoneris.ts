@@ -1,19 +1,36 @@
 Deno.serve(async (req) => {
-  try {
-    const body = await req.json();
-    const { ticketType, quantity, eventId, customerEmail, customerName, customerPhone } = body;
+    try {
+      const body = await req.json();
+      const { ticketType, quantity, eventId, customerEmail, customerName, customerPhone } = body;
 
-    if (!ticketType || !quantity || !eventId) {
-      return Response.json({ error: 'Missing required fields' }, { status: 400 });
-    }
-
-    // Fetch event from Railway to get pricing
-    const railwayToken = Deno.env.get('RAILWAY_AUTH_TOKEN');
-    const eventResponse = await fetch('http://localhost:3000/api/events', {
-      headers: {
-        'Authorization': `Bearer ${railwayToken}`
+      if (!ticketType || !quantity || !eventId) {
+        return Response.json({ error: 'Missing required fields' }, { status: 400 });
       }
-    });
+
+      // Authenticate with Railway backend
+      const loginResponse = await fetch('https://rodeo-fresh-production-7348.up.railway.app/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          email: 'darren@holmgraphics.ca',
+          password: 'changeme123'
+        })
+      });
+
+      if (!loginResponse.ok) {
+        console.error('Failed to authenticate with Railway:', loginResponse.status);
+        return Response.json({ error: 'Authentication failed' }, { status: 500 });
+      }
+
+      const authData = await loginResponse.json();
+      const railwayToken = authData.token;
+
+      // Fetch event from Railway to get pricing
+      const eventResponse = await fetch('https://rodeo-fresh-production-7348.up.railway.app/api/events', {
+        headers: {
+          'Authorization': `Bearer ${railwayToken}`
+        }
+      });
 
     if (!eventResponse.ok) {
       return Response.json({ error: 'Failed to fetch event data' }, { status: 500 });
