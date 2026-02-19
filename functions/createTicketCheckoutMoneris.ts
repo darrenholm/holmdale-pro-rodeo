@@ -10,14 +10,12 @@ Deno.serve(async (req) => {
       return Response.json({ error: 'Missing required fields' }, { status: 400 });
     }
 
-    // Use a default event object with dynamic pricing based on type
-    const event = {
-      id: eventId,
-      title: 'Holmdale Pro Rodeo 2026',
-      general_price: 50.00,
-      child_price: 25.00,
-      family_price: 100.00
-    };
+    // Fetch actual event with current pricing
+    const event = await base44.asServiceRole.entities.Event.get(eventId);
+    
+    if (!event) {
+      return Response.json({ error: 'Event not found' }, { status: 404 });
+    }
 
     // Calculate price with HST
     const priceKeyMap = {
