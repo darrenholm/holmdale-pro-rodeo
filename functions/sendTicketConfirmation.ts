@@ -1,4 +1,3 @@
-import { createClientFromRequest } from 'npm:@base44/sdk@0.8.6';
 import QRCode from 'npm:qrcode';
 import { Resend } from 'npm:resend@4.0.0';
 
@@ -6,7 +5,6 @@ const resend = new Resend(Deno.env.get('RESEND_API_KEY'));
 
 Deno.serve(async (req) => {
   try {
-    const base44 = createClientFromRequest(req);
     const body = await req.json();
     const { ticket_order_id } = body;
 
@@ -14,18 +12,27 @@ Deno.serve(async (req) => {
       return Response.json({ error: 'Missing ticket_order_id' }, { status: 400 });
     }
 
-    // Get ticket order
-    const ticketOrder = await base44.asServiceRole.entities.TicketOrder.get(ticket_order_id);
-    if (!ticketOrder) {
+    // Get ticket order from Railway
+    const railwayToken = Deno.env.get('RAILWAY_AUTH_TOKEN');
+    const ticketResponse = await fetch(`http://localhost:3000/api/ticket-orders/${ticket_order_id}`, {
+      headers: { 'Authorization': `Bearer ${railwayToken}` }
+    });
+
+    if (!ticketResponse.ok) {
       return Response.json({ error: 'Ticket order not found' }, { status: 404 });
     }
 
-    // Use event details or create minimal event object
+    const ticketOrder = await ticketResponse.json();
+
+    // Get event details from Railway
     let event;
     try {
-      event = await base44.asServiceRole.entities.Event.get(ticketOrder.event_id);
+      const eventResponse = await fetch(`http://localhost:3000/api/events/${ticketOrder.event_id}`, {
+        headers: { 'Authorization': `Bearer ${railwayToken}` }
+      });
+      event = await eventResponse.json();
     } catch (e) {
-      console.log('Event not found in Base44, using defaults');
+      console.log('Event not found in Railway, using defaults');
       event = {
         id: ticketOrder.event_id,
         title: 'Holmdale Pro Rodeo 2026',
