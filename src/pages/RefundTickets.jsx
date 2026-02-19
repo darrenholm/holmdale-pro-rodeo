@@ -10,21 +10,25 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { Search, RefreshCw, Check, AlertCircle, Loader2, DollarSign, X } from 'lucide-react';
 
 export default function RefundTickets() {
-  const [searchCode, setSearchCode] = useState('');
+  const [searchType, setSearchType] = useState('code'); // 'code' or 'txn'
+  const [searchValue, setSearchValue] = useState('');
   const [selectedOrder, setSelectedOrder] = useState(null);
   const [refundAmount, setRefundAmount] = useState('');
   const [refundReason, setRefundReason] = useState('');
   const queryClient = useQueryClient();
 
-  // Search for ticket by confirmation code
+  // Search for refundable tickets
   const { data: searchResults, isLoading: isSearching } = useQuery({
-    queryKey: ['ticketSearch', searchCode],
+    queryKey: ['ticketSearch', searchValue, searchType],
     queryFn: async () => {
-      if (!searchCode) return [];
-      const response = await base44.functions.invoke('searchTickets', { code: searchCode });
+      if (!searchValue) return [];
+      const response = await base44.functions.invoke('searchRefundableTickets', {
+        searchType: searchType,
+        searchValue: searchValue
+      });
       return response.data?.results || [];
     },
-    enabled: searchCode.length > 0
+    enabled: searchValue.length > 0
   });
 
   const processRefund = useMutation({
@@ -74,15 +78,31 @@ export default function RefundTickets() {
           <CardHeader>
             <CardTitle className="text-white flex items-center gap-2">
               <Search className="w-5 h-5 text-green-500" />
-              Find Ticket
+              Find Refundable Ticket
             </CardTitle>
           </CardHeader>
-          <CardContent>
+          <CardContent className="space-y-4">
+            <div className="flex gap-2">
+              <Button
+                variant={searchType === 'code' ? 'default' : 'outline'}
+                onClick={() => setSearchType('code')}
+                className={searchType === 'code' ? 'bg-green-600 hover:bg-green-700' : 'border-stone-700 text-white hover:bg-stone-800'}
+              >
+                Confirmation Code
+              </Button>
+              <Button
+                variant={searchType === 'txn' ? 'default' : 'outline'}
+                onClick={() => setSearchType('txn')}
+                className={searchType === 'txn' ? 'bg-green-600 hover:bg-green-700' : 'border-stone-700 text-white hover:bg-stone-800'}
+              >
+                Transaction ID
+              </Button>
+            </div>
             <div className="flex gap-3">
               <Input
-                placeholder="Enter confirmation code (e.g., CONF-12345)"
-                value={searchCode}
-                onChange={(e) => setSearchCode(e.target.value.toUpperCase())}
+                placeholder={searchType === 'code' ? 'Enter confirmation code (e.g., CONF-12345)' : 'Enter Moneris transaction ID'}
+                value={searchValue}
+                onChange={(e) => setSearchValue(e.target.value.toUpperCase())}
                 className="bg-stone-800 border-stone-700 text-white"
               />
               <Button 
@@ -96,7 +116,7 @@ export default function RefundTickets() {
         </Card>
 
         {/* Search Results */}
-        {searchCode && (
+        {searchValue && (
           <div className="space-y-4 mb-8">
             {isSearching ? (
               <Skeleton className="h-32 rounded-xl" />

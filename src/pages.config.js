@@ -61,6 +61,7 @@ import IDCheck from './pages/IDCheck';
 import ImportStaff from './pages/ImportStaff';
 import RFIDRegistry from './pages/RFIDRegistry';
 import RFIDTest from './pages/RFIDTest';
+import RefundTickets from './pages/RefundTickets';
 import ResendTicket from './pages/ResendTicket';
 import Shop from './pages/Shop';
 import Staff from './pages/Staff';
@@ -68,7 +69,6 @@ import StaffList from './pages/StaffList';
 import StaffScheduling from './pages/StaffScheduling';
 import TestRailway from './pages/TestRailway';
 import TrackOrder from './pages/TrackOrder';
-import RefundTickets from './pages/RefundTickets';
 import __Layout from './Layout.jsx';
 
 
@@ -87,6 +87,7 @@ export const PAGES = {
     "ImportStaff": ImportStaff,
     "RFIDRegistry": RFIDRegistry,
     "RFIDTest": RFIDTest,
+    "RefundTickets": RefundTickets,
     "ResendTicket": ResendTicket,
     "Shop": Shop,
     "Staff": Staff,
@@ -94,7 +95,6 @@ export const PAGES = {
     "StaffScheduling": StaffScheduling,
     "TestRailway": TestRailway,
     "TrackOrder": TrackOrder,
-    "RefundTickets": RefundTickets,
 }
 
 export const pagesConfig = {
