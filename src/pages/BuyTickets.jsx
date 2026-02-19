@@ -74,15 +74,25 @@ export default function BuyTickets() {
         };
     }, []);
     
-    const { data: event, isLoading } = useQuery({
+    const { data: event, isLoading, error } = useQuery({
         queryKey: ['event', eventId],
         queryFn: async () => {
-            const token = await railwayAuth.getToken();
-            const response = await base44.functions.invoke('getEventsFromRailway', { token });
-            const events = response.data?.data || [];
-            return events.find(e => e.id === eventId);
+            try {
+                const result = await railwayAuth.callWithAuth('getEventsFromRailway');
+                const events = result?.data || [];
+                const foundEvent = events.find(e => e.id === eventId);
+                if (!foundEvent) {
+                    console.error('Event not found with ID:', eventId);
+                    console.log('Available events:', events.map(e => ({ id: e.id, title: e.title })));
+                }
+                return foundEvent;
+            } catch (error) {
+                console.error('Error fetching event:', error);
+                throw error;
+            }
         },
-        enabled: !!eventId
+        enabled: !!eventId,
+        retry: 1
     });
     
     useEffect(() => {
