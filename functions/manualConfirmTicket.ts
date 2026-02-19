@@ -43,18 +43,38 @@ Deno.serve(async (req) => {
     console.log('Found ticket:', ticket.id, 'with confirmation code:', confirmationCode);
 
     // Update ticket order in Railway using ticket ID
+    const updateBody = {
+      status: 'confirmed',
+      moneris_transaction_id: transactionReference,
+      moneris_response_code: responseCode || '000000'
+    };
+
+    console.log('Attempting to update ticket with:', JSON.stringify(updateBody));
+
     const updateResponse = await fetch(`https://rodeo-fresh-production-7348.up.railway.app/api/ticket-orders/${ticket.id}`, {
-      method: 'PATCH',
+      method: 'PUT',
       headers: {
         'Authorization': `Bearer ${railwayToken}`,
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify({
-        status: 'confirmed',
-        moneris_transaction_id: transactionReference,
-        moneris_response_code: responseCode || '000000'
-      })
+      body: JSON.stringify(updateBody)
     });
+
+    // If PUT doesn't work, try PATCH
+    let updateResponse2 = updateResponse;
+    if (!updateResponse.ok && updateResponse.status === 404) {
+      console.log('PUT failed with 404, trying PATCH...');
+      updateResponse2 = await fetch(`https://rodeo-fresh-production-7348.up.railway.app/api/ticket-orders/${ticket.id}`, {
+        method: 'PATCH',
+        headers: {
+          'Authorization': `Bearer ${railwayToken}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(updateBody)
+      });
+    }
+    
+    const updateResponse3 = updateResponse2;
 
     if (!updateResponse.ok) {
       const errorText = await updateResponse.text();
