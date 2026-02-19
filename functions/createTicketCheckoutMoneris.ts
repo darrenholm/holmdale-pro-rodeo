@@ -54,7 +54,7 @@ Deno.serve(async (req) => {
 
     // Create pending ticket order
     const ticketOrder = await base44.asServiceRole.entities.TicketOrder.create({
-      event_id: eventId,
+      event_id: event.id,
       customer_name: customerName,
       customer_email: customerEmail,
       customer_phone: customerPhone,
