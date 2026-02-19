@@ -7,9 +7,25 @@ Deno.serve(async (req) => {
       return Response.json({ error: 'Missing required fields' }, { status: 400 });
     }
 
+    // Authenticate with Railway backend
+    const loginResponse = await fetch('https://rodeo-fresh-production-7348.up.railway.app/api/auth/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        email: 'darren@holmgraphics.ca',
+        password: 'changeme123'
+      })
+    });
+
+    if (!loginResponse.ok) {
+      return Response.json({ error: 'Authentication failed' }, { status: 500 });
+    }
+
+    const authData = await loginResponse.json();
+    const railwayToken = authData.token;
+
     // Get ticket order from Railway
-    const railwayToken = Deno.env.get('RAILWAY_AUTH_TOKEN');
-    const ticketResponse = await fetch(`http://localhost:3000/api/ticket-orders/${ticket_order_id}`, {
+    const ticketResponse = await fetch(`https://rodeo-fresh-production-7348.up.railway.app/api/ticket-orders/${ticket_order_id}`, {
       headers: { 'Authorization': `Bearer ${railwayToken}` }
     });
 
