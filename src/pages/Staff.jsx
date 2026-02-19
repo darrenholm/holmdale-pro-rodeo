@@ -110,7 +110,7 @@ export default function Staff() {
             </Card>
           </Link>
 
-          <Link to={createPageUrl('BuyTickets')}>
+          <Link to={createPageUrl('Events')}>
             <Card className="bg-stone-900 border-stone-800 hover:border-green-600 transition-all cursor-pointer h-full">
               <CardContent className="p-8 text-center">
                 <Ticket className="w-16 h-16 text-green-500 mx-auto mb-4" />
@@ -169,7 +169,7 @@ export default function Staff() {
             <a href={createPageUrl('GateScan')} className="block text-green-500 hover:text-green-400">
               Gate Scanner
             </a>
-            <a href={createPageUrl('BuyTickets')} className="block text-green-500 hover:text-green-400">
+            <a href={createPageUrl('Events')} className="block text-green-500 hover:text-green-400">
               Purchase Tickets
             </a>
           </CardContent>
