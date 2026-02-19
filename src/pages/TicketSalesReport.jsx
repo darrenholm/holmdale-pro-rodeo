@@ -167,23 +167,28 @@ export default function TicketSalesReport() {
                         </tr>
                       </thead>
                       <tbody>
-                        {data.orders.map((order) => (
-                          <tr key={order.id} className="border-b border-stone-800 hover:bg-stone-800/50">
-                            <td className="py-3 px-4 text-stone-300">
-                              {format(new Date(order.created_at || order.updatedAt), 'HH:mm')}
-                            </td>
-                            <td className="py-3 px-4 text-stone-300">
-                              <p className="font-medium">{order.customer_name}</p>
-                              <p className="text-xs text-stone-500">{order.customer_email}</p>
-                            </td>
-                            <td className="py-3 px-4 text-stone-300 capitalize">{order.ticket_type}</td>
-                            <td className="py-3 px-4 text-center text-stone-300">{order.quantity}</td>
-                            <td className="py-3 px-4 text-right text-green-400 font-semibold">
-                              ${parseFloat(order.total_price).toFixed(2)}
-                            </td>
-                            <td className="py-3 px-4 text-stone-400 font-mono text-xs">{order.confirmation_code}</td>
-                          </tr>
-                        ))}
+                        {data.orders.map((order) => {
+                          const adultQty = order.quantity_adult || 0;
+                          const childQty = order.quantity_child || 0;
+                          return (
+                            <tr key={order.id} className="border-b border-stone-800 hover:bg-stone-800/50">
+                              <td className="py-3 px-4 text-stone-300">
+                                {format(new Date(order.created_date || order.created_at), 'HH:mm')}
+                              </td>
+                              <td className="py-3 px-4 text-stone-300">
+                                <p className="font-medium">{order.customer_name}</p>
+                                <p className="text-xs text-stone-500">{order.customer_email}</p>
+                              </td>
+                              <td className="py-3 px-4 text-stone-300 capitalize">{order.ticket_type}</td>
+                              <td className="py-3 px-4 text-center text-stone-300">{adultQty}</td>
+                              <td className="py-3 px-4 text-center text-stone-300">{Math.max(0, childQty)}</td>
+                              <td className="py-3 px-4 text-right text-green-400 font-semibold">
+                                ${parseFloat(order.total_price).toFixed(2)}
+                              </td>
+                              <td className="py-3 px-4 text-stone-400 font-mono text-xs">{order.confirmation_code}</td>
+                            </tr>
+                          );
+                        })}
                       </tbody>
                     </table>
                   </div>
