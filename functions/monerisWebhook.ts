@@ -2,8 +2,8 @@ import { createClientFromRequest } from 'npm:@base44/sdk@0.8.6';
 
 Deno.serve(async (req) => {
   try {
-    const base44 = createClientFromRequest(req);
     const body = await req.json();
+    const base44 = createClientFromRequest(req);
     
     console.log('Moneris webhook received:', JSON.stringify(body, null, 2));
 
