@@ -112,6 +112,10 @@ Deno.serve(async (req) => {
     const ticketOrderData = await createOrderResponse.json();
     console.log('Ticket order created in Railway:', ticketOrderData);
 
+    // Use the confirmation code that Railway returned (it may generate its own)
+    const railwayConfirmationCode = ticketOrderData.confirmation_code || confirmationCode;
+    console.log('Using confirmation code from Railway:', railwayConfirmationCode);
+
     // Create Moneris Checkout ticket
     const checkoutData = {
       store_id: storeId,
