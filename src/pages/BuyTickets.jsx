@@ -380,7 +380,7 @@ export default function BuyTickets() {
                         </div>
                         <Skeleton className="h-96 rounded-xl" />
                     </div>
-                ) : isInIframe ? (
+                    ) : (
                     <Card className="bg-stone-900 border-stone-800 p-12 text-center max-w-md mx-auto">
                         <AlertCircle className="w-16 h-16 text-amber-500 mx-auto mb-4" />
                         <h3 className="text-xl font-semibold text-white mb-2">Checkout Not Available</h3>
