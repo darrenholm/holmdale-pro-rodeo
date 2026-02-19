@@ -81,7 +81,7 @@ Deno.serve(async (req) => {
 
     // Update ticket order in Railway
     const newStatus = refund_amount === ticketOrder.total_price ? 'refunded' : 'cancelled';
-    const updateResponse = await fetch(`http://localhost:3000/api/ticket-orders/${ticket_order_id}`, {
+    const updateResponse = await fetch(`https://rodeo-fresh-production-7348.up.railway.app/api/ticket-orders/${ticket_order_id}`, {
       method: 'PATCH',
       headers: {
         'Authorization': `Bearer ${railwayToken}`,
