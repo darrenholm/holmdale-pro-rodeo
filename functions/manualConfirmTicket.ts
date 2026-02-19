@@ -24,8 +24,26 @@ Deno.serve(async (req) => {
     const authData = await loginResponse.json();
     const railwayToken = authData.token;
 
-    // Update ticket order in Railway
-    const updateResponse = await fetch(`https://rodeo-fresh-production-7348.up.railway.app/api/ticket-orders/by-confirmation/${confirmationCode}`, {
+    // First, find the ticket by confirmation code
+    const searchResponse = await fetch('https://rodeo-fresh-production-7348.up.railway.app/api/ticket-orders', {
+      headers: { 'Authorization': `Bearer ${railwayToken}` }
+    });
+
+    if (!searchResponse.ok) {
+      return Response.json({ error: 'Failed to search tickets' }, { status: 500 });
+    }
+
+    const allTickets = await searchResponse.json();
+    const ticket = allTickets.find(t => t.confirmation_code === confirmationCode);
+
+    if (!ticket) {
+      return Response.json({ error: 'Ticket not found with confirmation code: ' + confirmationCode }, { status: 404 });
+    }
+
+    console.log('Found ticket:', ticket.id, 'with confirmation code:', confirmationCode);
+
+    // Update ticket order in Railway using ticket ID
+    const updateResponse = await fetch(`https://rodeo-fresh-production-7348.up.railway.app/api/ticket-orders/${ticket.id}`, {
       method: 'PATCH',
       headers: {
         'Authorization': `Bearer ${railwayToken}`,
@@ -45,7 +63,7 @@ Deno.serve(async (req) => {
     }
 
     const updatedTicket = await updateResponse.json();
-    console.log('Ticket manually confirmed:', confirmationCode, 'with transaction:', transactionReference);
+    console.log('✓ Ticket manually confirmed:', confirmationCode, 'with transaction:', transactionReference);
     
     return Response.json({ 
       success: true, 
