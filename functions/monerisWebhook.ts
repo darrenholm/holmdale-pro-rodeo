@@ -77,6 +77,16 @@ Deno.serve(async (req) => {
             if (updateResponse.ok) {
               const ticketOrder = await updateResponse.json();
               console.log('✓ Ticket order confirmed successfully:', order_no, 'with transaction:', txn_num);
+              
+              // Send QR code email
+              try {
+                const emailResponse = await base44.asServiceRole.functions.invoke('handleTicketPaymentSuccess', {
+                  confirmation_code: order_no
+                });
+                console.log('✓ QR code email sent');
+              } catch (emailError) {
+                console.error('✗ Failed to send QR code email:', emailError.message);
+              }
             } else {
               const errorText = await updateResponse.text();
               console.error('✗ Failed to update ticket order:', updateResponse.status, errorText);
