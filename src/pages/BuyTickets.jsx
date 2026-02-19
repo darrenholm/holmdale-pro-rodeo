@@ -160,8 +160,15 @@ export default function BuyTickets() {
 
     const createCheckout = useMutation({
         mutationFn: async (checkoutData) => {
-            const response = await base44.functions.invoke('createTicketCheckoutMoneris', checkoutData);
-            return response.data;
+            try {
+                const response = await base44.functions.invoke('createTicketCheckoutMoneris', checkoutData);
+                console.log('[Checkout] Response:', response);
+                console.log('[Checkout] Response.data:', response.data);
+                return response.data;
+            } catch (error) {
+                console.error('[Checkout] Error:', error);
+                throw error;
+            }
         }
     });
 
