@@ -55,7 +55,7 @@ export default function RefundTickets() {
     }
 
     const amount = parseFloat(refundAmount);
-    if (amount <= 0 || amount > selectedOrder.total_price) {
+    if (amount <= 0 || amount > Number(selectedOrder.total_price)) {
       alert('Invalid refund amount');
       return;
     }
