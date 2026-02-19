@@ -142,7 +142,14 @@ export default function BuyTickets() {
 
             myCheckout.setCallback('payment_complete', async (data) => {
                 console.log('Payment complete:', data);
-                // Order was already created, just mark as complete
+                try {
+                    // Send to backend to update status and send email
+                    await base44.functions.invoke('handleTicketPaymentSuccess', {
+                        confirmation_code: confirmationCode
+                    });
+                } catch (error) {
+                    console.error('Error processing payment:', error);
+                }
                 setOrderComplete(true);
                 setShowCheckout(false);
             });
