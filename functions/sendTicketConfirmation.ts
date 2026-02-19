@@ -20,10 +20,21 @@ Deno.serve(async (req) => {
       return Response.json({ error: 'Ticket order not found' }, { status: 404 });
     }
 
-    // Get event details
-    const event = await base44.asServiceRole.entities.Event.get(ticketOrder.event_id);
+    // Get event details from Railway
+    const token = await base44.asServiceRole.functions.invoke('loginRailway', {
+      email: 'darren@holmgraphics.ca',
+      password: 'changeme123'
+    });
+    
+    const eventsResult = await base44.asServiceRole.functions.invoke('getEventsFromRailway', {
+      token: token.data.data.token
+    });
+    
+    const events = eventsResult.data.data || [];
+    const event = events.find(e => e.id === ticketOrder.event_id);
+    
     if (!event) {
-      return Response.json({ error: 'Event not found' }, { status: 404 });
+      return Response.json({ error: 'Event not found', event_id: ticketOrder.event_id }, { status: 404 });
     }
 
     // Generate QR code as data URL for embedding directly in email
