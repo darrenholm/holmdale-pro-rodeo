@@ -130,7 +130,7 @@ Deno.serve(async (req) => {
       },
       environment: 'prod',
       action: 'preload',
-      order_no: confirmationCode,
+      order_no: railwayConfirmationCode,
       cust_id: customerEmail,
       contact_details: {
         email: customerEmail,
