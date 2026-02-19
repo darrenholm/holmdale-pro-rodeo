@@ -35,9 +35,12 @@ Deno.serve(async (req) => {
     today.setHours(0, 0, 0, 0);
     
     const todayOrders = allOrders.filter(order => {
-      const orderDate = new Date(order.created_at || order.updatedAt);
+      // Show all confirmed orders or check for today if date is available
+      if (order.status !== 'confirmed') return false;
+      
+      const orderDate = new Date(order.created_at || order.updated_at || new Date());
       orderDate.setHours(0, 0, 0, 0);
-      return orderDate.getTime() === today.getTime() && order.status === 'confirmed';
+      return orderDate.getTime() === today.getTime();
     });
 
     // Calculate totals
