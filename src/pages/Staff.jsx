@@ -159,6 +159,16 @@ export default function Staff() {
               </CardContent>
             </Card>
           </Link>
+
+          <Link to={createPageUrl('RefundTickets')}>
+            <Card className="bg-stone-900 border-stone-800 hover:border-green-600 transition-all cursor-pointer h-full">
+              <CardContent className="p-8 text-center">
+                <RefreshCw className="w-16 h-16 text-green-500 mx-auto mb-4" />
+                <h2 className="text-2xl font-bold text-white mb-2">Refund Tickets</h2>
+                <p className="text-gray-400">Process ticket refunds</p>
+              </CardContent>
+            </Card>
+          </Link>
           </div>
 
         <Card className="bg-stone-900 border-stone-800 mt-8">
