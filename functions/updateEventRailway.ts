@@ -2,6 +2,13 @@ Deno.serve(async (req) => {
   try {
     const { token, eventId, ...updateData } = await req.json();
     
+    // Combine date + time into ISO timestamp if both exist
+    if (updateData.date && updateData.time) {
+      const dateTimeStr = `${updateData.date}T${updateData.time}:00.000Z`;
+      updateData.date = dateTimeStr;
+      delete updateData.time;
+    }
+    
     const headers = {
       'Content-Type': 'application/json',
     };
