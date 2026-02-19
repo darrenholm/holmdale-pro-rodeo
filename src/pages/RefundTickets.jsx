@@ -192,7 +192,7 @@ export default function RefundTickets() {
                 </div>
                 <div className="flex justify-between mb-2">
                   <span className="text-stone-300">Original Amount:</span>
-                  <span className="text-white font-medium">${selectedOrder.total_price.toFixed(2)}</span>
+                  <span className="text-white font-medium">${Number(selectedOrder.total_price).toFixed(2)}</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-stone-300">Status:</span>
