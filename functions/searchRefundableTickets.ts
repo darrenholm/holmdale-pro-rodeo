@@ -1,28 +1,32 @@
-import { createClientFromRequest } from 'npm:@base44/sdk@0.8.6';
-
 Deno.serve(async (req) => {
   try {
-    const base44 = createClientFromRequest(req);
     const { searchType, searchValue } = await req.json();
 
     if (!searchValue) {
       return Response.json({ error: 'Search value required' }, { status: 400 });
     }
 
+    const railwayToken = Deno.env.get('RAILWAY_AUTH_TOKEN');
     let results = [];
 
     if (searchType === 'code') {
-      // Search by confirmation code
-      results = await base44.asServiceRole.entities.TicketOrder.filter({
-        confirmation_code: searchValue.trim().toUpperCase()
+      // Search by confirmation code in Railway
+      const response = await fetch(`http://localhost:3000/api/ticket-orders/search?type=code&value=${encodeURIComponent(searchValue)}`, {
+        headers: { 'Authorization': `Bearer ${railwayToken}` }
       });
+      
+      if (response.ok) {
+        results = await response.json();
+      }
     } else if (searchType === 'txn') {
-      // Search by moneris_transaction_id (only tickets with valid transaction IDs)
-      const allTickets = await base44.asServiceRole.entities.TicketOrder.list();
-      results = allTickets.filter(t => 
-        t.moneris_transaction_id && 
-        t.moneris_transaction_id.toString().toUpperCase().includes(searchValue.trim().toUpperCase())
-      );
+      // Search by moneris_transaction_id in Railway
+      const response = await fetch(`http://localhost:3000/api/ticket-orders/search?type=txn&value=${encodeURIComponent(searchValue)}`, {
+        headers: { 'Authorization': `Bearer ${railwayToken}` }
+      });
+      
+      if (response.ok) {
+        results = await response.json();
+      }
     }
 
     return Response.json({ results });
