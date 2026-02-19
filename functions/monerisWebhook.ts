@@ -44,28 +44,46 @@ Deno.serve(async (req) => {
       try {
         console.log('Processing ticket order:', order_no);
         
-        // Update ticket order in Railway
-        const updateResponse = await fetch(`https://rodeo-fresh-production-7348.up.railway.app/api/ticket-orders/by-confirmation/${order_no}`, {
-          method: 'PATCH',
-          headers: {
-            'Authorization': `Bearer ${railwayToken}`,
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({
-            status: 'confirmed',
-            moneris_transaction_id: txn_num,
-            moneris_response_code: response_code
-          })
+        // First, find the ticket by confirmation code
+        const searchResponse = await fetch('https://rodeo-fresh-production-7348.up.railway.app/api/ticket-orders', {
+          headers: { 'Authorization': `Bearer ${railwayToken}` }
         });
 
-        console.log('Railway API response status:', updateResponse.status);
-        
-        if (updateResponse.ok) {
-          const ticketOrder = await updateResponse.json();
-          console.log('✓ Ticket order confirmed successfully:', order_no, 'with transaction:', txn_num);
+        if (!searchResponse.ok) {
+          console.error('Failed to fetch ticket orders:', searchResponse.status);
         } else {
-          const errorText = await updateResponse.text();
-          console.error('✗ Failed to update ticket order:', updateResponse.status, errorText);
+          const allTickets = await searchResponse.json();
+          const ticket = allTickets.find(t => t.confirmation_code === order_no);
+
+          if (ticket) {
+            console.log('Found ticket:', ticket.id, 'for confirmation code:', order_no);
+            
+            // Update ticket order in Railway using ticket ID
+            const updateResponse = await fetch(`https://rodeo-fresh-production-7348.up.railway.app/api/ticket-orders/${ticket.id}`, {
+              method: 'PUT',
+              headers: {
+                'Authorization': `Bearer ${railwayToken}`,
+                'Content-Type': 'application/json'
+              },
+              body: JSON.stringify({
+                status: 'confirmed',
+                moneris_transaction_id: txn_num,
+                moneris_response_code: response_code
+              })
+            });
+
+            console.log('Railway API response status:', updateResponse.status);
+            
+            if (updateResponse.ok) {
+              const ticketOrder = await updateResponse.json();
+              console.log('✓ Ticket order confirmed successfully:', order_no, 'with transaction:', txn_num);
+            } else {
+              const errorText = await updateResponse.text();
+              console.error('✗ Failed to update ticket order:', updateResponse.status, errorText);
+            }
+          } else {
+            console.error('Ticket not found with confirmation code:', order_no);
+          }
         }
       } catch (error) {
         console.error('Error updating ticket order:', error.message);
