@@ -10,42 +10,41 @@ Deno.serve(async (req) => {
       return Response.json({ error: 'Missing required fields' }, { status: 400 });
     }
 
-    // Get event details from Railway
+    // Get event details - try Base44 entity first, fallback to Railway
     let event;
     try {
-      console.log('Logging into Railway...');
-      const loginResult = await base44.asServiceRole.functions.invoke('loginRailway', {
-        email: 'darren@holmgraphics.ca',
-        password: 'changeme123'
-      });
-      
-      const token = loginResult.data?.data?.token;
-      console.log('Got Railway token:', token ? 'yes' : 'no');
-      
-      if (!token) {
-        throw new Error('Failed to get Railway token');
+      console.log('Fetching event from Base44 Event entity:', eventId);
+      event = await base44.asServiceRole.entities.Event.get(eventId);
+      console.log('Found event from Base44:', event.title);
+    } catch (base44Error) {
+      console.log('Event not in Base44, trying Railway...');
+      try {
+        const loginResult = await base44.asServiceRole.functions.invoke('loginRailway', {
+          email: 'darren@holmgraphics.ca',
+          password: 'changeme123'
+        });
+        
+        const token = loginResult.data?.data?.token;
+        if (!token) {
+          throw new Error('Failed to get Railway token');
+        }
+        
+        const eventsResult = await base44.asServiceRole.functions.invoke('getEventsFromRailway', {
+          token: token
+        });
+        
+        const events = eventsResult.data?.data || [];
+        event = events.find(e => e.id === eventId);
+        
+        if (!event) {
+          console.error('Event not found in Railway either:', eventId);
+          return Response.json({ error: 'Event not found' }, { status: 404 });
+        }
+        console.log('Found event from Railway:', event.title);
+      } catch (railwayError) {
+        console.error('Railway API error:', railwayError.message || railwayError);
+        return Response.json({ error: 'Failed to fetch event: ' + (railwayError.message || railwayError) }, { status: 500 });
       }
-      
-      console.log('Fetching events from Railway...');
-      const eventsResult = await base44.asServiceRole.functions.invoke('getEventsFromRailway', {
-        token: token
-      });
-      
-      const events = eventsResult.data?.data || [];
-      console.log('Found events:', events.length);
-      
-      event = events.find(e => e.id === eventId);
-      
-      if (!event) {
-        console.error('Event not found:', eventId);
-        console.log('Available events:', events.map(e => ({ id: e.id, title: e.title })));
-        return Response.json({ error: 'Event not found' }, { status: 404 });
-      }
-      
-      console.log('Found event:', event.title);
-    } catch (railwayError) {
-      console.error('Railway API error:', railwayError.message || railwayError);
-      return Response.json({ error: 'Failed to fetch event details: ' + (railwayError.message || railwayError) }, { status: 500 });
     }
 
     // Calculate price with HST
