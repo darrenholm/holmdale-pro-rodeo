@@ -39,8 +39,9 @@ export const railwayAuth = {
       });
       return response.data;
     } catch (error) {
-      // If 403, token expired - re-login and retry
-      if (error.response?.status === 500 && error.response?.data?.error?.includes('403')) {
+      // If 500 error with 403 message (token expired), re-login and retry
+      const errorMessage = error.response?.data?.error || '';
+      if (error.response?.status === 500 && errorMessage.includes('403')) {
         console.log('Token expired, re-logging in...');
         localStorage.removeItem(TOKEN_KEY);
         token = await this.login();
@@ -51,6 +52,20 @@ export const railwayAuth = {
         });
         return response.data;
       }
+      
+      // If 401, clear token and retry login once
+      if (error.response?.status === 401 || errorMessage.includes('Unauthorized') || errorMessage.includes('401')) {
+        console.log('Authentication failed, re-logging in...');
+        localStorage.removeItem(TOKEN_KEY);
+        token = await this.login();
+        
+        const response = await base44.functions.invoke(functionName, {
+          ...params,
+          token
+        });
+        return response.data;
+      }
+      
       throw error;
     }
   },
