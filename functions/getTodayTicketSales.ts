@@ -50,7 +50,8 @@ Deno.serve(async (req) => {
 
     todayOrders.forEach(order => {
       totalRevenue += parseFloat(order.total_price || 0);
-      totalTickets += order.quantity;
+      const qty = (order.quantity_adult || 0) + (order.quantity_child || 0);
+      totalTickets += qty;
       
       const type = order.ticket_type;
       if (!byType[type]) {
@@ -58,7 +59,7 @@ Deno.serve(async (req) => {
       }
       byType[type].count += 1;
       byType[type].revenue += parseFloat(order.total_price || 0);
-      byType[type].quantity += order.quantity;
+      byType[type].quantity += qty;
     });
 
     return Response.json({
