@@ -39,9 +39,11 @@ Deno.serve(async (req) => {
     const authData = await loginResponse.json();
     const railwayToken = authData.token;
 
-    // Handle ticket orders (order_no is the CONF- prefixed confirmation code)
-    if (order_no.startsWith('CONF-')) {
+    // Handle ticket orders (order_no might be confirmation code with or without CONF- prefix)
+    if (order_no && (order_no.startsWith('CONF-') || order_no.match(/^[A-Z]{2}-[A-Z0-9]{8}$/))) {
       try {
+        console.log('Processing ticket order:', order_no);
+        
         // Update ticket order in Railway
         const updateResponse = await fetch(`https://rodeo-fresh-production-7348.up.railway.app/api/ticket-orders/by-confirmation/${order_no}`, {
           method: 'PATCH',
@@ -51,19 +53,22 @@ Deno.serve(async (req) => {
           },
           body: JSON.stringify({
             status: 'confirmed',
-            moneris_transaction_id: txn_num
+            moneris_transaction_id: txn_num,
+            moneris_response_code: response_code
           })
         });
 
+        console.log('Railway API response status:', updateResponse.status);
+        
         if (updateResponse.ok) {
           const ticketOrder = await updateResponse.json();
-          console.log('Ticket order confirmed:', order_no);
-
-          // Send confirmation email
-          // You can call sendTicketConfirmation function or invoke it via API
+          console.log('✓ Ticket order confirmed successfully:', order_no, 'with transaction:', txn_num);
+        } else {
+          const errorText = await updateResponse.text();
+          console.error('✗ Failed to update ticket order:', updateResponse.status, errorText);
         }
       } catch (error) {
-        console.error('Error updating ticket order:', error);
+        console.error('Error updating ticket order:', error.message);
       }
     }
     
