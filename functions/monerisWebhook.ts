@@ -87,7 +87,7 @@ Deno.serve(async (req) => {
     // Handle bar credit orders
     else if (order_no.startsWith('BAR')) {
       try {
-        const updateResponse = await fetch(`http://localhost:3000/api/bar-credits/by-confirmation/${order_no}`, {
+        const updateResponse = await fetch(`https://rodeo-fresh-production-7348.up.railway.app/api/bar-credits/by-confirmation/${order_no}`, {
           method: 'PATCH',
           headers: {
             'Authorization': `Bearer ${railwayToken}`,
