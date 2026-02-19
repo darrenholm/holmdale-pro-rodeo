@@ -129,7 +129,7 @@ export default function RefundTickets() {
                   }`}
                   onClick={() => {
                     setSelectedOrder(order);
-                    setRefundAmount('');
+                    setRefundAmount(order.total_price.toString());
                   }}
                 >
                   <CardContent className="pt-6">
