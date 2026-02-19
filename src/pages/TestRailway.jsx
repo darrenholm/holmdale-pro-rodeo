@@ -16,6 +16,7 @@ export default function TestRailway() {
     try {
       let data;
       if (requiresAuth) {
+        console.log(`Testing ${name} with auth...`);
         data = await railwayAuth.callWithAuth(functionName);
       } else {
         const response = await base44.functions.invoke(functionName);
@@ -25,7 +26,9 @@ export default function TestRailway() {
       setResults(prev => ({ ...prev, [name]: data }));
     } catch (err) {
       console.error(`Error fetching ${name}:`, err);
-      setError(prev => ({ ...prev, [name]: err.message }));
+      console.error('Full error object:', err);
+      console.error('Error response:', err.response);
+      setError(prev => ({ ...prev, [name]: err.message + (err.response?.data?.error ? ' - ' + err.response.data.error : '') }));
     } finally {
       setLoading(prev => ({ ...prev, [name]: false }));
     }
