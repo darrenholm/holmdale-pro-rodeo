@@ -370,6 +370,9 @@ export default function BuyTickets() {
                                         const isSelected = selectedType === type.id;
                                         const isAvailable = available > 0;
                                         
+                                        // Skip ticket types that don't have pricing set for this event
+                                        if (!price && price !== 0) return null;
+                                        
                                         return (
                                             <button
                                                 key={type.id}
