@@ -64,7 +64,7 @@ Deno.serve(async (req) => {
     // Handle merchandise orders
     else if (order_no.startsWith('ORDER-')) {
       try {
-        const updateResponse = await fetch(`http://localhost:3000/api/orders/by-confirmation/${order_no}`, {
+        const updateResponse = await fetch(`https://rodeo-fresh-production-7348.up.railway.app/api/orders/by-confirmation/${order_no}`, {
           method: 'PATCH',
           headers: {
             'Authorization': `Bearer ${railwayToken}`,
