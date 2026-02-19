@@ -22,26 +22,24 @@ Deno.serve(async (req) => {
 
     const authData = await loginResponse.json();
     const railwayToken = authData.token;
-    let results = [];
 
+    // Fetch all ticket orders
+    const ordersResponse = await fetch('https://rodeo-fresh-production-7348.up.railway.app/api/ticket-orders', {
+      headers: { 'Authorization': `Bearer ${railwayToken}` }
+    });
+
+    if (!ordersResponse.ok) {
+      return Response.json({ error: 'Failed to fetch ticket orders' }, { status: 500 });
+    }
+
+    const allOrders = await ordersResponse.json();
+    
+    // Filter locally based on search type
+    let results = [];
     if (searchType === 'code') {
-      // Search by confirmation code in Railway
-      const response = await fetch(`https://rodeo-fresh-production-7348.up.railway.app/api/ticket-orders/search?type=code&value=${encodeURIComponent(searchValue)}`, {
-        headers: { 'Authorization': `Bearer ${railwayToken}` }
-      });
-      
-      if (response.ok) {
-        results = await response.json();
-      }
+      results = allOrders.filter(order => order.confirmation_code === searchValue);
     } else if (searchType === 'txn') {
-      // Search by moneris_transaction_id in Railway
-      const response = await fetch(`https://rodeo-fresh-production-7348.up.railway.app/api/ticket-orders/search?type=txn&value=${encodeURIComponent(searchValue)}`, {
-        headers: { 'Authorization': `Bearer ${railwayToken}` }
-      });
-      
-      if (response.ok) {
-        results = await response.json();
-      }
+      results = allOrders.filter(order => order.moneris_transaction_id === searchValue);
     }
 
     return Response.json({ results });
