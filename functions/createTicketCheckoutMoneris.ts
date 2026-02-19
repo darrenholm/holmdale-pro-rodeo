@@ -108,8 +108,14 @@ Deno.serve(async (req) => {
 
     if (!monerisResponse.ok) {
       const errorData = await monerisResponse.text();
-      console.error('Moneris Checkout error:', errorData);
-      return Response.json({ error: 'Failed to create checkout', details: errorData }, { status: 500 });
+      console.error('Moneris API Error - Status:', monerisResponse.status);
+      console.error('Moneris API Error - Response:', errorData);
+      console.error('Moneris API Error - Headers:', Object.fromEntries(monerisResponse.headers));
+      return Response.json({ 
+        error: 'Failed to create checkout', 
+        status: monerisResponse.status,
+        details: errorData 
+      }, { status: 500 });
     }
 
     const result = await monerisResponse.json();
