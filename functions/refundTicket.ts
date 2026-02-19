@@ -1,8 +1,8 @@
-import sql from 'npm:mssql@10.0.0';
+import { createClientFromRequest } from 'npm:@base44/sdk@0.8.6';
 
 Deno.serve(async (req) => {
-  let pool;
   try {
+    const base44 = createClientFromRequest(req);
     const body = await req.json();
     const { ticket_order_id, refund_amount, reason } = body;
 
@@ -10,30 +10,8 @@ Deno.serve(async (req) => {
       return Response.json({ error: 'Missing required fields' }, { status: 400 });
     }
 
-    const password = Deno.env.get('SQL_SERVER_PASSWORD');
-    if (!password) {
-      return Response.json({ error: 'SQL_SERVER_PASSWORD not set in environment' }, { status: 500 });
-    }
-
-    const config = {
-      server: 'roundhouse.proxy.rlwy.net',
-      port: 20151,
-      user: 'sa',
-      password: password,
-      database: 'master',
-      authentication: { type: 'default' },
-      options: { encrypt: true, trustServerCertificate: true }
-    };
-
-    pool = new sql.ConnectionPool(config);
-    await pool.connect();
-
-    // Get ticket order from Railway
-    const ticketResult = await pool.request()
-      .input('id', sql.NVarChar(255), ticket_order_id)
-      .query('SELECT * FROM ticket_orders WHERE id = @id');
-
-    const ticketOrder = ticketResult.recordset?.[0];
+    // Get ticket order from Base44
+    const ticketOrder = await base44.asServiceRole.entities.TicketOrder.get(ticket_order_id);
     if (!ticketOrder) {
       return Response.json({ error: 'Ticket order not found' }, { status: 404 });
     }
@@ -82,19 +60,14 @@ Deno.serve(async (req) => {
       return Response.json({ error: 'Refund failed with payment processor', details: refundResult }, { status: 500 });
     }
 
-    // Update ticket in Railway
+    // Update ticket order in Base44
     const newStatus = refund_amount === ticketOrder.total_price ? 'refunded' : 'cancelled';
-    await pool.request()
-      .input('id', sql.NVarChar(255), ticket_order_id)
-      .input('status', sql.NVarChar(50), newStatus)
-      .input('refund_amount', sql.Decimal(10, 2), refund_amount)
-      .input('refund_reason', sql.NVarChar(sql.MAX), reason || '')
-      .input('refunded_at', sql.DateTime2, new Date())
-      .query(`
-        UPDATE ticket_orders 
-        SET status = @status, refund_amount = @refund_amount, refund_reason = @refund_reason, refunded_at = @refunded_at
-        WHERE id = @id
-      `);
+    await base44.asServiceRole.entities.TicketOrder.update(ticket_order_id, {
+      status: newStatus,
+      refund_amount: refund_amount,
+      refund_reason: reason || '',
+      refunded_at: new Date().toISOString()
+    });
 
     console.log('Refund processed successfully:', ticket_order_id);
     return Response.json({ success: true, message: 'Refund processed successfully', refund_amount: refund_amount });
@@ -102,7 +75,5 @@ Deno.serve(async (req) => {
   } catch (error) {
     console.error('Refund error:', error);
     return Response.json({ error: error.message }, { status: 500 });
-  } finally {
-    if (pool) await pool.close();
   }
 });
