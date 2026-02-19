@@ -16,8 +16,14 @@ Deno.serve(async (req) => {
       return Response.json({ error: 'Ticket order not found' }, { status: 404 });
     }
 
+    console.log('Ticket order:', { id: ticketOrder.id, moneris_id: ticketOrder.moneris_transaction_id, total: ticketOrder.total_price });
+
     if (refund_amount > ticketOrder.total_price) {
       return Response.json({ error: 'Refund amount exceeds total price' }, { status: 400 });
+    }
+
+    if (!ticketOrder.moneris_transaction_id) {
+      return Response.json({ error: 'No transaction ID found for this ticket' }, { status: 400 });
     }
 
     // Get Moneris credentials
