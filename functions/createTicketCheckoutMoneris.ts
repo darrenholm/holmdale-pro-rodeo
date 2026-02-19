@@ -10,12 +10,26 @@ Deno.serve(async (req) => {
       return Response.json({ error: 'Missing required fields' }, { status: 400 });
     }
 
-    // Get event details
-    const events = await base44.asServiceRole.entities.Event.filter({ id: eventId });
-    const event = events[0];
+    // Get event details from Railway
+    const token = await base44.asServiceRole.functions.invoke('loginRailway', {
+      email: 'darren@holmgraphics.ca',
+      password: 'changeme123'
+    });
+    
+    const eventsResult = await base44.asServiceRole.functions.invoke('getEventsFromRailway', {
+      token: token.data.data.token
+    });
+    
+    const events = eventsResult.data.data || [];
+    const event = events.find(e => e.id === eventId);
+    
     if (!event) {
+      console.error('Event not found:', eventId);
+      console.log('Available events:', events.map(e => ({ id: e.id, title: e.title })));
       return Response.json({ error: 'Event not found' }, { status: 404 });
     }
+    
+    console.log('Found event:', event.title);
 
     // Calculate price with HST
     const priceKey = ticketType === 'vip' ? 'vip_price' : 'general_price';
