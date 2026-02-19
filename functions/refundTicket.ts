@@ -35,14 +35,24 @@ Deno.serve(async (req) => {
 
     const ticketOrder = await ticketResponse.json();
 
-    console.log('Ticket order:', { id: ticketOrder.id, moneris_id: ticketOrder.moneris_transaction_id, total: ticketOrder.total_price });
+    console.log('Ticket order:', { 
+      id: ticketOrder.id, 
+      moneris_id: ticketOrder.moneris_transaction_id, 
+      total: ticketOrder.total_price,
+      status: ticketOrder.status
+    });
 
-    if (refund_amount > ticketOrder.total_price) {
+    if (refund_amount > Number(ticketOrder.total_price)) {
       return Response.json({ error: 'Refund amount exceeds total price' }, { status: 400 });
     }
 
     if (!ticketOrder.moneris_transaction_id) {
-      return Response.json({ error: 'No transaction ID found for this ticket' }, { status: 400 });
+      console.error('Missing moneris_transaction_id for ticket:', ticket_order_id);
+      console.error('Ticket order data:', JSON.stringify(ticketOrder, null, 2));
+      return Response.json({ 
+        error: 'No transaction ID found for this ticket', 
+        details: 'This ticket may not have been paid with Moneris or the payment was not completed' 
+      }, { status: 400 });
     }
 
     // Get Moneris credentials
