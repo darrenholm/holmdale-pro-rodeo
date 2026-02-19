@@ -14,11 +14,7 @@ Deno.serve(async (req) => {
     const allTickets = await base44.asServiceRole.entities.TicketOrder.list();
     console.log(`Fetched ${allTickets.length} tickets from Base44`);
 
-    // Get Railway credentials
-    const railwayUrl = Deno.env.get('RAILWAY_SQL_URL');
-    if (!railwayUrl) {
-      return Response.json({ error: 'Railway SQL URL not configured' }, { status: 500 });
-    }
+    // All credentials are managed by Railway environment
 
     // Prepare data for Railway insert
     const insertedCount = 0;

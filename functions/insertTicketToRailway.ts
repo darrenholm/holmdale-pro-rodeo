@@ -9,11 +9,9 @@ Deno.serve(async (req) => {
       return Response.json({ error: 'Ticket data required' }, { status: 400 });
     }
 
-    const sqlUrl = Deno.env.get('RAILWAY_SQL_URL');
     const password = Deno.env.get('SQL_SERVER_PASSWORD');
-
-    if (!sqlUrl || !password) {
-      return Response.json({ error: 'SQL credentials not configured' }, { status: 500 });
+    if (!password) {
+      return Response.json({ error: 'SQL_SERVER_PASSWORD not set in environment' }, { status: 500 });
     }
 
     // Parse connection string

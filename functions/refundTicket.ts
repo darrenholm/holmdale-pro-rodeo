@@ -12,7 +12,7 @@ Deno.serve(async (req) => {
 
     const password = Deno.env.get('SQL_SERVER_PASSWORD');
     if (!password) {
-      return Response.json({ error: 'SQL credentials not configured' }, { status: 500 });
+      return Response.json({ error: 'SQL_SERVER_PASSWORD not set in environment' }, { status: 500 });
     }
 
     const config = {
