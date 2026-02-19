@@ -372,22 +372,7 @@ export default function BuyTickets() {
                     Back to Events
                 </Link>
                 
-                {isLoading ? (
-                    <div className="grid lg:grid-cols-3 gap-8">
-                        <div className="lg:col-span-2 space-y-6">
-                            <Skeleton className="h-64 rounded-xl" />
-                            <Skeleton className="h-96 rounded-xl" />
-                        </div>
-                        <Skeleton className="h-96 rounded-xl" />
-                    </div>
-                    ) : (
-                    <Card className="bg-stone-900 border-stone-800 p-12 text-center max-w-md mx-auto">
-                        <AlertCircle className="w-16 h-16 text-amber-500 mx-auto mb-4" />
-                        <h3 className="text-xl font-semibold text-white mb-2">Checkout Not Available</h3>
-                        <p className="text-stone-400 mb-6">Checkout is only available from the published app. Please open this link in a new window to continue.</p>
-                    </Card>
-                ) : (
-                    <div className="grid lg:grid-cols-3 gap-8">
+                <div className="grid lg:grid-cols-3 gap-8">
                         {/* Main Content */}
                         <div className="lg:col-span-2 space-y-6">
                             {/* Event Info */}
