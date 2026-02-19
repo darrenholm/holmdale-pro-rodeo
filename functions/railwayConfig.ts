@@ -45,6 +45,8 @@ async function railwayRequest(endpoint, options = {}) {
   }
 
   console.log(`[Railway Request] ${method} ${url}`);
+  console.log('[Auth Header]', headers['Authorization']);
+  console.log('[Token Received]', token);
 
   const response = await fetch(url, config);
 
