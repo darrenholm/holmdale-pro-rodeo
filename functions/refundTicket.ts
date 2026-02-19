@@ -1,8 +1,5 @@
-import { createClientFromRequest } from 'npm:@base44/sdk@0.8.6';
-
 Deno.serve(async (req) => {
   try {
-    const base44 = createClientFromRequest(req);
     const body = await req.json();
     const { ticket_order_id, refund_amount, reason } = body;
 
@@ -10,11 +7,17 @@ Deno.serve(async (req) => {
       return Response.json({ error: 'Missing required fields' }, { status: 400 });
     }
 
-    // Get ticket order from Base44
-    const ticketOrder = await base44.asServiceRole.entities.TicketOrder.get(ticket_order_id);
-    if (!ticketOrder) {
+    // Get ticket order from Railway
+    const railwayToken = Deno.env.get('RAILWAY_AUTH_TOKEN');
+    const ticketResponse = await fetch(`http://localhost:3000/api/ticket-orders/${ticket_order_id}`, {
+      headers: { 'Authorization': `Bearer ${railwayToken}` }
+    });
+
+    if (!ticketResponse.ok) {
       return Response.json({ error: 'Ticket order not found' }, { status: 404 });
     }
+
+    const ticketOrder = await ticketResponse.json();
 
     console.log('Ticket order:', { id: ticketOrder.id, moneris_id: ticketOrder.moneris_transaction_id, total: ticketOrder.total_price });
 
@@ -60,13 +63,20 @@ Deno.serve(async (req) => {
       return Response.json({ error: 'Refund failed with payment processor', details: refundResult }, { status: 500 });
     }
 
-    // Update ticket order in Base44
+    // Update ticket order in Railway
     const newStatus = refund_amount === ticketOrder.total_price ? 'refunded' : 'cancelled';
-    await base44.asServiceRole.entities.TicketOrder.update(ticket_order_id, {
-      status: newStatus,
-      refund_amount: refund_amount,
-      refund_reason: reason || '',
-      refunded_at: new Date().toISOString()
+    const updateResponse = await fetch(`http://localhost:3000/api/ticket-orders/${ticket_order_id}`, {
+      method: 'PATCH',
+      headers: {
+        'Authorization': `Bearer ${railwayToken}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        status: newStatus,
+        refund_amount: refund_amount,
+        refund_reason: reason || '',
+        refunded_at: new Date().toISOString()
+      })
     });
 
     console.log('Refund processed successfully:', ticket_order_id);
