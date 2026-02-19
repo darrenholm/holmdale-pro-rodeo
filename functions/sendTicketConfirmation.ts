@@ -21,20 +21,32 @@ Deno.serve(async (req) => {
     }
 
     // Get event details from Railway
-    const token = await base44.asServiceRole.functions.invoke('loginRailway', {
-      email: 'darren@holmgraphics.ca',
-      password: 'changeme123'
-    });
-    
-    const eventsResult = await base44.asServiceRole.functions.invoke('getEventsFromRailway', {
-      token: token.data.data.token
-    });
-    
-    const events = eventsResult.data.data || [];
-    const event = events.find(e => e.id === ticketOrder.event_id);
-    
-    if (!event) {
-      return Response.json({ error: 'Event not found', event_id: ticketOrder.event_id }, { status: 404 });
+    let event;
+    try {
+      const loginResult = await base44.asServiceRole.functions.invoke('loginRailway', {
+        email: 'darren@holmgraphics.ca',
+        password: 'changeme123'
+      });
+      
+      const token = loginResult.data?.data?.token;
+      if (!token) {
+        throw new Error('Failed to get Railway token');
+      }
+      
+      const eventsResult = await base44.asServiceRole.functions.invoke('getEventsFromRailway', {
+        token: token
+      });
+      
+      const events = eventsResult.data?.data || [];
+      event = events.find(e => e.id === ticketOrder.event_id);
+      
+      if (!event) {
+        console.error('Event not found in Railway:', ticketOrder.event_id);
+        throw new Error('Event not found');
+      }
+    } catch (railwayError) {
+      console.error('Railway API error:', railwayError);
+      throw railwayError;
     }
 
     // Generate QR code as data URL for embedding directly in email
