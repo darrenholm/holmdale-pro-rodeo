@@ -241,6 +241,57 @@ export default function BuyTickets() {
             </div>
         );
     }
+
+    if (error) {
+        return (
+            <div className="min-h-screen bg-stone-950 pt-24 pb-20 px-6 flex items-center justify-center">
+                <Card className="bg-stone-900 border-stone-800 p-12 text-center max-w-md">
+                    <AlertCircle className="w-16 h-16 text-red-500 mx-auto mb-4" />
+                    <h3 className="text-xl font-semibold text-white mb-2">Error Loading Event</h3>
+                    <p className="text-stone-400 mb-6">{error.message || 'Failed to load event details'}</p>
+                    <Link to={createPageUrl('Events')}>
+                        <Button className="bg-green-500 hover:bg-green-600 text-stone-900">
+                            Back to Events
+                        </Button>
+                    </Link>
+                </Card>
+            </div>
+        );
+    }
+
+    if (isLoading) {
+        return (
+            <div className="min-h-screen bg-stone-950 pt-24 pb-20 px-6">
+                <div className="max-w-6xl mx-auto">
+                    <Skeleton className="h-8 w-32 mb-8" />
+                    <div className="grid lg:grid-cols-3 gap-8">
+                        <div className="lg:col-span-2 space-y-6">
+                            <Skeleton className="h-64 rounded-xl" />
+                            <Skeleton className="h-96 rounded-xl" />
+                        </div>
+                        <Skeleton className="h-96 rounded-xl" />
+                    </div>
+                </div>
+            </div>
+        );
+    }
+
+    if (!event) {
+        return (
+            <div className="min-h-screen bg-stone-950 pt-24 pb-20 px-6 flex items-center justify-center">
+                <Card className="bg-stone-900 border-stone-800 p-12 text-center max-w-md">
+                    <AlertCircle className="w-16 h-16 text-amber-500 mx-auto mb-4" />
+                    <h3 className="text-xl font-semibold text-white mb-2">Event Not Found</h3>
+                    <p className="text-stone-400 mb-6">This event may no longer be available.</p>
+                    <Link to={createPageUrl('Events')}>
+                        <Button className="bg-green-500 hover:bg-green-600 text-stone-900">
+                            Browse Events
+                        </Button>
+                    </Link>
+                </Card>
+            </div>
+        );
+    }
     
     if (orderComplete) {
         return (
