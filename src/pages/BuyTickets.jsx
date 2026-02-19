@@ -609,7 +609,6 @@ export default function BuyTickets() {
                             </Card>
                         </div>
                     </div>
-                )}
             </div>
         </div>
     );
