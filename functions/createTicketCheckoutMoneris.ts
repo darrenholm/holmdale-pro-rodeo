@@ -50,10 +50,21 @@ Deno.serve(async (req) => {
       'family': 'family_price'
     };
     const priceKey = priceKeyMap[ticketType] || 'general_price';
-    const unitPrice = event[priceKey] || 0;
+    let unitPrice = parseFloat(event[priceKey]) || 0;
+    
+    // Log pricing for debugging
+    console.log(`Price key: ${priceKey}, Unit price from event: ${unitPrice}`);
+    
+    if (unitPrice <= 0) {
+      console.error(`Invalid price for ticket type ${ticketType}:`, unitPrice);
+      return Response.json({ error: `No pricing configured for ${ticketType} tickets` }, { status: 400 });
+    }
+    
     const subtotal = unitPrice * parseInt(quantity);
     const hst = subtotal * 0.13;
     const total = subtotal + hst;
+    
+    console.log(`Calculation: ${unitPrice} × ${quantity} = ${subtotal}, + HST ${hst.toFixed(2)} = ${total.toFixed(2)}`);
 
     // Get Moneris credentials
     const checkoutId = Deno.env.get('MONERIS_CHECKOUT_ID');
