@@ -639,9 +639,9 @@ export default function GateScan() {
 
               <div className="bg-purple-900/20 border-2 border-purple-500 rounded-lg p-6">
                 <p className="text-purple-200 font-semibold text-center mb-4">
-                  {currentWristbandIndex < (ticket.quantityAdult || 0)
+                  {currentWristbandIndex < (ticket.quantity_adult || 0)
                     ? `Scan Adult Wristband #${currentWristbandIndex + 1} (19+)`
-                    : `Scan Child Wristband #${currentWristbandIndex - (ticket.quantityAdult || 0) + 1}`
+                    : `Scan Child Wristband #${currentWristbandIndex - (ticket.quantity_adult || 0) + 1}`
                   }
                 </p>
                 <Input
