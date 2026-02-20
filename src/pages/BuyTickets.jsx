@@ -91,16 +91,13 @@ export default function BuyTickets() {
               }
               console.log('[BuyTickets] Found event:', foundEvent.title);
 
-              // Fetch current tier data directly from Railway
+              // Fetch current tier data via backend function
               try {
-                  const tierResponse = await fetch(`https://rodeo-fresh-production-7348.up.railway.app/api/events/${eventId}/current-tier`);
-                  if (tierResponse.ok) {
-                      const tierData = await tierResponse.json();
-                      console.log('[BuyTickets] Tier data from Railway:', tierData);
-                      foundEvent.tierData = tierData;
-                  }
+                  const tierResult = await base44.functions.invoke('getEventCurrentTier', { eventId });
+                  console.log('[BuyTickets] Tier data from Railway:', tierResult.data);
+                  foundEvent.tierData = tierResult.data;
               } catch (tierError) {
-                  console.warn('[BuyTickets] Failed to fetch tier data, using fallback:', tierError);
+                  console.warn('[BuyTickets] Failed to fetch tier data:', tierError);
               }
 
               return foundEvent;
