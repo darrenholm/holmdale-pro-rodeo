@@ -89,21 +89,9 @@ Deno.serve(async (req) => {
     const orderId = `TICKET-${Date.now()}`;
     const confirmationCode = `CONF-${Date.now().toString().slice(-8)}`;
 
-    // Calculate quantity_adult and quantity_child based on ticket type
-    let quantityAdult = 0;
-    let quantityChild = 0;
-    
-    if (ticketType === 'general') {
-      quantityAdult = parseInt(quantity);
-      quantityChild = 0;
-    } else if (ticketType === 'child') {
-      quantityAdult = 0;
-      quantityChild = parseInt(quantity);
-    } else if (ticketType === 'family') {
-      // Each family ticket is 2 adults + 2 children
-      quantityAdult = parseInt(quantity) * 2;
-      quantityChild = parseInt(quantity) * 2;
-    }
+    // Calculate quantity_adult and quantity_child based on all ticket types
+    const quantityAdult = (tickets.general || 0) + ((tickets.family || 0) * 2);
+    const quantityChild = (tickets.child || 0) + ((tickets.family || 0) * 2);
     
     console.log(`Ticket breakdown: ${quantityAdult} adults, ${quantityChild} children`);
 
@@ -117,10 +105,11 @@ Deno.serve(async (req) => {
       },
       body: JSON.stringify({
         event_id: eventId,
-        ticket_type: ticketType,
-        quantity: parseInt(quantity),
+        ticket_type: 'mixed',
+        quantity: totalQuantity,
         quantity_adult: quantityAdult,
         quantity_child: quantityChild,
+        tickets: tickets,
         customer_name: customerName,
         customer_email: customerEmail,
         customer_phone: customerPhone || '',
