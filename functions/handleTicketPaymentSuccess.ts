@@ -8,11 +8,14 @@ Deno.serve(async (req) => {
     const body = await req.json();
     const { confirmation_code } = body;
 
+    console.log('=== PAYMENT SUCCESS HANDLER ===');
+    console.log('Full request body:', JSON.stringify(body, null, 2));
+    console.log('Confirmation code received:', confirmation_code);
+
     if (!confirmation_code) {
+      console.error('ERROR: No confirmation code in request');
       return Response.json({ error: 'Missing confirmation_code' }, { status: 400 });
     }
-
-    console.log('Processing payment success for:', confirmation_code);
 
     // Authenticate with Railway backend
     const loginResponse = await fetch('https://rodeo-fresh-production-7348.up.railway.app/api/auth/login', {
@@ -32,16 +35,36 @@ Deno.serve(async (req) => {
     const railwayToken = authData.token;
 
     // Find and update the ticket order in Railway
-    const ticketResponse = await fetch(`https://rodeo-fresh-production-7348.up.railway.app/api/ticket-orders/by-confirmation/${confirmation_code}`, {
+    const ticketUrl = `https://rodeo-fresh-production-7348.up.railway.app/api/ticket-orders/by-confirmation/${confirmation_code}`;
+    console.log('Looking up ticket at:', ticketUrl);
+    
+    const ticketResponse = await fetch(ticketUrl, {
       headers: { 'Authorization': `Bearer ${railwayToken}` }
     });
 
+    console.log('Ticket lookup response status:', ticketResponse.status);
+
     if (!ticketResponse.ok) {
-      console.log('No ticket order found for:', confirmation_code);
-      return Response.json({ error: 'Ticket order not found' }, { status: 404 });
+      const errorText = await ticketResponse.text();
+      console.error('ERROR: Ticket order not found');
+      console.error('Response status:', ticketResponse.status);
+      console.error('Response body:', errorText);
+      return Response.json({ 
+        error: 'Ticket order not found', 
+        confirmation_code,
+        details: errorText 
+      }, { status: 404 });
     }
 
     const ticketOrder = await ticketResponse.json();
+    console.log('Found ticket order:', {
+      id: ticketOrder.id,
+      confirmation_code: ticketOrder.confirmation_code,
+      customer_email: ticketOrder.customer_email,
+      status: ticketOrder.status,
+      quantity_adult: ticketOrder.quantity_adult,
+      quantity_child: ticketOrder.quantity_child
+    });
 
     // Update status to confirmed
     await fetch(`https://rodeo-fresh-production-7348.up.railway.app/api/ticket-orders/${ticketOrder.id}`, {
@@ -174,15 +197,17 @@ Deno.serve(async (req) => {
     `;
 
     // Send email
-    await resend.emails.send({
+    console.log('Sending confirmation email to:', ticketOrder.customer_email);
+    const emailResult = await resend.emails.send({
       from: 'Holmdale Pro Rodeo <info@holmdalerodeo.ca>',
       to: ticketOrder.customer_email,
       subject: `Your Tickets for ${event.title} - Confirmation #${ticketOrder.confirmation_code}`,
       html: emailHtml
     });
 
-    console.log('Ticket confirmation email sent for:', confirmation_code);
-    return Response.json({ success: true });
+    console.log('✓ Email sent successfully! ID:', emailResult.id);
+    console.log('=== PAYMENT SUCCESS COMPLETE ===');
+    return Response.json({ success: true, email_sent: true, email_id: emailResult.id });
 
   } catch (error) {
     console.error('Payment success handler error:', error);
