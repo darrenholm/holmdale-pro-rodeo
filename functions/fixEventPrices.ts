@@ -1,12 +1,25 @@
-import { railwayRequest } from './railwayConfig.js';
-
 Deno.serve(async (req) => {
   try {
     const body = await req.json().catch(() => ({}));
     const token = body.token;
     
+    const BASE_URL = 'https://rodeo-fresh-production-7348.up.railway.app';
+    
+    // Get events
     console.log('Fetching events...');
-    const events = await railwayRequest('/api/events', 'GET', null, token);
+    const eventsResponse = await fetch(`${BASE_URL}/api/events`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      }
+    });
+    
+    if (!eventsResponse.ok) {
+      throw new Error(`Failed to fetch events: ${eventsResponse.status}`);
+    }
+    
+    const events = await eventsResponse.json();
     console.log(`Found ${events.length} events`);
     
     const updates = [];
@@ -25,7 +38,21 @@ Deno.serve(async (req) => {
           family_price: 70
         };
         
-        const updated = await railwayRequest(`/api/events/${event.id}`, 'PUT', updateData, token);
+        const updateResponse = await fetch(`${BASE_URL}/api/events/${event.id}`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify(updateData)
+        });
+        
+        if (!updateResponse.ok) {
+          console.error(`Failed to update ${eventName}: ${updateResponse.status}`);
+          continue;
+        }
+        
+        const updated = await updateResponse.json();
         console.log(`✓ Updated ${eventName} to General: $30, Child: $10, Family: $70`);
         updates.push({ name: eventName, id: event.id, ...updateData });
       }
