@@ -1,6 +1,7 @@
 import React from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
+import { railwayAuth } from '@/components/railwayAuth';
 
 import HeroSection from '../components/home/HeroSection';
 import FeaturesSection from '../components/home/FeaturesSection';
@@ -11,7 +12,8 @@ export default function Home() {
     const { data: events = [], isLoading } = useQuery({
         queryKey: ['events'],
         queryFn: async () => {
-            const response = await base44.functions.invoke('getEventsFromRailway');
+            const token = await railwayAuth.getToken();
+            const response = await base44.functions.invoke('getEventsFromRailway', { token });
             return response.data?.data || [];
         }
     });
