@@ -103,6 +103,24 @@ Deno.serve(async (req) => {
     const orderId = `TICKET-${Date.now()}`;
     const confirmationCode = `CONF-${Date.now().toString().slice(-8)}`;
 
+    // Calculate quantity_adult and quantity_child based on ticket type
+    let quantityAdult = 0;
+    let quantityChild = 0;
+    
+    if (ticketType === 'general') {
+      quantityAdult = parseInt(quantity);
+      quantityChild = 0;
+    } else if (ticketType === 'child') {
+      quantityAdult = 0;
+      quantityChild = parseInt(quantity);
+    } else if (ticketType === 'family') {
+      // Each family ticket is 2 adults + 2 children
+      quantityAdult = parseInt(quantity) * 2;
+      quantityChild = parseInt(quantity) * 2;
+    }
+    
+    console.log(`Ticket breakdown: ${quantityAdult} adults, ${quantityChild} children`);
+
     // Create ticket order in Railway
     console.log('Creating ticket order in Railway:', confirmationCode);
     const createOrderResponse = await fetch('https://rodeo-fresh-production-7348.up.railway.app/api/ticket-orders', {
@@ -115,8 +133,8 @@ Deno.serve(async (req) => {
         event_id: eventId,
         ticket_type: ticketType,
         quantity: parseInt(quantity),
-        quantity_adult: ticketType === 'family' ? 2 : (ticketType === 'general' ? parseInt(quantity) : 0),
-        quantity_child: ticketType === 'family' ? 2 : (ticketType === 'child' ? parseInt(quantity) : 0),
+        quantity_adult: quantityAdult,
+        quantity_child: quantityChild,
         customer_name: customerName,
         customer_email: customerEmail,
         customer_phone: customerPhone || '',
