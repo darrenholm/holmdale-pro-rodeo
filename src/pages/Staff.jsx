@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { QrCode, Ticket, CreditCard, LogOut, Radio, DollarSign, Mail, BadgeCheck, Wine, RefreshCw } from 'lucide-react';
+import { QrCode, Ticket, CreditCard, LogOut, Radio, DollarSign, Mail, BadgeCheck, Wine, RefreshCw, Calendar } from 'lucide-react';
 import { createPageUrl } from '@/utils';
 
 const STAFF_PASSWORD = 'staff2026'; // Change this to your desired password
@@ -106,6 +106,16 @@ export default function Staff() {
                 <Ticket className="w-16 h-16 text-green-500 mx-auto mb-4" />
                 <h2 className="text-2xl font-bold text-white mb-2">Scheduling</h2>
                 <p className="text-gray-400">Manage staff shifts</p>
+              </CardContent>
+            </Card>
+          </Link>
+
+          <Link to={createPageUrl('ManageEvents')}>
+            <Card className="bg-stone-900 border-stone-800 hover:border-green-600 transition-all cursor-pointer h-full">
+              <CardContent className="p-8 text-center">
+                <Calendar className="w-16 h-16 text-green-500 mx-auto mb-4" />
+                <h2 className="text-2xl font-bold text-white mb-2">Manage Events</h2>
+                <p className="text-gray-400">Create and manage rodeo events</p>
               </CardContent>
             </Card>
           </Link>

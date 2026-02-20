@@ -70,6 +70,7 @@ import StaffScheduling from './pages/StaffScheduling';
 import TestRailway from './pages/TestRailway';
 import TicketSalesReport from './pages/TicketSalesReport';
 import TrackOrder from './pages/TrackOrder';
+import ManageEvents from './pages/ManageEvents';
 import __Layout from './Layout.jsx';
 
 
@@ -97,6 +98,7 @@ export const PAGES = {
     "TestRailway": TestRailway,
     "TicketSalesReport": TicketSalesReport,
     "TrackOrder": TrackOrder,
+    "ManageEvents": ManageEvents,
 }
 
 export const pagesConfig = {
