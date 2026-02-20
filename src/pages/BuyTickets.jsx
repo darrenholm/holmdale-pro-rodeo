@@ -234,8 +234,6 @@ export default function BuyTickets() {
         }
     });
     
-    const selectedTicketType = ticketTypes.find(t => t.id === selectedType);
-    
     // Calculate tier-based pricing from Railway
     const tierData = event?.tierData;
     const currentTier = tierData?.currentTier || 1;
@@ -261,19 +259,19 @@ export default function BuyTickets() {
         }
     }
     
-    let ticketPrice = 0;
-    if (selectedType === 'general') {
-        ticketPrice = tierData?.adultPrice || (currentTier === 1 ? 30 : currentTier === 2 ? 35 : 40);
-    } else if (selectedType === 'child') {
-        ticketPrice = tierData?.childPrice || 10;
-    } else if (selectedType === 'family') {
-        ticketPrice = tierData?.familyPrice || (currentTier === 1 ? 70 : currentTier === 2 ? 80 : 90);
-    }
+    // Get prices for each ticket type
+    const adultPrice = tierData?.adultPrice || (currentTier === 1 ? 30 : currentTier === 2 ? 35 : 40);
+    const childPrice = tierData?.childPrice || 10;
+    const familyPrice = tierData?.familyPrice || (currentTier === 1 ? 70 : currentTier === 2 ? 80 : 90);
     
-    const ticketAvailable = ticketsRemaining;
-    const subtotal = ticketPrice * quantity;
+    // Calculate totals across all ticket types
+    const generalSubtotal = quantities.general * adultPrice;
+    const childSubtotal = quantities.child * childPrice;
+    const familySubtotal = quantities.family * familyPrice;
+    const subtotal = generalSubtotal + childSubtotal + familySubtotal;
     const hst = subtotal * 0.13;
     const totalPrice = subtotal + hst;
+    const totalQuantity = quantities.general + quantities.child + quantities.family;
     
     const handleSubmit = async (e) => {
         e.preventDefault();
