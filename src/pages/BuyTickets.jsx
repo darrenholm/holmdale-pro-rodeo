@@ -490,12 +490,22 @@ export default function BuyTickets() {
                                                     <div>
                                                         <h3 className="text-white font-semibold mb-1">{type.name}</h3>
                                                         <p className="text-stone-400 text-sm">{type.description}</p>
-                                                        <Badge 
-                                                            variant="outline" 
-                                                            className={`mt-2 ${isAvailable ? 'border-green-500/50 text-green-400' : 'border-red-500/50 text-red-400'}`}
-                                                        >
-                                                            {isAvailable ? `Tier ${currentTier} pricing` : 'Sold Out'}
-                                                        </Badge>
+                                                        {type.id !== 'child' && (
+                                                            <Badge 
+                                                                variant="outline" 
+                                                                className={`mt-2 ${isAvailable ? 'border-green-500/50 text-green-400' : 'border-red-500/50 text-red-400'}`}
+                                                            >
+                                                                {isAvailable ? `Tier ${currentTier} pricing` : 'Sold Out'}
+                                                            </Badge>
+                                                        )}
+                                                        {type.id === 'child' && isAvailable && (
+                                                            <Badge 
+                                                                variant="outline" 
+                                                                className="mt-2 border-green-500/50 text-green-400"
+                                                            >
+                                                                Fixed price
+                                                            </Badge>
+                                                        )}
                                                     </div>
                                                     <div className="text-right">
                                                         <p className="text-2xl font-bold text-green-400">${price.toFixed(2)}</p>
