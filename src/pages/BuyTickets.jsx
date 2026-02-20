@@ -143,10 +143,11 @@ export default function BuyTickets() {
             myCheckout.setCallback('payment_complete', async (data) => {
                 console.log('Payment complete:', data);
                 try {
-                    // Send to backend to update status and send email
-                    await base44.functions.invoke('handleTicketPaymentSuccess', {
+                    // Send to backend to update status and send email with QR code
+                    const result = await base44.functions.invoke('handleTicketPaymentSuccess', {
                         confirmation_code: confirmationCode
                     });
+                    console.log('Email sent:', result);
                 } catch (error) {
                     console.error('Error processing payment:', error);
                 }
