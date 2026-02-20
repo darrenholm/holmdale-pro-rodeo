@@ -75,39 +75,42 @@ export default function BuyTickets() {
     }, []);
     
     const { data: event, isLoading, error } = useQuery({
-        queryKey: ['event', eventId],
-        queryFn: async () => {
-            console.log('[BuyTickets] Fetching event with ID:', eventId);
-            try {
-                const result = await railwayAuth.callWithAuth('getEventsFromRailway');
-                console.log('[BuyTickets] Railway API result:', result);
-                const events = result?.data || [];
-                console.log('[BuyTickets] Found events:', events.length);
-                const foundEvent = events.find(e => e.id === eventId);
-                if (!foundEvent) {
-                    console.error('[BuyTickets] Event not found with ID:', eventId);
-                    console.log('[BuyTickets] Available event IDs:', events.map(e => e.id));
-                    throw new Error(`Event not found: ${eventId}`);
-                }
-                console.log('[BuyTickets] Found event:', foundEvent.title);
-                
-                // Fetch tier pricing from backend function (avoids CORS issues)
-                try {
-                    const tierResult = await base44.functions.invoke('getEventTierData', { eventId });
-                    console.log('[BuyTickets] Tier data:', tierResult.data);
-                    foundEvent.tierData = tierResult.data;
-                } catch (tierError) {
-                    console.warn('[BuyTickets] Failed to fetch tier data, using fallback prices:', tierError);
-                }
-                
-                return foundEvent;
-            } catch (error) {
-                console.error('[BuyTickets] Error fetching event:', error);
-                throw error;
-            }
-        },
-        enabled: !!eventId,
-        retry: false
+      queryKey: ['event', eventId],
+      queryFn: async () => {
+          console.log('[BuyTickets] Fetching event with ID:', eventId);
+          try {
+              const result = await railwayAuth.callWithAuth('getEventsFromRailway');
+              console.log('[BuyTickets] Railway API result:', result);
+              const events = result?.data || [];
+              console.log('[BuyTickets] Found events:', events.length);
+              const foundEvent = events.find(e => e.id === eventId);
+              if (!foundEvent) {
+                  console.error('[BuyTickets] Event not found with ID:', eventId);
+                  console.log('[BuyTickets] Available event IDs:', events.map(e => e.id));
+                  throw new Error(`Event not found: ${eventId}`);
+              }
+              console.log('[BuyTickets] Found event:', foundEvent.title);
+
+              // Fetch current tier data directly from Railway
+              try {
+                  const tierResponse = await fetch(`https://rodeo-fresh-production-7348.up.railway.app/api/events/${eventId}/current-tier`);
+                  if (tierResponse.ok) {
+                      const tierData = await tierResponse.json();
+                      console.log('[BuyTickets] Tier data from Railway:', tierData);
+                      foundEvent.tierData = tierData;
+                  }
+              } catch (tierError) {
+                  console.warn('[BuyTickets] Failed to fetch tier data, using fallback:', tierError);
+              }
+
+              return foundEvent;
+          } catch (error) {
+              console.error('[BuyTickets] Error fetching event:', error);
+              throw error;
+          }
+      },
+      enabled: !!eventId,
+      retry: false
     });
     
     useEffect(() => {
@@ -205,23 +208,25 @@ export default function BuyTickets() {
     // Calculate tier-based pricing from Railway
     const tierData = event?.tierData;
     const currentTier = tierData?.currentTier || 1;
-    const ticketsSold = tierData?.ticketsSold || 0;
 
-    // Calculate remaining in CURRENT tier only
+    // Calculate remaining in CURRENT tier
     let ticketsRemaining = 1000;
     let nextTierPrice = null;
     let nextTierAvailable = null;
 
-    if (tierData?.tiers) {
-        const currentTierData = tierData.tiers[`tier${currentTier}`];
-        ticketsRemaining = Math.max(0, (currentTierData?.quantity || 1000) - (currentTierData?.sold || 0));
+    if (tierData && tierData[`tier${currentTier}`]) {
+        const currentTierData = tierData[`tier${currentTier}`];
+        ticketsRemaining = Math.max(0, (currentTierData.quantity || 1000) - (currentTierData.sold || 0));
+        console.log(`[BuyTickets] Tier ${currentTier}: ${currentTierData.quantity} total - ${currentTierData.sold} sold = ${ticketsRemaining} remaining`);
 
         // Get next tier info if available
         if (currentTier < 3) {
             const nextTier = currentTier + 1;
-            const nextTierData = tierData.tiers[`tier${nextTier}`];
-            nextTierPrice = nextTierData?.price;
-            nextTierAvailable = (nextTierData?.quantity || 1000) - (nextTierData?.sold || 0);
+            const nextTierData = tierData[`tier${nextTier}`];
+            if (nextTierData) {
+                nextTierPrice = nextTierData.price;
+                nextTierAvailable = (nextTierData.quantity || 1000) - (nextTierData.sold || 0);
+            }
         }
     }
     
