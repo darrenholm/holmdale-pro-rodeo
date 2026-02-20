@@ -14,8 +14,25 @@ export default function UpdatePrices() {
         setSuccess(false);
         
         try {
-            const token = await railwayAuth.getToken();
-            await base44.functions.invoke('updateEventPrices', { token });
+            // Get events
+            const eventsResult = await railwayAuth.callWithAuth('getEventsFromRailway');
+            const events = eventsResult?.data || [];
+            
+            // Update Saturday and Sunday events
+            const token = localStorage.getItem('railway_auth_token');
+            for (const event of events) {
+                const eventName = event.name || event.title || '';
+                if (eventName.includes('Saturday') || eventName.includes('Sunday')) {
+                    await base44.functions.invoke('updateEventRailway', {
+                        token,
+                        eventId: event.id,
+                        general_price: 30,
+                        child_price: 20,
+                        family_price: 100
+                    });
+                }
+            }
+            
             setSuccess(true);
         } catch (error) {
             console.error('Update error:', error);
