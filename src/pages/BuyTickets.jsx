@@ -190,8 +190,35 @@ export default function BuyTickets() {
     });
     
     const selectedTicketType = ticketTypes.find(t => t.id === selectedType);
-    const ticketPrice = Number(event?.[selectedTicketType?.priceKey]) || 0;
-    const ticketAvailable = Number(event?.[selectedTicketType?.availableKey]) || 0;
+    
+    // Calculate tier-based pricing
+    const ticketsSold = Number(event?.tickets_sold) || 0;
+    let currentTier = 1;
+    let ticketsRemaining = 3000;
+    
+    if (ticketsSold < 1000) {
+        currentTier = 1;
+        ticketsRemaining = 1000 - ticketsSold;
+    } else if (ticketsSold < 2000) {
+        currentTier = 2;
+        ticketsRemaining = 2000 - ticketsSold;
+    } else if (ticketsSold < 3000) {
+        currentTier = 3;
+        ticketsRemaining = 3000 - ticketsSold;
+    } else {
+        ticketsRemaining = 0;
+    }
+    
+    let ticketPrice = 0;
+    if (selectedType === 'general') {
+        ticketPrice = currentTier === 1 ? 30 : currentTier === 2 ? 35 : 40;
+    } else if (selectedType === 'child') {
+        ticketPrice = currentTier === 1 ? 15 : currentTier === 2 ? 17.50 : 20;
+    } else if (selectedType === 'family') {
+        ticketPrice = currentTier === 1 ? 80 : currentTier === 2 ? 90 : 100;
+    }
+    
+    const ticketAvailable = ticketsRemaining;
     const subtotal = ticketPrice * quantity;
     const hst = subtotal * 0.13;
     const totalPrice = subtotal + hst;
@@ -415,16 +442,36 @@ export default function BuyTickets() {
                                         <Ticket className="w-5 h-5 text-green-500" />
                                         Select Ticket Type
                                     </CardTitle>
+                                    <div className="mt-4 bg-green-500/10 border border-green-500/30 rounded-lg p-4">
+                                        <div className="flex items-center justify-between">
+                                            <div>
+                                                <p className="text-white font-semibold">Current Tier: {currentTier}</p>
+                                                <p className="text-stone-400 text-sm">{ticketsRemaining} tickets remaining at this price</p>
+                                            </div>
+                                            <Badge className="bg-green-500 text-stone-900 text-lg px-4 py-1">
+                                                Tier {currentTier} Pricing
+                                            </Badge>
+                                        </div>
+                                        {currentTier < 3 && (
+                                            <p className="text-stone-400 text-xs mt-2">
+                                                Next tier: ${currentTier === 1 ? '35' : '40'}/ticket
+                                            </p>
+                                        )}
+                                    </div>
                                 </CardHeader>
                                 <CardContent className="space-y-4">
                                     {ticketTypes.map((type) => {
-                                        const price = eventId === '696b7bdc81676e7ff80617a1' ? 0 : Number(event?.[type.priceKey]);
-                                        const available = Number(event?.[type.availableKey]) || 0;
                                         const isSelected = selectedType === type.id;
-                                        const isAvailable = available > 0;
+                                        const isAvailable = ticketsRemaining > 0;
                                         
-                                        // Skip ticket types that don't have pricing set for this event
-                                        if (price === null || price === undefined) return null;
+                                        let price = 0;
+                                        if (type.id === 'general') {
+                                            price = currentTier === 1 ? 30 : currentTier === 2 ? 35 : 40;
+                                        } else if (type.id === 'child') {
+                                            price = currentTier === 1 ? 15 : currentTier === 2 ? 17.50 : 20;
+                                        } else if (type.id === 'family') {
+                                            price = currentTier === 1 ? 80 : currentTier === 2 ? 90 : 100;
+                                        }
                                         
                                         return (
                                             <button
@@ -447,11 +494,11 @@ export default function BuyTickets() {
                                                             variant="outline" 
                                                             className={`mt-2 ${isAvailable ? 'border-green-500/50 text-green-400' : 'border-red-500/50 text-red-400'}`}
                                                         >
-                                                            {isAvailable ? `${available} seats available` : 'Sold Out'}
+                                                            {isAvailable ? `Tier ${currentTier} pricing` : 'Sold Out'}
                                                         </Badge>
                                                     </div>
                                                     <div className="text-right">
-                                                        <p className="text-2xl font-bold text-green-400">${price}</p>
+                                                        <p className="text-2xl font-bold text-green-400">${price.toFixed(2)}</p>
                                                         <p className="text-stone-500 text-sm">per ticket</p>
                                                     </div>
                                                 </div>

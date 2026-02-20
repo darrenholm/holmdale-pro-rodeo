@@ -43,17 +43,40 @@ Deno.serve(async (req) => {
       return Response.json({ error: 'Event not found' }, { status: 404 });
     }
 
-    // Calculate price with HST
-    const priceKeyMap = {
-      'general': 'general_price',
-      'child': 'child_price',
-      'family': 'family_price'
-    };
-    const priceKey = priceKeyMap[ticketType] || 'general_price';
-    let unitPrice = parseFloat(event[priceKey]) || 0;
+    // Calculate price with tiered pricing
+    let unitPrice = 0;
+    let currentTier = 1;
     
-    // Log pricing for debugging
-    console.log(`Price key: ${priceKey}, Unit price from event: ${unitPrice}`);
+    if (ticketType === 'general' || ticketType === 'child') {
+      // Determine current tier based on tickets sold
+      const ticketsSold = event.tickets_sold || 0;
+      
+      if (ticketsSold < 1000) {
+        currentTier = 1;
+        unitPrice = ticketType === 'general' ? 30 : 15; // Tier 1: $30 adult, $15 child
+      } else if (ticketsSold < 2000) {
+        currentTier = 2;
+        unitPrice = ticketType === 'general' ? 35 : 17.50; // Tier 2: $35 adult, $17.50 child
+      } else {
+        currentTier = 3;
+        unitPrice = ticketType === 'general' ? 40 : 20; // Tier 3: $40 adult, $20 child
+      }
+      
+      console.log(`Tickets sold: ${ticketsSold}, Current tier: ${currentTier}, Price: $${unitPrice}`);
+    } else if (ticketType === 'family') {
+      // Family tickets use tier 1 pricing as base
+      const ticketsSold = event.tickets_sold || 0;
+      if (ticketsSold < 1000) {
+        currentTier = 1;
+        unitPrice = parseFloat(event.family_price) || 80;
+      } else if (ticketsSold < 2000) {
+        currentTier = 2;
+        unitPrice = parseFloat(event.family_price) || 90;
+      } else {
+        currentTier = 3;
+        unitPrice = parseFloat(event.family_price) || 100;
+      }
+    }
     
     if (unitPrice <= 0) {
       console.error(`Invalid price for ticket type ${ticketType}:`, unitPrice);
