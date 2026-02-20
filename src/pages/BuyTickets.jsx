@@ -213,7 +213,7 @@ export default function BuyTickets() {
     if (selectedType === 'general') {
         ticketPrice = currentTier === 1 ? 30 : currentTier === 2 ? 35 : 40;
     } else if (selectedType === 'child') {
-        ticketPrice = currentTier === 1 ? 10 : currentTier === 2 ? 12.50 : 15;
+        ticketPrice = 10; // Fixed price, not tiered
     } else if (selectedType === 'family') {
         ticketPrice = currentTier === 1 ? 70 : currentTier === 2 ? 80 : 90;
     }
@@ -468,7 +468,7 @@ export default function BuyTickets() {
                                         if (type.id === 'general') {
                                             price = currentTier === 1 ? 30 : currentTier === 2 ? 35 : 40;
                                         } else if (type.id === 'child') {
-                                            price = currentTier === 1 ? 10 : currentTier === 2 ? 12.50 : 15;
+                                            price = 10; // Fixed price, not tiered
                                         } else if (type.id === 'family') {
                                             price = currentTier === 1 ? 70 : currentTier === 2 ? 80 : 90;
                                         }
