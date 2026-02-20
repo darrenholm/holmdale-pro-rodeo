@@ -92,7 +92,7 @@ export default function EventsShowcase({ events }) {
                                         <div>
                                             <span className="text-stone-500 text-sm">{event.id === '696b7bdc81676e7ff80617a1' ? 'Entry Fee' : 'Starting at'}</span>
                                             <p className="text-green-400 font-bold text-xl">
-                                                ${event.id === '696b7bdc81676e7ff80617a1' ? '0' : (event.general_price || 25)}
+                                                ${event.id === '696b7bdc81676e7ff80617a1' ? '0' : (event.general_price || 30)}
                                             </p>
                                         </div>
                                         {event.id !== '696b7bdc81676e7ff80617a1' && (
