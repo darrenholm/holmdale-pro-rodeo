@@ -21,22 +21,32 @@ Deno.serve(async (req) => {
     
     const events = await eventsResponse.json();
     console.log(`Found ${events.length} events`);
+    console.log('Full event data:', JSON.stringify(events, null, 2));
     
     const updates = [];
     
     for (const event of events) {
       const eventName = event.name || event.title || '';
-      console.log(`Event: ${eventName} (ID: ${event.id})`);
-      console.log(`Current prices - General: $${event.general_price}, Child: $${event.child_price}, Family: $${event.family_price}`);
+      console.log(`\nProcessing event: ${eventName} (ID: ${event.id})`);
+      console.log(`Current event data:`, JSON.stringify(event, null, 2));
       
       if (eventName.includes('Saturday') || eventName.includes('Sunday')) {
         console.log(`Updating ${eventName}...`);
         
+        // Send ALL existing fields plus the price updates
         const updateData = {
+          ...event,
           general_price: 30,
           child_price: 10,
           family_price: 70
         };
+        
+        // Remove fields that shouldn't be updated
+        delete updateData.id;
+        delete updateData.created_at;
+        delete updateData.updated_at;
+        
+        console.log('Sending update data:', JSON.stringify(updateData, null, 2));
         
         const updateResponse = await fetch(`${BASE_URL}/api/events/${event.id}`, {
           method: 'PUT',
@@ -47,14 +57,17 @@ Deno.serve(async (req) => {
           body: JSON.stringify(updateData)
         });
         
+        const responseText = await updateResponse.text();
+        console.log(`Update response status: ${updateResponse.status}`);
+        console.log(`Update response body: ${responseText}`);
+        
         if (!updateResponse.ok) {
-          console.error(`Failed to update ${eventName}: ${updateResponse.status}`);
+          console.error(`Failed to update ${eventName}: ${updateResponse.status} - ${responseText}`);
           continue;
         }
         
-        const updated = await updateResponse.json();
-        console.log(`✓ Updated ${eventName} to General: $30, Child: $10, Family: $70`);
-        updates.push({ name: eventName, id: event.id, ...updateData });
+        console.log(`✓ Updated ${eventName}`);
+        updates.push({ name: eventName, id: event.id, general_price: 30, child_price: 10, family_price: 70 });
       }
     }
     
@@ -65,6 +78,6 @@ Deno.serve(async (req) => {
     });
   } catch (error) {
     console.error('Error:', error);
-    return Response.json({ error: error.message }, { status: 500 });
+    return Response.json({ error: error.message, stack: error.stack }, { status: 500 });
   }
 });
