@@ -89,19 +89,6 @@ Deno.serve(async (req) => {
       body: JSON.stringify({ status: 'confirmed' })
     });
 
-    // Increment tickets_sold on the event
-    const totalTickets = (ticketOrder.quantity_adult || 0) + (ticketOrder.quantity_child || 0);
-    console.log(`Incrementing tickets_sold by ${totalTickets} for event ${ticketOrder.event_id}`);
-    
-    await fetch(`https://rodeo-fresh-production-7348.up.railway.app/api/events/${ticketOrder.event_id}/increment-tickets`, {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${railwayToken}`,
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({ increment: totalTickets })
-    });
-
     // Get event details from Railway
     let event;
     try {
@@ -109,6 +96,21 @@ Deno.serve(async (req) => {
         headers: { 'Authorization': `Bearer ${railwayToken}` }
       });
       event = await eventResponse.json();
+      
+      // Increment tickets_sold on the event
+      const totalTickets = (ticketOrder.quantity_adult || 0) + (ticketOrder.quantity_child || 0);
+      const currentTicketsSold = Number(event.tickets_sold) || 0;
+      const newTicketsSold = currentTicketsSold + totalTickets;
+      console.log(`Updating tickets_sold from ${currentTicketsSold} to ${newTicketsSold} (adding ${totalTickets})`);
+      
+      await fetch(`https://rodeo-fresh-production-7348.up.railway.app/api/events/${ticketOrder.event_id}`, {
+        method: 'PATCH',
+        headers: {
+          'Authorization': `Bearer ${railwayToken}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ tickets_sold: newTicketsSold })
+      });
     } catch (e) {
       console.log('Event not found in Railway, using defaults');
       event = {
