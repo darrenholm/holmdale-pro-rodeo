@@ -58,29 +58,22 @@ Deno.serve(async (req) => {
       currentTier = 2;
     }
 
-    let unitPrice = 0;
+    // Calculate prices for each ticket type
+    const adultPrice = parseFloat(event[`tier${currentTier}_adult_price`] || '30');
+    const childPrice = 10;
+    const familyPrice = parseFloat(event[`tier${currentTier}_family_price`] || '70');
 
-    if (ticketType === 'general') {
-      unitPrice = parseFloat(event[`tier${currentTier}_adult_price`] || '30');
-      console.log(`Adult ticket - Tier ${currentTier}, Price: $${unitPrice}`);
-    } else if (ticketType === 'child') {
-      unitPrice = 10;
-      console.log(`Child ticket fixed price: $${unitPrice}`);
-    } else if (ticketType === 'family') {
-      unitPrice = parseFloat(event[`tier${currentTier}_family_price`] || '70');
-      console.log(`Family ticket - Tier ${currentTier}, Price: $${unitPrice}`);
-    }
-    
-    if (unitPrice <= 0) {
-      console.error(`Invalid price for ticket type ${ticketType}:`, unitPrice);
-      return Response.json({ error: `No pricing configured for ${ticketType} tickets` }, { status: 400 });
-    }
-    
-    const subtotal = unitPrice * parseInt(quantity);
+    console.log(`Tier ${currentTier} pricing - Adult: $${adultPrice}, Child: $${childPrice}, Family: $${familyPrice}`);
+
+    // Calculate subtotal across all ticket types
+    const generalSubtotal = (tickets.general || 0) * adultPrice;
+    const childSubtotal = (tickets.child || 0) * childPrice;
+    const familySubtotal = (tickets.family || 0) * familyPrice;
+    const subtotal = generalSubtotal + childSubtotal + familySubtotal;
     const hst = subtotal * 0.13;
     const total = subtotal + hst;
-    
-    console.log(`Calculation: ${unitPrice} × ${quantity} = ${subtotal}, + HST ${hst.toFixed(2)} = ${total.toFixed(2)}`);
+
+    console.log(`Calculation: General(${tickets.general}×$${adultPrice}=$${generalSubtotal}) + Child(${tickets.child}×$${childPrice}=$${childSubtotal}) + Family(${tickets.family}×$${familyPrice}=$${familySubtotal}) = $${subtotal}, + HST $${hst.toFixed(2)} = $${total.toFixed(2)}`);
 
     // Get Moneris credentials
     const checkoutId = Deno.env.get('MONERIS_CHECKOUT_ID');
