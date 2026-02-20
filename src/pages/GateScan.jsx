@@ -188,23 +188,12 @@ export default function GateScan() {
     setScanError(null);
 
     try {
-      let tickets = [];
-      
-      // Check if it's a confirmation code or RFID
-      if (identifier.includes('-') || identifier.length < 10) {
-        // Likely confirmation code
-        tickets = await base44.entities.TicketOrder.filter({
-          confirmation_code: identifier
-        });
-      } else {
-        // Likely RFID
-        const allTickets = await base44.entities.TicketOrder.list();
-        tickets = allTickets.filter(t => 
-          t.rfid_wristbands && t.rfid_wristbands.some(w => w.tag_id === identifier)
-        );
-      }
+      // Query Railway for ticket
+      const response = await base44.functions.invoke('getTicketFromRailway', {
+        identifier
+      });
 
-      if (tickets.length === 0) {
+      if (!response.data.success) {
         setResult({
           success: false,
           message: 'Ticket not found. Invalid code or RFID.',
@@ -212,8 +201,8 @@ export default function GateScan() {
         });
         setStep(STEP.ERROR);
       } else {
-        const foundTicket = tickets[0];
-        
+        const foundTicket = response.data.ticket;
+
         if (foundTicket.scanned) {
           setResult({
             success: false,
@@ -223,17 +212,11 @@ export default function GateScan() {
           });
           setStep(STEP.ERROR);
         } else {
-          // Mark as scanned
-          await base44.entities.TicketOrder.update(foundTicket.id, {
-            scanned: true,
-            scanned_at: new Date().toISOString()
-          });
-          
           setTicket(foundTicket);
-          
+
           // Calculate total wristbands needed
-          const totalWristbands = (foundTicket.quantityAdult || 0) + (foundTicket.quantityChild || 0);
-          
+          const totalWristbands = (foundTicket.quantity_adult || 0) + (foundTicket.quantity_child || 0);
+
           if (totalWristbands > 0) {
             // Need to scan wristbands
             setTotalWristbandsNeeded(totalWristbands);
