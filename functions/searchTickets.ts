@@ -1,6 +1,7 @@
 Deno.serve(async (req) => {
   try {
-    const { searchValue, searchType } = await req.json();
+    const body = await req.json();
+    const { searchValue, searchType } = body;
 
     if (!searchValue) {
       return Response.json({ error: 'Search value required' }, { status: 400 });
