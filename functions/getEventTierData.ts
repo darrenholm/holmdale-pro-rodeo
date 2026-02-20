@@ -27,20 +27,55 @@ Deno.serve(async (req) => {
     const authData = await loginResponse.json();
     const railwayToken = authData.token;
 
-    // Fetch tier data from Railway
-    const tierResponse = await fetch(`https://rodeo-fresh-production-7348.up.railway.app/api/events/${eventId}/current-tier`, {
+    // Fetch event from Railway to get tier data
+    const eventResponse = await fetch(`https://rodeo-fresh-production-7348.up.railway.app/api/events/${eventId}`, {
       headers: {
         'Authorization': `Bearer ${railwayToken}`
       }
     });
 
-    if (!tierResponse.ok) {
-      const error = await tierResponse.text();
-      console.error('Failed to fetch tier data:', error);
-      return Response.json({ error: 'Failed to fetch tier data' }, { status: 500 });
+    if (!eventResponse.ok) {
+      const error = await eventResponse.text();
+      console.error('Failed to fetch event:', error);
+      return Response.json({ error: 'Failed to fetch event' }, { status: 500 });
     }
 
-    const tierData = await tierResponse.json();
+    const event = await eventResponse.json();
+    
+    // Calculate current tier based on tickets sold
+    const ticketsSold = event.tickets_sold || 0;
+    let currentTier = 1;
+    if (ticketsSold >= event.tier2_quantity) {
+      currentTier = 3;
+    } else if (ticketsSold >= event.tier1_quantity) {
+      currentTier = 2;
+    }
+
+    const tierData = {
+      currentTier,
+      ticketsSold,
+      adultPrice: parseFloat(event[`tier${currentTier}_adult_price`] || '30'),
+      childPrice: 10,
+      familyPrice: parseFloat(event[`tier${currentTier}_family_price`] || '70'),
+      tiers: {
+        tier1: {
+          quantity: event.tier1_quantity || 1000,
+          sold: event.tier1_sold || 0,
+          price: parseFloat(event.tier1_adult_price || '30')
+        },
+        tier2: {
+          quantity: event.tier2_quantity || 1000,
+          sold: event.tier2_sold || 0,
+          price: parseFloat(event.tier2_adult_price || '35')
+        },
+        tier3: {
+          quantity: event.tier3_quantity || 1000,
+          sold: event.tier3_sold || 0,
+          price: parseFloat(event.tier3_adult_price || '40')
+        }
+      }
+    };
+
     return Response.json(tierData);
 
   } catch (error) {
