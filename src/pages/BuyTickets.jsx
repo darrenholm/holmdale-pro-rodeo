@@ -46,8 +46,11 @@ export default function BuyTickets() {
     const eventId = urlParams.get('eventId');
     const queryClient = useQueryClient();
     
-    const [selectedType, setSelectedType] = useState('general');
-    const [quantity, setQuantity] = useState(1);
+    const [quantities, setQuantities] = useState({
+        general: 0,
+        child: 0,
+        family: 0
+    });
     const [customerInfo, setCustomerInfo] = useState({
         name: '',
         email: '',
