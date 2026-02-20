@@ -281,10 +281,14 @@ export default function BuyTickets() {
             return;
         }
 
+        if (totalQuantity === 0) {
+            alert('Please select at least one ticket');
+            return;
+        }
+
         try {
             const checkoutData = {
-                ticketType: selectedType,
-                quantity: quantity,
+                tickets: quantities,
                 eventId: eventId,
                 customerEmail: customerInfo.email,
                 customerName: customerInfo.name,
