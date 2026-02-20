@@ -495,7 +495,7 @@ export default function BuyTickets() {
                                         <div className="flex items-center justify-between">
                                             <div>
                                                 <p className="text-white font-semibold">Tier {currentTier}: {ticketsRemaining} tickets remaining</p>
-                                                <p className="text-stone-300 text-sm">${tierData?.tiers[`tier${currentTier}`]?.price || (currentTier === 1 ? '30' : currentTier === 2 ? '35' : '40')}/ticket</p>
+                                                <p className="text-stone-300 text-sm">${tierData?.[`tier${currentTier}`]?.price || (currentTier === 1 ? '30' : currentTier === 2 ? '35' : '40')}/ticket</p>
                                             </div>
                                             <Badge className="bg-green-500 text-stone-900 text-lg px-4 py-1">
                                                 CURRENT
