@@ -20,11 +20,11 @@ export default function ResendTicket() {
         
         setIsSearching(true);
         try {
-            const results = await base44.entities.TicketOrder.list();
-            const filtered = results.filter(ticket => 
-                ticket.customer_name?.toLowerCase().includes(searchName.toLowerCase())
-            );
-            setTickets(filtered);
+            const response = await base44.functions.invoke('searchTickets', {
+                searchValue: searchName,
+                searchType: 'name'
+            });
+            setTickets(response.data.results || []);
         } catch (error) {
             console.error('Search error:', error);
             alert('Failed to search tickets');
@@ -38,8 +38,8 @@ export default function ResendTicket() {
         setSuccessId(null);
         
         try {
-            await base44.functions.invoke('sendTicketConfirmation', {
-                ticket_order_id: ticket.id
+            await base44.functions.invoke('handleTicketPaymentSuccess', {
+                confirmation_code: ticket.confirmation_code
             });
             setSuccessId(ticket.id);
             setTimeout(() => setSuccessId(null), 3000);
@@ -121,7 +121,7 @@ export default function ResendTicket() {
                                             </div>
                                             <div>
                                                 <span className="text-stone-400">Quantity:</span>
-                                                <span className="text-white ml-2">{ticket.quantityAdult || 0} adults, {ticket.quantityChild || 0} children</span>
+                                                <span className="text-white ml-2">{ticket.quantity_adult || 0} adults, {ticket.quantity_child || 0} children</span>
                                             </div>
                                             <div>
                                                 <span className="text-stone-400">Confirmation:</span>
