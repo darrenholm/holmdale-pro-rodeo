@@ -461,16 +461,16 @@ export default function BuyTickets() {
                                     <div className="mt-4 bg-green-500/10 border border-green-500/30 rounded-lg p-4">
                                         <div className="flex items-center justify-between">
                                             <div>
-                                                <p className="text-white font-semibold">Current Tier: {currentTier}</p>
-                                                <p className="text-stone-400 text-sm">{ticketsRemaining} tickets remaining at this price</p>
+                                                <p className="text-white font-semibold">Tier {currentTier}: {ticketsRemaining} tickets remaining</p>
+                                                <p className="text-stone-300 text-sm">${tierData?.tiers[`tier${currentTier}`]?.price || (currentTier === 1 ? '30' : currentTier === 2 ? '35' : '40')}/ticket</p>
                                             </div>
                                             <Badge className="bg-green-500 text-stone-900 text-lg px-4 py-1">
-                                                Tier {currentTier} Pricing
+                                                CURRENT
                                             </Badge>
                                         </div>
-                                        {currentTier < 3 && (
-                                            <p className="text-stone-400 text-xs mt-2">
-                                                Next tier: ${currentTier === 1 ? '35' : '40'}/ticket
+                                        {nextTierPrice && (
+                                            <p className="text-stone-400 text-xs mt-3 pt-3 border-t border-green-500/20">
+                                                Next tier: {nextTierAvailable} tickets at ${nextTierPrice}/ticket
                                             </p>
                                         )}
                                     </div>
