@@ -403,10 +403,24 @@ export default function BuyTickets() {
                                 <span className="text-stone-400">Event</span>
                                 <span className="text-white font-medium">{event?.title}</span>
                             </div>
-                            <div className="flex justify-between">
-                                <span className="text-stone-400">Tickets</span>
-                                <span className="text-white font-medium">{quantity}x {selectedTicketType?.name}</span>
-                            </div>
+                            {quantities.general > 0 && (
+                                <div className="flex justify-between">
+                                    <span className="text-stone-400">General Admission</span>
+                                    <span className="text-white font-medium">{quantities.general}x @ ${adultPrice.toFixed(2)}</span>
+                                </div>
+                            )}
+                            {quantities.child > 0 && (
+                                <div className="flex justify-between">
+                                    <span className="text-stone-400">Child Tickets</span>
+                                    <span className="text-white font-medium">{quantities.child}x @ ${childPrice.toFixed(2)}</span>
+                                </div>
+                            )}
+                            {quantities.family > 0 && (
+                                <div className="flex justify-between">
+                                    <span className="text-stone-400">Family Packages</span>
+                                    <span className="text-white font-medium">{quantities.family}x @ ${familyPrice.toFixed(2)}</span>
+                                </div>
+                            )}
                             <div className="flex justify-between">
                                 <span className="text-stone-400">Total</span>
                                 <span className="text-green-400 font-bold">${totalPrice.toFixed(2)}</span>
