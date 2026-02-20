@@ -3,13 +3,13 @@ Deno.serve(async (req) => {
     const payload = await req.json();
     console.log('Received payload:', payload);
     
-    // Login to Railway to get token using SQL credentials
+    // Login to Railway to get token
     const loginResponse = await fetch('https://rodeo-fresh-production-7348.up.railway.app/api/auth/login', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        username: 'sa',
-        password: Deno.env.get('SQL_SERVER_PASSWORD')
+        email: 'admin@holmdale.com',
+        password: 'Holmdale2026!'
       })
     });
     
@@ -20,6 +20,7 @@ Deno.serve(async (req) => {
     
     const loginData = await loginResponse.json();
     const token = loginData.token || loginData.data?.token;
+    console.log('Login response:', loginData);
     
     if (!token) {
       throw new Error('No token received from login');
