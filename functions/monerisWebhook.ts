@@ -83,10 +83,10 @@ Deno.serve(async (req) => {
               
               // Send QR code email
               try {
-                const emailResponse = await base44.asServiceRole.functions.invoke('handleTicketPaymentSuccess', {
+                const emailResponse = await base44.asServiceRole.functions.invoke('resendTicketEmail', {
                   confirmation_code: order_no
                 });
-                console.log('✓ QR code email sent');
+                console.log('✓ QR code email sent:', emailResponse);
               } catch (emailError) {
                 console.error('✗ Failed to send QR code email:', emailError.message);
               }
