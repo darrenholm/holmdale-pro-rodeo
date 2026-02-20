@@ -586,53 +586,17 @@ export default function BuyTickets() {
                                 </CardContent>
                             </Card>
                             
-                            {/* Quantity & Customer Info */}
-                            <Card className="bg-stone-900 border-stone-800">
-                                <CardHeader>
-                                    <CardTitle className="text-white flex items-center gap-2">
-                                        <Users className="w-5 h-5 text-green-500" />
-                                        Ticket Details
-                                    </CardTitle>
-                                </CardHeader>
-                                <CardContent>
-                                    <form onSubmit={handleSubmit} className="space-y-6">
-                                        {/* Quantity */}
-                                        <div>
-                                            <Label className="text-stone-300 mb-3 block">Number of Tickets</Label>
-                                            <div className="flex items-center gap-4">
-                                                <Button
-                                                    type="button"
-                                                    variant="outline"
-                                                    size="icon"
-                                                    onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                                                    className="border-stone-700 text-white hover:bg-stone-800"
-                                                >
-                                                    <Minus className="w-4 h-4" />
-                                                </Button>
-                                                <span className="text-2xl font-bold text-white w-12 text-center">{quantity}</span>
-                                                <Button
-                                                    type="button"
-                                                    variant="outline"
-                                                    size="icon"
-                                                    onClick={() => setQuantity(Math.min(ticketAvailable, quantity + 1))}
-                                                    className="border-stone-700 text-white hover:bg-stone-800"
-                                                >
-                                                    <Plus className="w-4 h-4" />
-                                                </Button>
-                                            </div>
-                                        </div>
-                                        
-                                        {(selectedType === 'family' || (selectedType !== 'family' && quantity > 1)) && (
-                                            <div className="bg-amber-950/50 border border-amber-700/50 rounded-lg p-4 flex gap-3">
-                                                <AlertTriangle className="w-5 h-5 text-amber-500 flex-shrink-0 mt-0.5" />
-                                                <div className="text-sm text-amber-300">
-                                                    <p className="font-semibold mb-1">Important Notice</p>
-                                                    <p>All people covered by this ticket must present themselves together at the gate. If you need to attend separately, please purchase individual tickets instead.</p>
-                                                </div>
-                                            </div>
-                                        )}
-                                        
-                                        {/* Customer Info */}
+                            {/* Customer Info */}
+                             <Card className="bg-stone-900 border-stone-800">
+                                 <CardHeader>
+                                     <CardTitle className="text-white flex items-center gap-2">
+                                         <Users className="w-5 h-5 text-green-500" />
+                                         Ticket Details
+                                     </CardTitle>
+                                 </CardHeader>
+                                 <CardContent>
+                                     <form onSubmit={handleSubmit} className="space-y-6">
+                                         {/* Customer Info */}
                                         <div className="grid md:grid-cols-2 gap-4">
                                             <div>
                                                 <Label htmlFor="name" className="text-stone-300">Full Name</Label>
