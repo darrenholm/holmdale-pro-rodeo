@@ -97,20 +97,30 @@ Deno.serve(async (req) => {
       });
       event = await eventResponse.json();
       
-      // Increment tickets_sold on the event
-      const totalTickets = (ticketOrder.quantity_adult || 0) + (ticketOrder.quantity_child || 0);
-      const currentTicketsSold = Number(event.tickets_sold) || 0;
-      const newTicketsSold = currentTicketsSold + totalTickets;
-      console.log(`Updating tickets_sold from ${currentTicketsSold} to ${newTicketsSold} (adding ${totalTickets})`);
+      // Decrement available tickets using the new endpoint
+      const decrementBody = {
+        quantity_adult: ticketOrder.ticket_type === 'general' ? (ticketOrder.quantity_adult || 0) : 0,
+        quantity_child: ticketOrder.ticket_type === 'child' ? (ticketOrder.quantity_child || 0) : 0,
+        quantity_family: ticketOrder.ticket_type === 'family' ? 1 : 0
+      };
       
-      await fetch(`https://rodeo-fresh-production-7348.up.railway.app/api/events/${ticketOrder.event_id}`, {
-        method: 'PATCH',
+      console.log(`Decrementing tickets for event ${ticketOrder.event_id}:`, decrementBody);
+      
+      const decrementResponse = await fetch(`https://rodeo-fresh-production-7348.up.railway.app/api/events/${ticketOrder.event_id}/decrement-tickets`, {
+        method: 'POST',
         headers: {
           'Authorization': `Bearer ${railwayToken}`,
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ tickets_sold: newTicketsSold })
+        body: JSON.stringify(decrementBody)
       });
+      
+      if (decrementResponse.ok) {
+        const updatedEvent = await decrementResponse.json();
+        console.log('Tickets decremented successfully:', updatedEvent);
+      } else {
+        console.error('Failed to decrement tickets:', await decrementResponse.text());
+      }
     } catch (e) {
       console.log('Event not found in Railway, using defaults');
       event = {
