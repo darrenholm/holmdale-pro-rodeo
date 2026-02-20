@@ -1,10 +1,16 @@
 Deno.serve(async (req) => {
     try {
       const body = await req.json();
-      const { ticketType, quantity, eventId, customerEmail, customerName, customerPhone } = body;
+      const { tickets, eventId, customerEmail, customerName, customerPhone } = body;
 
-      if (!ticketType || !quantity || !eventId) {
+      if (!tickets || !eventId || !customerEmail || !customerName) {
         return Response.json({ error: 'Missing required fields' }, { status: 400 });
+      }
+
+      // Calculate total quantities and validate
+      const totalQuantity = (tickets.general || 0) + (tickets.child || 0) + (tickets.family || 0);
+      if (totalQuantity === 0) {
+        return Response.json({ error: 'No tickets selected' }, { status: 400 });
       }
 
       // Authenticate with Railway backend
