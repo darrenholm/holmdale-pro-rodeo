@@ -14,42 +14,20 @@ export default function UpdatePrices() {
         setSuccess(false);
         
         try {
-            // Get events
-            const eventsResult = await railwayAuth.callWithAuth('getEventsFromRailway');
-            const events = eventsResult?.data || [];
-            
-            console.log('Events fetched:', events);
-            
-            // Update Saturday and Sunday events
             const token = localStorage.getItem('railway_auth_token');
             
             if (!token) {
-                throw new Error('No authentication token found. Please log in.');
+                throw new Error('No authentication token found. Please refresh the page.');
             }
             
-            let updatedCount = 0;
-            for (const event of events) {
-                const eventName = event.name || event.title || '';
-                console.log('Checking event:', eventName, 'ID:', event.id);
-                
-                if (eventName.includes('Saturday') || eventName.includes('Sunday')) {
-                    console.log('Updating event:', eventName);
-                    const result = await base44.functions.invoke('updateEventRailway', {
-                        token,
-                        eventId: event.id,
-                        general_price: 30,
-                        child_price: 10,
-                        family_price: 70
-                    });
-                    console.log('Update result:', result);
-                    updatedCount++;
-                }
-            }
+            const result = await base44.functions.invoke('fixEventPrices', { token });
+            console.log('Update result:', result);
             
-            if (updatedCount === 0) {
-                alert('No Saturday or Sunday events found to update');
-            } else {
+            if (result.data?.success) {
                 setSuccess(true);
+                setTimeout(() => window.location.reload(), 2000);
+            } else {
+                throw new Error(result.data?.error || 'Update failed');
             }
         } catch (error) {
             console.error('Update error:', error);
