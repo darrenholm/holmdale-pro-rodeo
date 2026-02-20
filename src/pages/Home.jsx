@@ -12,9 +12,15 @@ export default function Home() {
     const { data: events = [], isLoading } = useQuery({
         queryKey: ['events'],
         queryFn: async () => {
-            const result = await railwayAuth.callWithAuth('getEventsFromRailway');
-            return result.data || [];
-        }
+            try {
+                const result = await railwayAuth.callWithAuth('getEventsFromRailway');
+                return result.data || [];
+            } catch (error) {
+                console.error('Failed to fetch events:', error);
+                return [];
+            }
+        },
+        retry: 1
     });
     
     const featuredEvent = events.find(e => e.is_featured) || events[0];

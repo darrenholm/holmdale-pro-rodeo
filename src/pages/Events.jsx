@@ -13,12 +13,18 @@ import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 
 export default function Events() {
-    const { data: events = [], isLoading } = useQuery({
+    const { data: events = [], isLoading, error } = useQuery({
         queryKey: ['events'],
         queryFn: async () => {
-            const result = await railwayAuth.callWithAuth('getEventsFromRailway');
-            return result.data || [];
-        }
+            try {
+                const result = await railwayAuth.callWithAuth('getEventsFromRailway');
+                return result.data || [];
+            } catch (error) {
+                console.error('Failed to fetch events:', error);
+                return [];
+            }
+        },
+        retry: 1
     });
     
     return (
