@@ -43,30 +43,25 @@ Deno.serve(async (req) => {
       return Response.json({ error: 'Event not found' }, { status: 404 });
     }
 
-    // Fetch tier pricing from Railway endpoint
-    const tierResponse = await fetch(`https://rodeo-fresh-production-7348.up.railway.app/api/events/${eventId}/current-tier`, {
-      headers: {
-        'Authorization': `Bearer ${railwayToken}`
-      }
-    });
-
-    if (!tierResponse.ok) {
-      console.error('Failed to fetch tier data:', await tierResponse.text());
-      return Response.json({ error: 'Failed to fetch tier pricing' }, { status: 500 });
+    // Calculate tier pricing from event data
+    const ticketsSold = event.tickets_sold || 0;
+    let currentTier = 1;
+    if (ticketsSold >= event.tier2_quantity) {
+      currentTier = 3;
+    } else if (ticketsSold >= event.tier1_quantity) {
+      currentTier = 2;
     }
 
-    const tierData = await tierResponse.json();
     let unitPrice = 0;
-    const currentTier = tierData.currentTier;
 
     if (ticketType === 'general') {
-      unitPrice = tierData.adultPrice;
+      unitPrice = parseFloat(event[`tier${currentTier}_adult_price`] || '30');
       console.log(`Adult ticket - Tier ${currentTier}, Price: $${unitPrice}`);
     } else if (ticketType === 'child') {
-      unitPrice = tierData.childPrice;
+      unitPrice = 10;
       console.log(`Child ticket fixed price: $${unitPrice}`);
     } else if (ticketType === 'family') {
-      unitPrice = tierData.familyPrice;
+      unitPrice = parseFloat(event[`tier${currentTier}_family_price`] || '70');
       console.log(`Family ticket - Tier ${currentTier}, Price: $${unitPrice}`);
     }
     
