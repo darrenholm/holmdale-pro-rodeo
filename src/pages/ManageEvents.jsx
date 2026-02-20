@@ -25,8 +25,8 @@ export default function ManageEvents() {
         description: '',
         image_url: '',
         general_price: 30,
-        child_price: 20,
-        family_price: 100
+        child_price: 10,
+        family_price: 70
     });
 
     const { data: events, isLoading } = useQuery({
@@ -59,8 +59,8 @@ export default function ManageEvents() {
                 description: '',
                 image_url: '',
                 general_price: 30,
-                child_price: 20,
-                family_price: 100
+                child_price: 10,
+                family_price: 70
             });
         }
     });
@@ -87,8 +87,8 @@ export default function ManageEvents() {
                 description: '',
                 image_url: '',
                 general_price: 30,
-                child_price: 20,
-                family_price: 100
+                child_price: 10,
+                family_price: 70
             });
         }
     });
@@ -112,8 +112,8 @@ export default function ManageEvents() {
             description: event.description,
             image_url: event.image_url || '',
             general_price: event.general_price || 30,
-            child_price: event.child_price || 20,
-            family_price: event.family_price || 100
+            child_price: event.child_price || 10,
+            family_price: event.family_price || 70
         });
         setShowForm(true);
     };
@@ -249,7 +249,7 @@ export default function ManageEvents() {
                                                 value={formData.child_price}
                                                 onChange={(e) => setFormData({ ...formData, child_price: Number(e.target.value) })}
                                                 className="mt-2 bg-stone-800 border-stone-700 text-white"
-                                                placeholder="20"
+                                                placeholder="10"
                                             />
                                         </div>
                                         <div>
@@ -259,7 +259,7 @@ export default function ManageEvents() {
                                                 value={formData.family_price}
                                                 onChange={(e) => setFormData({ ...formData, family_price: Number(e.target.value) })}
                                                 className="mt-2 bg-stone-800 border-stone-700 text-white"
-                                                placeholder="100"
+                                                placeholder="70"
                                             />
                                         </div>
                                     </div>
