@@ -299,7 +299,7 @@ export default function GateScan() {
       nfcAbortControllerRef.current = new AbortController();
       
       // Add event listeners BEFORE starting scan
-      ndef.addEventListener('reading', (event) => {
+      ndef.addEventListener('reading', async (event) => {
         console.log('NFC tag detected:', event.serialNumber);
         if (event.serialNumber) {
           const tagId = event.serialNumber;
@@ -308,9 +308,10 @@ export default function GateScan() {
             // Handle wristband scanning
             if (!wristbandsScanned.includes(tagId)) {
               stopNFCScan();
-              handleWristbandScan(null, tagId);
-              // Restart scan for next wristband
-              if (wristbandsScanned.length + 1 < totalWristbandsNeeded) {
+              await handleWristbandScan(null, tagId);
+              // Restart scan for next wristband - check if more needed
+              const newScannedCount = wristbandsScanned.length + 1;
+              if (newScannedCount < totalWristbandsNeeded) {
                 setTimeout(() => startNFCScan(), 500);
               }
             }
