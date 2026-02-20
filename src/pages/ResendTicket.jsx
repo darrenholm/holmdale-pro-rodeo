@@ -38,7 +38,7 @@ export default function ResendTicket() {
         setSuccessId(null);
         
         try {
-            await base44.functions.invoke('handleTicketPaymentSuccess', {
+            await base44.functions.invoke('resendTicketEmail', {
                 confirmation_code: ticket.confirmation_code
             });
             setSuccessId(ticket.id);
