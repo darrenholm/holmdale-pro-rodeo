@@ -89,6 +89,19 @@ Deno.serve(async (req) => {
       body: JSON.stringify({ status: 'confirmed' })
     });
 
+    // Increment tickets_sold on the event
+    const totalTickets = (ticketOrder.quantity_adult || 0) + (ticketOrder.quantity_child || 0);
+    console.log(`Incrementing tickets_sold by ${totalTickets} for event ${ticketOrder.event_id}`);
+    
+    await fetch(`https://rodeo-fresh-production-7348.up.railway.app/api/events/${ticketOrder.event_id}/increment-tickets`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${railwayToken}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ increment: totalTickets })
+    });
+
     // Get event details from Railway
     let event;
     try {
