@@ -634,21 +634,21 @@ export default function BuyTickets() {
                                         </div>
                                         
                                         <Button 
-                                            type="submit"
-                                            disabled={createCheckout.isPending || ticketAvailable === 0}
-                                            className="w-full bg-green-500 hover:bg-green-600 text-stone-900 font-semibold py-6 text-lg"
-                                        >
-                                            {createCheckout.isPending ? (
-                                                <>
-                                                    <Loader2 className="w-5 h-5 mr-2 animate-spin" />
-                                                    Redirecting to Checkout...
-                                                </>
-                                            ) : (
-                                                <>
-                                                    Complete Purchase - ${totalPrice.toFixed(2)}
-                                                </>
-                                            )}
-                                        </Button>
+                                                             type="submit"
+                                                             disabled={createCheckout.isPending || totalQuantity === 0}
+                                                             className="w-full bg-green-500 hover:bg-green-600 text-stone-900 font-semibold py-6 text-lg"
+                                                         >
+                                                             {createCheckout.isPending ? (
+                                                                 <>
+                                                                     <Loader2 className="w-5 h-5 mr-2 animate-spin" />
+                                                                     Redirecting to Checkout...
+                                                                 </>
+                                                             ) : (
+                                                                 <>
+                                                                     Complete Purchase - ${totalPrice.toFixed(2)}
+                                                                 </>
+                                                             )}
+                                                         </Button>
                                     </form>
                                 </CardContent>
                             </Card>
