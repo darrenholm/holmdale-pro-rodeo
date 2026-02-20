@@ -18,25 +18,42 @@ export default function UpdatePrices() {
             const eventsResult = await railwayAuth.callWithAuth('getEventsFromRailway');
             const events = eventsResult?.data || [];
             
+            console.log('Events fetched:', events);
+            
             // Update Saturday and Sunday events
             const token = localStorage.getItem('railway_auth_token');
+            
+            if (!token) {
+                throw new Error('No authentication token found. Please log in.');
+            }
+            
+            let updatedCount = 0;
             for (const event of events) {
                 const eventName = event.name || event.title || '';
+                console.log('Checking event:', eventName, 'ID:', event.id);
+                
                 if (eventName.includes('Saturday') || eventName.includes('Sunday')) {
-                    await base44.functions.invoke('updateEventRailway', {
+                    console.log('Updating event:', eventName);
+                    const result = await base44.functions.invoke('updateEventRailway', {
                         token,
                         eventId: event.id,
                         general_price: 30,
                         child_price: 20,
                         family_price: 100
                     });
+                    console.log('Update result:', result);
+                    updatedCount++;
                 }
             }
             
-            setSuccess(true);
+            if (updatedCount === 0) {
+                alert('No Saturday or Sunday events found to update');
+            } else {
+                setSuccess(true);
+            }
         } catch (error) {
             console.error('Update error:', error);
-            alert('Failed to update prices: ' + error.message);
+            alert('Failed to update prices: ' + (error.response?.data?.error || error.message));
         } finally {
             setUpdating(false);
         }
