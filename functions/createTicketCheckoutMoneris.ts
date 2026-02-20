@@ -43,44 +43,31 @@ Deno.serve(async (req) => {
       return Response.json({ error: 'Event not found' }, { status: 404 });
     }
 
-    // Calculate price with tiered pricing
-    let unitPrice = 0;
-    let currentTier = 1;
-    
-    if (ticketType === 'general') {
-      // Determine current tier based on tickets sold
-      const ticketsSold = event.tickets_sold || 0;
-      
-      if (ticketsSold < 1000) {
-        currentTier = 1;
-        unitPrice = 30;
-      } else if (ticketsSold < 2000) {
-        currentTier = 2;
-        unitPrice = 35;
-      } else {
-        currentTier = 3;
-        unitPrice = 40;
+    // Fetch tier pricing from Railway endpoint
+    const tierResponse = await fetch(`https://rodeo-fresh-production-7348.up.railway.app/api/events/${eventId}/current-tier`, {
+      headers: {
+        'Authorization': `Bearer ${railwayToken}`
       }
-      
-      console.log(`Tickets sold: ${ticketsSold}, Current tier: ${currentTier}, Price: $${unitPrice}`);
+    });
+
+    if (!tierResponse.ok) {
+      console.error('Failed to fetch tier data:', await tierResponse.text());
+      return Response.json({ error: 'Failed to fetch tier pricing' }, { status: 500 });
+    }
+
+    const tierData = await tierResponse.json();
+    let unitPrice = 0;
+    const currentTier = tierData.currentTier;
+
+    if (ticketType === 'general') {
+      unitPrice = tierData.adultPrice;
+      console.log(`Adult ticket - Tier ${currentTier}, Price: $${unitPrice}`);
     } else if (ticketType === 'child') {
-      // Child tickets are FIXED at $10 (not tiered)
-      unitPrice = 10;
+      unitPrice = tierData.childPrice;
       console.log(`Child ticket fixed price: $${unitPrice}`);
     } else if (ticketType === 'family') {
-      // Family tickets use tier pricing
-      const ticketsSold = event.tickets_sold || 0;
-      if (ticketsSold < 1000) {
-        currentTier = 1;
-        unitPrice = 70;
-      } else if (ticketsSold < 2000) {
-        currentTier = 2;
-        unitPrice = 80;
-      } else {
-        currentTier = 3;
-        unitPrice = 90;
-      }
-      console.log(`Tickets sold: ${ticketsSold}, Current tier: ${currentTier}, Family price: $${unitPrice}`);
+      unitPrice = tierData.familyPrice;
+      console.log(`Family ticket - Tier ${currentTier}, Price: $${unitPrice}`);
     }
     
     if (unitPrice <= 0) {
