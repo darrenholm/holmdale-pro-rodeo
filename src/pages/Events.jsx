@@ -18,14 +18,19 @@ export default function Events() {
         queryFn: async () => {
             try {
                 const result = await railwayAuth.callWithAuth('getEventsFromRailway');
+                console.log('Events fetched:', result);
                 return result.data || [];
             } catch (error) {
                 console.error('Failed to fetch events:', error);
                 return [];
             }
         },
-        retry: 1
+        retry: 1,
+        staleTime: 0
     });
+    
+    console.log('Events page - events:', events);
+    console.log('Events page - isLoading:', isLoading);
     
     return (
         <div className="min-h-screen bg-stone-950 pt-24 pb-20 px-6">
