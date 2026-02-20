@@ -47,35 +47,40 @@ Deno.serve(async (req) => {
     let unitPrice = 0;
     let currentTier = 1;
     
-    if (ticketType === 'general' || ticketType === 'child') {
+    if (ticketType === 'general') {
       // Determine current tier based on tickets sold
       const ticketsSold = event.tickets_sold || 0;
       
       if (ticketsSold < 1000) {
         currentTier = 1;
-        unitPrice = ticketType === 'general' ? 30 : 15; // Tier 1: $30 adult, $15 child
+        unitPrice = 30;
       } else if (ticketsSold < 2000) {
         currentTier = 2;
-        unitPrice = ticketType === 'general' ? 35 : 17.50; // Tier 2: $35 adult, $17.50 child
+        unitPrice = 35;
       } else {
         currentTier = 3;
-        unitPrice = ticketType === 'general' ? 40 : 20; // Tier 3: $40 adult, $20 child
+        unitPrice = 40;
       }
       
       console.log(`Tickets sold: ${ticketsSold}, Current tier: ${currentTier}, Price: $${unitPrice}`);
+    } else if (ticketType === 'child') {
+      // Child tickets are FIXED at $10 (not tiered)
+      unitPrice = 10;
+      console.log(`Child ticket fixed price: $${unitPrice}`);
     } else if (ticketType === 'family') {
-      // Family tickets use tier 1 pricing as base
+      // Family tickets use tier pricing
       const ticketsSold = event.tickets_sold || 0;
       if (ticketsSold < 1000) {
         currentTier = 1;
-        unitPrice = parseFloat(event.family_price) || 80;
+        unitPrice = 70;
       } else if (ticketsSold < 2000) {
         currentTier = 2;
-        unitPrice = parseFloat(event.family_price) || 90;
+        unitPrice = 80;
       } else {
         currentTier = 3;
-        unitPrice = parseFloat(event.family_price) || 100;
+        unitPrice = 90;
       }
+      console.log(`Tickets sold: ${ticketsSold}, Current tier: ${currentTier}, Family price: $${unitPrice}`);
     }
     
     if (unitPrice <= 0) {
