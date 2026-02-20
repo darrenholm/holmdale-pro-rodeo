@@ -133,7 +133,7 @@ export default function Events() {
                                                     <div className="mb-4">
                                                         <span className="text-stone-500 text-sm block mb-1">{event.id === '696b7bdc81676e7ff80617a1' ? 'Entry Fee' : 'Starting at'}</span>
                                                         <span className="text-3xl font-bold text-green-400">
-                                                            ${event.id === '696b7bdc81676e7ff80617a1' ? '0' : (event.general_price || 25)}
+                                                            ${event.id === '696b7bdc81676e7ff80617a1' ? '0' : (event.general_price || 30)}
                                                         </span>
                                                     </div>
                                                     
