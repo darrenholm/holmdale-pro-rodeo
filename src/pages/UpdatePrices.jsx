@@ -38,8 +38,8 @@ export default function UpdatePrices() {
                         token,
                         eventId: event.id,
                         general_price: 30,
-                        child_price: 20,
-                        family_price: 100
+                        child_price: 10,
+                        family_price: 70
                     });
                     console.log('Update result:', result);
                     updatedCount++;
