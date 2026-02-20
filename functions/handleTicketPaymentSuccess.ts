@@ -34,29 +34,42 @@ Deno.serve(async (req) => {
     const authData = await loginResponse.json();
     const railwayToken = authData.token;
 
-    // Find and update the ticket order in Railway
-    const ticketUrl = `https://rodeo-fresh-production-7348.up.railway.app/api/ticket-orders/by-confirmation/${confirmation_code}`;
-    console.log('Looking up ticket at:', ticketUrl);
+    // Find ticket order in Railway - get all orders and filter by confirmation code
+    const ticketsUrl = 'https://rodeo-fresh-production-7348.up.railway.app/api/ticket-orders';
+    console.log('Fetching all ticket orders from:', ticketsUrl);
     
-    const ticketResponse = await fetch(ticketUrl, {
+    const ticketsResponse = await fetch(ticketsUrl, {
       headers: { 'Authorization': `Bearer ${railwayToken}` }
     });
 
-    console.log('Ticket lookup response status:', ticketResponse.status);
+    console.log('Ticket orders fetch status:', ticketsResponse.status);
 
-    if (!ticketResponse.ok) {
-      const errorText = await ticketResponse.text();
-      console.error('ERROR: Ticket order not found');
-      console.error('Response status:', ticketResponse.status);
+    if (!ticketsResponse.ok) {
+      const errorText = await ticketsResponse.text();
+      console.error('ERROR: Failed to fetch ticket orders');
+      console.error('Response status:', ticketsResponse.status);
       console.error('Response body:', errorText);
+      return Response.json({ 
+        error: 'Failed to fetch ticket orders', 
+        details: errorText 
+      }, { status: 500 });
+    }
+
+    const allTicketOrders = await ticketsResponse.json();
+    console.log(`Found ${allTicketOrders.length} total ticket orders`);
+    
+    // Find the order with matching confirmation code
+    const ticketOrder = allTicketOrders.find(order => order.confirmation_code === confirmation_code);
+    
+    if (!ticketOrder) {
+      console.error('ERROR: No ticket order found with confirmation code:', confirmation_code);
+      console.log('Available confirmation codes:', allTicketOrders.map(o => o.confirmation_code).slice(0, 10));
       return Response.json({ 
         error: 'Ticket order not found', 
         confirmation_code,
-        details: errorText 
+        searched_orders: allTicketOrders.length 
       }, { status: 404 });
     }
-
-    const ticketOrder = await ticketResponse.json();
     console.log('Found ticket order:', {
       id: ticketOrder.id,
       confirmation_code: ticketOrder.confirmation_code,
