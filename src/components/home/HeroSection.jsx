@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Button } from "@/components/ui/button";
 import { ChevronDown, Calendar, MapPin } from 'lucide-react';
@@ -7,6 +7,30 @@ import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 
 export default function HeroSection({ featuredEvent }) {
+  const [countdown, setCountdown] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 });
+
+  useEffect(() => {
+    const eventDate = new Date('2026-07-31T12:00:00');
+    
+    const updateCountdown = () => {
+      const now = new Date();
+      const diff = eventDate - now;
+      
+      if (diff > 0) {
+        setCountdown({
+          days: Math.floor(diff / (1000 * 60 * 60 * 24)),
+          hours: Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)),
+          minutes: Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60)),
+          seconds: Math.floor((diff % (1000 * 60)) / 1000)
+        });
+      }
+    };
+    
+    updateCountdown();
+    const interval = setInterval(updateCountdown, 1000);
+    
+    return () => clearInterval(interval);
+  }, []);
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
             {/* Background Image */}
@@ -70,24 +94,48 @@ export default function HeroSection({ featuredEvent }) {
 
         </motion.p>
                 
-                {featuredEvent &&
-        <motion.div
-          className="flex flex-wrap items-center justify-center gap-4 text-stone-400 mb-10"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.8, delay: 0.3 }}>
-
-                        <div className="flex items-center gap-2">
-                            <Calendar className="w-5 h-5 text-green-500" />
-                            <span className="bg-slate-950 text-[#ffffff] mx-3 px-3 py-1 font-bold opacity-100 rounded-[10px]">July 31 - August 2, 2026</span>
-                        </div>
-                        <span className="hidden sm:inline">•</span>
-                        <div className="flex items-center gap-2">
-                            <MapPin className="w-5 h-5 text-green-500" />
-                            <span className="bg-slate-950 text-[#ffffff] px-4 py-1 font-bold rounded-[10px]">588 Sideroad 10 S., Walkerton, ON</span>
-                        </div>
+                {featuredEvent && (
+                  <>
+                    <motion.div
+                      className="flex flex-wrap items-center justify-center gap-4 text-stone-400 mb-8"
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      transition={{ duration: 0.8, delay: 0.3 }}>
+                      <div className="flex items-center gap-2">
+                        <Calendar className="w-5 h-5 text-green-500" />
+                        <span className="bg-slate-950 text-[#ffffff] mx-3 px-3 py-1 font-bold opacity-100 rounded-[10px]">July 31 - August 2, 2026</span>
+                      </div>
+                      <span className="hidden sm:inline">•</span>
+                      <div className="flex items-center gap-2">
+                        <MapPin className="w-5 h-5 text-green-500" />
+                        <span className="bg-slate-950 text-[#ffffff] px-4 py-1 font-bold rounded-[10px]">588 Sideroad 10 S., Walkerton, ON</span>
+                      </div>
                     </motion.div>
-        }
+
+                    <motion.div
+                      className="flex justify-center gap-4 mb-10"
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      transition={{ duration: 0.8, delay: 0.4 }}>
+                      <div className="bg-stone-900/80 backdrop-blur-sm border border-green-500/30 rounded-lg p-4 text-center min-w-[80px]">
+                        <div className="text-3xl font-bold text-green-400">{countdown.days}</div>
+                        <div className="text-xs text-stone-400 uppercase mt-1">Days</div>
+                      </div>
+                      <div className="bg-stone-900/80 backdrop-blur-sm border border-green-500/30 rounded-lg p-4 text-center min-w-[80px]">
+                        <div className="text-3xl font-bold text-green-400">{countdown.hours}</div>
+                        <div className="text-xs text-stone-400 uppercase mt-1">Hours</div>
+                      </div>
+                      <div className="bg-stone-900/80 backdrop-blur-sm border border-green-500/30 rounded-lg p-4 text-center min-w-[80px]">
+                        <div className="text-3xl font-bold text-green-400">{countdown.minutes}</div>
+                        <div className="text-xs text-stone-400 uppercase mt-1">Minutes</div>
+                      </div>
+                      <div className="bg-stone-900/80 backdrop-blur-sm border border-green-500/30 rounded-lg p-4 text-center min-w-[80px]">
+                        <div className="text-3xl font-bold text-green-400">{countdown.seconds}</div>
+                        <div className="text-xs text-stone-400 uppercase mt-1">Seconds</div>
+                      </div>
+                    </motion.div>
+                  </>
+                )}
                 
                 <motion.div
           className="flex flex-col sm:flex-row gap-4 justify-center"
