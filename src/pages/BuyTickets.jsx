@@ -201,7 +201,7 @@ export default function BuyTickets() {
 
             myCheckout.startCheckout(checkoutTicket);
         }
-    }, [showCheckout, checkoutTicket]);
+    }, [showCheckout, checkoutTicket, confirmationCode]);
 
     const createCheckout = useMutation({
         mutationFn: async (checkoutData) => {
