@@ -112,8 +112,8 @@ Deno.serve(async (req) => {
       confirmation_code: ticketOrder.confirmation_code,
       event_id: ticketOrder.event_id,
       ticket_type: ticketOrder.ticket_type,
-      quantityAdult: ticketOrder.quantityAdult,
-      quantityChild: ticketOrder.quantityChild,
+      quantity_adult: ticketOrder.quantity_adult,
+      quantity_child: ticketOrder.quantity_child,
       customer_email: ticketOrder.customer_email
     });
     
@@ -182,7 +182,7 @@ Deno.serve(async (req) => {
                 </tr>
                 <tr>
                   <td class="label">Quantity:</td>
-                  <td>${ticketOrder.quantityAdult || 0} Adult${(ticketOrder.quantityAdult || 0) !== 1 ? 's' : ''}${ticketOrder.quantityChild ? `, ${ticketOrder.quantityChild} Child${ticketOrder.quantityChild !== 1 ? 'ren' : ''}` : ''}</td>
+                  <td>${ticketOrder.quantity_adult || 0} Adult${(ticketOrder.quantity_adult || 0) !== 1 ? 's' : ''}${ticketOrder.quantity_child ? `, ${ticketOrder.quantity_child} Child${ticketOrder.quantity_child !== 1 ? 'ren' : ''}` : ''}</td>
                 </tr>
               </table>
             </div>
