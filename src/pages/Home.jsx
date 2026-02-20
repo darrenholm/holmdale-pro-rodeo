@@ -12,9 +12,8 @@ export default function Home() {
     const { data: events = [], isLoading } = useQuery({
         queryKey: ['events'],
         queryFn: async () => {
-            const token = await railwayAuth.getToken();
-            const response = await base44.functions.invoke('getEventsFromRailway', { token });
-            return response.data?.data || [];
+            const result = await railwayAuth.callWithAuth('getEventsFromRailway');
+            return result.data || [];
         }
     });
     
