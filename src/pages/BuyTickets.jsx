@@ -90,6 +90,15 @@ export default function BuyTickets() {
                     throw new Error(`Event not found: ${eventId}`);
                 }
                 console.log('[BuyTickets] Found event:', foundEvent.title);
+                
+                // Fetch tier pricing from Railway
+                const tierResponse = await fetch(`https://rodeo-fresh-production-7348.up.railway.app/api/events/${eventId}/current-tier`);
+                if (tierResponse.ok) {
+                    const tierData = await tierResponse.json();
+                    console.log('[BuyTickets] Tier data:', tierData);
+                    foundEvent.tierData = tierData;
+                }
+                
                 return foundEvent;
             } catch (error) {
                 console.error('[BuyTickets] Error fetching event:', error);
@@ -192,31 +201,24 @@ export default function BuyTickets() {
     
     const selectedTicketType = ticketTypes.find(t => t.id === selectedType);
     
-    // Calculate tier-based pricing
-    const ticketsSold = Number(event?.tickets_sold) || 0;
-    let currentTier = 1;
-    let ticketsRemaining = 3000;
+    // Calculate tier-based pricing from Railway
+    const tierData = event?.tierData;
+    const currentTier = tierData?.currentTier || 1;
+    const ticketsSold = tierData?.ticketsSold || 0;
     
-    if (ticketsSold < 1000) {
-        currentTier = 1;
-        ticketsRemaining = 1000 - ticketsSold;
-    } else if (ticketsSold < 2000) {
-        currentTier = 2;
-        ticketsRemaining = 2000 - ticketsSold;
-    } else if (ticketsSold < 3000) {
-        currentTier = 3;
-        ticketsRemaining = 3000 - ticketsSold;
-    } else {
-        ticketsRemaining = 0;
+    let ticketsRemaining = 3000;
+    if (tierData?.tiers) {
+        const remainingInCurrentTier = tierData.tiers[`tier${currentTier}`]?.quantity - tierData.tiers[`tier${currentTier}`]?.sold || 0;
+        ticketsRemaining = Math.max(0, remainingInCurrentTier);
     }
     
     let ticketPrice = 0;
     if (selectedType === 'general') {
-        ticketPrice = currentTier === 1 ? 30 : currentTier === 2 ? 35 : 40;
+        ticketPrice = tierData?.adultPrice || (currentTier === 1 ? 30 : currentTier === 2 ? 35 : 40);
     } else if (selectedType === 'child') {
-        ticketPrice = 10; // Fixed price, not tiered
+        ticketPrice = tierData?.childPrice || 10;
     } else if (selectedType === 'family') {
-        ticketPrice = currentTier === 1 ? 70 : currentTier === 2 ? 80 : 90;
+        ticketPrice = tierData?.familyPrice || (currentTier === 1 ? 70 : currentTier === 2 ? 80 : 90);
     }
     
     const ticketAvailable = ticketsRemaining;
@@ -467,11 +469,11 @@ export default function BuyTickets() {
                                         
                                         let price = 0;
                                         if (type.id === 'general') {
-                                            price = currentTier === 1 ? 30 : currentTier === 2 ? 35 : 40;
+                                            price = tierData?.adultPrice || (currentTier === 1 ? 30 : currentTier === 2 ? 35 : 40);
                                         } else if (type.id === 'child') {
-                                            price = 10; // Fixed price, not tiered
+                                            price = tierData?.childPrice || 10;
                                         } else if (type.id === 'family') {
-                                            price = currentTier === 1 ? 70 : currentTier === 2 ? 80 : 90;
+                                            price = tierData?.familyPrice || (currentTier === 1 ? 70 : currentTier === 2 ? 80 : 90);
                                         }
                                         
                                         return (
