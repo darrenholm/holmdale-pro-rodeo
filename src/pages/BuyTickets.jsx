@@ -206,11 +206,23 @@ export default function BuyTickets() {
     const tierData = event?.tierData;
     const currentTier = tierData?.currentTier || 1;
     const ticketsSold = tierData?.ticketsSold || 0;
-    
-    let ticketsRemaining = 3000;
+
+    // Calculate remaining in CURRENT tier only
+    let ticketsRemaining = 1000;
+    let nextTierPrice = null;
+    let nextTierAvailable = null;
+
     if (tierData?.tiers) {
-        const remainingInCurrentTier = tierData.tiers[`tier${currentTier}`]?.quantity - tierData.tiers[`tier${currentTier}`]?.sold || 0;
-        ticketsRemaining = Math.max(0, remainingInCurrentTier);
+        const currentTierData = tierData.tiers[`tier${currentTier}`];
+        ticketsRemaining = Math.max(0, (currentTierData?.quantity || 1000) - (currentTierData?.sold || 0));
+
+        // Get next tier info if available
+        if (currentTier < 3) {
+            const nextTier = currentTier + 1;
+            const nextTierData = tierData.tiers[`tier${nextTier}`];
+            nextTierPrice = nextTierData?.price;
+            nextTierAvailable = (nextTierData?.quantity || 1000) - (nextTierData?.sold || 0);
+        }
     }
     
     let ticketPrice = 0;
