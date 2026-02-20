@@ -16,13 +16,17 @@ import { format } from 'date-fns';
 export default function ManageEvents() {
     const queryClient = useQueryClient();
     const [showForm, setShowForm] = useState(false);
+    const [editingEvent, setEditingEvent] = useState(null);
     const [formData, setFormData] = useState({
         name: '',
         date: '',
         time: '',
         location: '',
         description: '',
-        image_url: ''
+        image_url: '',
+        general_price: 30,
+        child_price: 20,
+        family_price: 100
     });
 
     const { data: events, isLoading } = useQuery({
@@ -46,20 +50,88 @@ export default function ManageEvents() {
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['events-manage'] });
             setShowForm(false);
+            setEditingEvent(null);
             setFormData({
                 name: '',
                 date: '',
                 time: '',
                 location: '',
                 description: '',
-                image_url: ''
+                image_url: '',
+                general_price: 30,
+                child_price: 20,
+                family_price: 100
+            });
+        }
+    });
+
+    const updateEvent = useMutation({
+        mutationFn: async ({ eventId, eventData }) => {
+            const token = localStorage.getItem('railway_auth_token');
+            const response = await base44.functions.invoke('updateEventRailway', {
+                token,
+                eventId,
+                ...eventData
+            });
+            return response.data;
+        },
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['events-manage'] });
+            setShowForm(false);
+            setEditingEvent(null);
+            setFormData({
+                name: '',
+                date: '',
+                time: '',
+                location: '',
+                description: '',
+                image_url: '',
+                general_price: 30,
+                child_price: 20,
+                family_price: 100
             });
         }
     });
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        createEvent.mutate(formData);
+        if (editingEvent) {
+            updateEvent.mutate({ eventId: editingEvent.id, eventData: formData });
+        } else {
+            createEvent.mutate(formData);
+        }
+    };
+
+    const handleEdit = (event) => {
+        setEditingEvent(event);
+        setFormData({
+            name: event.name || event.title,
+            date: event.date ? event.date.split('T')[0] : '',
+            time: event.time,
+            location: event.location || event.venue,
+            description: event.description,
+            image_url: event.image_url || '',
+            general_price: event.general_price || 30,
+            child_price: event.child_price || 20,
+            family_price: event.family_price || 100
+        });
+        setShowForm(true);
+    };
+
+    const handleCancel = () => {
+        setShowForm(false);
+        setEditingEvent(null);
+        setFormData({
+            name: '',
+            date: '',
+            time: '',
+            location: '',
+            description: '',
+            image_url: '',
+            general_price: 30,
+            child_price: 20,
+            family_price: 100
+        });
     };
 
     return (
@@ -76,7 +148,7 @@ export default function ManageEvents() {
                 <div className="flex justify-between items-center mb-8">
                     <h1 className="text-3xl font-bold text-white">Manage Events</h1>
                     <Button
-                        onClick={() => setShowForm(!showForm)}
+                        onClick={() => showForm ? handleCancel() : setShowForm(true)}
                         className="bg-green-500 hover:bg-green-600 text-stone-900"
                     >
                         <Plus className="w-4 h-4 mr-2" />
@@ -87,7 +159,9 @@ export default function ManageEvents() {
                 {showForm && (
                     <Card className="bg-stone-900 border-stone-800 mb-8">
                         <CardHeader>
-                            <CardTitle className="text-white">Create New Event</CardTitle>
+                            <CardTitle className="text-white">
+                                {editingEvent ? 'Edit Event' : 'Create New Event'}
+                            </CardTitle>
                         </CardHeader>
                         <CardContent>
                             <form onSubmit={handleSubmit} className="space-y-6">
@@ -155,27 +229,63 @@ export default function ManageEvents() {
                                     />
                                 </div>
 
+                                <div>
+                                    <Label className="text-stone-300 mb-2 block">Ticket Pricing</Label>
+                                    <div className="grid md:grid-cols-3 gap-4">
+                                        <div>
+                                            <Label className="text-stone-400 text-sm">General Admission</Label>
+                                            <Input
+                                                type="number"
+                                                value={formData.general_price}
+                                                onChange={(e) => setFormData({ ...formData, general_price: Number(e.target.value) })}
+                                                className="mt-2 bg-stone-800 border-stone-700 text-white"
+                                                placeholder="30"
+                                            />
+                                        </div>
+                                        <div>
+                                            <Label className="text-stone-400 text-sm">Child Ticket</Label>
+                                            <Input
+                                                type="number"
+                                                value={formData.child_price}
+                                                onChange={(e) => setFormData({ ...formData, child_price: Number(e.target.value) })}
+                                                className="mt-2 bg-stone-800 border-stone-700 text-white"
+                                                placeholder="20"
+                                            />
+                                        </div>
+                                        <div>
+                                            <Label className="text-stone-400 text-sm">Family Package</Label>
+                                            <Input
+                                                type="number"
+                                                value={formData.family_price}
+                                                onChange={(e) => setFormData({ ...formData, family_price: Number(e.target.value) })}
+                                                className="mt-2 bg-stone-800 border-stone-700 text-white"
+                                                placeholder="100"
+                                            />
+                                        </div>
+                                    </div>
+                                </div>
+
                                 <div className="bg-green-500/10 border border-green-500/30 rounded-lg p-4">
                                     <p className="text-stone-300 text-sm">
                                         <CheckCircle className="w-4 h-4 text-green-500 inline mr-2" />
-                                        Tiered pricing is automatic: Tier 1 ($30), Tier 2 ($35), Tier 3 ($40) with 1000 tickets each
+                                        Tiered pricing is automatic: Tier 1 starts at your base price, then increases by $5 per tier (1000 tickets each)
                                     </p>
                                 </div>
 
                                 <Button
                                     type="submit"
-                                    disabled={createEvent.isPending}
+                                    disabled={createEvent.isPending || updateEvent.isPending}
                                     className="w-full bg-green-500 hover:bg-green-600 text-stone-900"
                                 >
-                                    {createEvent.isPending ? (
+                                    {(createEvent.isPending || updateEvent.isPending) ? (
                                         <>
                                             <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                                            Creating Event...
+                                            {editingEvent ? 'Updating...' : 'Creating...'}
                                         </>
                                     ) : (
                                         <>
-                                            <Plus className="w-4 h-4 mr-2" />
-                                            Create Event
+                                            {editingEvent ? <Edit className="w-4 h-4 mr-2" /> : <Plus className="w-4 h-4 mr-2" />}
+                                            {editingEvent ? 'Update Event' : 'Create Event'}
                                         </>
                                     )}
                                 </Button>
@@ -214,6 +324,9 @@ export default function ManageEvents() {
                                                 {format(new Date(event.date), 'MMMM d, yyyy')} at {event.time}
                                             </div>
                                             <p className="text-stone-500">{event.location}</p>
+                                            <p className="text-green-400 font-semibold">
+                                                Starting at ${event.general_price || 30}
+                                            </p>
                                         </div>
                                         <div className="flex gap-2 mb-4">
                                             <Badge className="bg-green-500/20 text-green-400">
@@ -223,9 +336,20 @@ export default function ManageEvents() {
                                                 {ticketsRemaining} tickets left
                                             </Badge>
                                         </div>
-                                        <p className="text-stone-500 text-xs">
-                                            {ticketsSold} tickets sold
-                                        </p>
+                                        <div className="flex justify-between items-center">
+                                            <p className="text-stone-500 text-xs">
+                                                {ticketsSold} tickets sold
+                                            </p>
+                                            <Button
+                                                size="sm"
+                                                variant="outline"
+                                                onClick={() => handleEdit(event)}
+                                                className="border-green-500/50 text-green-400 hover:bg-green-500/10"
+                                            >
+                                                <Edit className="w-3 h-3 mr-1" />
+                                                Edit
+                                            </Button>
+                                        </div>
                                     </CardContent>
                                 </Card>
                             );
