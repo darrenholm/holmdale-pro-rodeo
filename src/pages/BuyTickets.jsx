@@ -675,28 +675,45 @@ export default function BuyTickets() {
                                     <CardTitle className="text-white">Order Summary</CardTitle>
                                 </CardHeader>
                                 <CardContent className="space-y-4">
-                                    <div className="flex justify-between text-stone-300">
-                                        <span>{selectedTicketType?.name}</span>
-                                        <span>${ticketPrice.toFixed(2)}</span>
-                                    </div>
-                                    <div className="flex justify-between text-stone-300">
-                                        <span>Quantity</span>
-                                        <span>× {quantity}</span>
-                                    </div>
-                                    <div className="flex justify-between text-stone-300">
-                                        <span>Subtotal</span>
-                                        <span>${subtotal.toFixed(2)}</span>
-                                    </div>
-                                    <div className="flex justify-between text-stone-300">
-                                        <span>HST (13%)</span>
-                                        <span>${hst.toFixed(2)}</span>
-                                    </div>
-                                    <div className="border-t border-stone-800 pt-4">
-                                        <div className="flex justify-between text-lg font-bold">
-                                            <span className="text-white">Total</span>
-                                            <span className="text-green-400">${totalPrice.toFixed(2)}</span>
+                                    {quantities.general > 0 && (
+                                        <div className="flex justify-between text-stone-300">
+                                            <span>{quantities.general}x General Admission</span>
+                                            <span>${(quantities.general * adultPrice).toFixed(2)}</span>
                                         </div>
-                                    </div>
+                                    )}
+                                    {quantities.child > 0 && (
+                                        <div className="flex justify-between text-stone-300">
+                                            <span>{quantities.child}x Child Tickets</span>
+                                            <span>${(quantities.child * childPrice).toFixed(2)}</span>
+                                        </div>
+                                    )}
+                                    {quantities.family > 0 && (
+                                        <div className="flex justify-between text-stone-300">
+                                            <span>{quantities.family}x Family Packages</span>
+                                            <span>${(quantities.family * familyPrice).toFixed(2)}</span>
+                                        </div>
+                                    )}
+                                    {totalQuantity > 0 && (
+                                        <>
+                                            <div className="flex justify-between text-stone-300">
+                                                <span>Subtotal</span>
+                                                <span>${subtotal.toFixed(2)}</span>
+                                            </div>
+                                            <div className="flex justify-between text-stone-300">
+                                                <span>HST (13%)</span>
+                                                <span>${hst.toFixed(2)}</span>
+                                            </div>
+                                            <div className="border-t border-stone-800 pt-4">
+                                                <div className="flex justify-between text-lg font-bold">
+                                                    <span className="text-white">Total</span>
+                                                    <span className="text-green-400">${totalPrice.toFixed(2)}</span>
+                                                </div>
+                                            </div>
+                                        </>
+                                    )}
+                                    {totalQuantity === 0 && (
+                                        <div className="text-center text-stone-400 py-4">Select tickets above to see pricing</div>
+                                    )}
                                     
                                     <div className="bg-stone-800/50 rounded-lg p-4 text-sm text-stone-400">
                                         <p className="flex items-start gap-2">
