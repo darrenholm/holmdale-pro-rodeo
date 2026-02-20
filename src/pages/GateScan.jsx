@@ -577,16 +577,16 @@ export default function GateScan() {
                   <span className="text-stone-300">Total Wristbands:</span>
                   <span className="text-white font-semibold">{totalWristbandsNeeded}</span>
                 </div>
-                {ticket.quantityAdult > 0 && (
+                {ticket.quantity_adult > 0 && (
                   <div className="flex justify-between items-center">
                     <span className="text-stone-300">Adults:</span>
-                    <span className="text-white font-semibold">{ticket.quantityAdult}</span>
+                    <span className="text-white font-semibold">{ticket.quantity_adult}</span>
                   </div>
                 )}
-                {ticket.quantityChild > 0 && (
+                {ticket.quantity_child > 0 && (
                   <div className="flex justify-between items-center">
                     <span className="text-stone-300">Children:</span>
-                    <span className="text-white font-semibold">{ticket.quantityChild}</span>
+                    <span className="text-white font-semibold">{ticket.quantity_child}</span>
                   </div>
                 )}
               </div>
