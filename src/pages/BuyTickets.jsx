@@ -515,32 +515,23 @@ export default function BuyTickets() {
                                 </CardHeader>
                                 <CardContent className="space-y-4">
                                     {ticketTypes.map((type) => {
-                                        const isSelected = selectedType === type.id;
                                         const isAvailable = ticketsRemaining > 0;
+                                        const quantity = quantities[type.id];
                                         
                                         let price = 0;
                                         if (type.id === 'general') {
-                                            price = tierData?.adultPrice || (currentTier === 1 ? 30 : currentTier === 2 ? 35 : 40);
+                                            price = adultPrice;
                                         } else if (type.id === 'child') {
-                                            price = tierData?.childPrice || 10;
+                                            price = childPrice;
                                         } else if (type.id === 'family') {
-                                            price = tierData?.familyPrice || (currentTier === 1 ? 70 : currentTier === 2 ? 80 : 90);
+                                            price = familyPrice;
                                         }
                                         
                                         return (
-                                            <button
-                                                key={type.id}
-                                                onClick={() => isAvailable && setSelectedType(type.id)}
-                                                disabled={!isAvailable}
-                                                className={`w-full p-4 rounded-xl border-2 text-left transition-all ${
-                                                    isSelected 
-                                                        ? 'border-green-500 bg-green-500/10' 
-                                                        : isAvailable 
-                                                            ? 'border-stone-700 bg-stone-800/50 hover:border-stone-600' 
-                                                            : 'border-stone-800 bg-stone-800/30 opacity-50 cursor-not-allowed'
-                                                }`}
-                                            >
-                                                <div className="flex items-start justify-between">
+                                            <div key={type.id} className={`p-4 rounded-xl border-2 transition-all ${
+                                                quantity > 0 ? 'border-green-500 bg-green-500/10' : isAvailable ? 'border-stone-700 bg-stone-800/50' : 'border-stone-800 bg-stone-800/30 opacity-50'
+                                            }`}>
+                                                <div className="flex items-start justify-between mb-3">
                                                     <div>
                                                         <h3 className="text-white font-semibold mb-1">{type.name}</h3>
                                                         <p className="text-stone-400 text-sm">{type.description}</p>
@@ -566,7 +557,30 @@ export default function BuyTickets() {
                                                         <p className="text-stone-500 text-sm">per ticket</p>
                                                     </div>
                                                 </div>
-                                            </button>
+                                                {isAvailable && (
+                                                    <div className="flex items-center gap-3 pt-3 border-t border-stone-700">
+                                                        <Button
+                                                            type="button"
+                                                            variant="outline"
+                                                            size="icon"
+                                                            onClick={() => setQuantities({...quantities, [type.id]: Math.max(0, quantity - 1)})}
+                                                            className="border-stone-600 text-white hover:bg-stone-700 h-8 w-8"
+                                                        >
+                                                            <Minus className="w-3 h-3" />
+                                                        </Button>
+                                                        <span className="text-white font-semibold w-8 text-center">{quantity}</span>
+                                                        <Button
+                                                            type="button"
+                                                            variant="outline"
+                                                            size="icon"
+                                                            onClick={() => setQuantities({...quantities, [type.id]: quantity + 1})}
+                                                            className="border-stone-600 text-white hover:bg-stone-700 h-8 w-8"
+                                                        >
+                                                            <Plus className="w-3 h-3" />
+                                                        </Button>
+                                                    </div>
+                                                )}
+                                            </div>
                                         );
                                     })}
                                 </CardContent>
