@@ -705,7 +705,7 @@ export default function GateScan() {
                         <span className="text-green-300 text-sm">Party Size:</span>
                         <span className="text-green-100 font-semibold">
                           <Users className="w-4 h-4 inline mr-1" />
-                          {result.ticket.quantityAdult || 2} Adults, {result.ticket.quantityChild || 2} Children
+                          {result.ticket.quantity_adult || 2} Adults, {result.ticket.quantity_child || 2} Children
                         </span>
                       </div>
                     )}
