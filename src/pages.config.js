@@ -59,6 +59,7 @@ import GateScan from './pages/GateScan';
 import Home from './pages/Home';
 import IDCheck from './pages/IDCheck';
 import ImportStaff from './pages/ImportStaff';
+import ManageEvents from './pages/ManageEvents';
 import RFIDRegistry from './pages/RFIDRegistry';
 import RFIDTest from './pages/RFIDTest';
 import RefundTickets from './pages/RefundTickets';
@@ -70,7 +71,6 @@ import StaffScheduling from './pages/StaffScheduling';
 import TestRailway from './pages/TestRailway';
 import TicketSalesReport from './pages/TicketSalesReport';
 import TrackOrder from './pages/TrackOrder';
-import ManageEvents from './pages/ManageEvents';
 import UpdatePrices from './pages/UpdatePrices';
 import __Layout from './Layout.jsx';
 
@@ -88,6 +88,7 @@ export const PAGES = {
     "Home": Home,
     "IDCheck": IDCheck,
     "ImportStaff": ImportStaff,
+    "ManageEvents": ManageEvents,
     "RFIDRegistry": RFIDRegistry,
     "RFIDTest": RFIDTest,
     "RefundTickets": RefundTickets,
@@ -99,7 +100,6 @@ export const PAGES = {
     "TestRailway": TestRailway,
     "TicketSalesReport": TicketSalesReport,
     "TrackOrder": TrackOrder,
-    "ManageEvents": ManageEvents,
     "UpdatePrices": UpdatePrices,
 }
 
