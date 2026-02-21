@@ -99,26 +99,26 @@ export default function BuyTickets() {
               const tierData = tierResponse.data;
 
               foundEvent.tierData = {
-                  currentTier: tierData.current_tier,
-                  ticketsSold: tierData.tickets_sold,
+                  currentTier: tierData.currentTier,
+                  ticketsSold: tierData.ticketsSold,
                   tier1: {
-                      quantity: tierData.tier1_quantity,
-                      sold: tierData.tier1_sold,
-                      price: tierData.tier1_adult_price
+                      quantity: tierData.tiers.tier1.quantity,
+                      sold: tierData.tiers.tier1.sold,
+                      price: parseFloat(tierData.tiers.tier1.adultPrice)
                   },
                   tier2: {
-                      quantity: tierData.tier2_quantity,
-                      sold: tierData.tier2_sold,
-                      price: tierData.tier2_adult_price
+                      quantity: tierData.tiers.tier2.quantity,
+                      sold: tierData.tiers.tier2.sold,
+                      price: parseFloat(tierData.tiers.tier2.adultPrice)
                   },
                   tier3: {
-                      quantity: tierData.tier3_quantity,
-                      sold: tierData.tier3_sold,
-                      price: tierData.tier3_adult_price
+                      quantity: tierData.tiers.tier3.quantity,
+                      sold: tierData.tiers.tier3.sold,
+                      price: parseFloat(tierData.tiers.tier3.adultPrice)
                   },
-                  adultPrice: tierData.current_adult_price,
-                  childPrice: 10,
-                  familyPrice: tierData.current_family_price
+                  adultPrice: parseFloat(tierData.adultPrice),
+                  childPrice: tierData.childPrice || 10,
+                  familyPrice: parseFloat(tierData.familyPrice)
               };
 
               return foundEvent;
