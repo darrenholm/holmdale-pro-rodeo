@@ -1,11 +1,20 @@
 Deno.serve(async (req) => {
   try {
-    const body = await req.json();
-    const { token } = body;
+    // Login to Railway to get token
+    const loginResponse = await fetch('https://rodeo-fresh-production-7348.up.railway.app/api/auth/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        username: 'ww_admin',
+        password: 'SecurePass123!'
+      })
+    });
 
-    if (!token) {
-      return Response.json({ error: 'Authentication token required' }, { status: 401 });
+    if (!loginResponse.ok) {
+      throw new Error('Railway authentication failed');
     }
+
+    const { token } = await loginResponse.json();
 
     const url = 'https://rodeo-fresh-production-7348.up.railway.app/api/staff';
     
