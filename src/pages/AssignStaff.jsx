@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { base44 } from '@/api/base44Client';
 import { railwayAuth } from '@/components/railwayAuth';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
-import { Calendar, Users, Clock, CheckCircle, XCircle, Loader2, ArrowLeft } from 'lucide-react';
+import { Calendar, Users, Clock, CheckCircle, XCircle, Loader2, ArrowLeft, Plus } from 'lucide-react';
 import { format } from 'date-fns';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
@@ -35,7 +36,6 @@ export default function AssignStaff() {
 
   const assignStaffMutation = useMutation({
     mutationFn: async ({ shiftId, staffId }) => {
-      // This will need a backend function to update Railway
       const result = await railwayAuth.callWithAuth('assignStaffToShift', {
         shift_id: shiftId,
         staff_id: staffId
@@ -45,6 +45,16 @@ export default function AssignStaff() {
     onSuccess: () => {
       queryClient.invalidateQueries(['railway-shifts']);
       setAssignments({});
+    }
+  });
+
+  const createShiftsMutation = useMutation({
+    mutationFn: async () => {
+      const result = await base44.functions.invoke('createEventShifts', {});
+      return result.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries(['railway-shifts']);
     }
   });
 
@@ -109,25 +119,46 @@ export default function AssignStaff() {
             <h1 className="text-3xl font-bold text-white mb-2">Assign Staff to Shifts</h1>
             <p className="text-gray-400">Schedule available staff to open shifts</p>
           </div>
-          {Object.keys(assignments).length > 0 && (
-            <Button
-              onClick={handleSaveAssignments}
-              className="bg-green-600 hover:bg-green-700"
-              disabled={assignStaffMutation.isPending}
-            >
-              {assignStaffMutation.isPending ? (
-                <>
-                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                  Saving...
-                </>
-              ) : (
-                <>
-                  <CheckCircle className="w-4 h-4 mr-2" />
-                  Save {Object.keys(assignments).length} Assignment{Object.keys(assignments).length > 1 ? 's' : ''}
-                </>
-              )}
-            </Button>
-          )}
+          <div className="flex gap-3">
+            {shifts.length === 0 && (
+              <Button
+                onClick={() => createShiftsMutation.mutate()}
+                className="bg-purple-600 hover:bg-purple-700"
+                disabled={createShiftsMutation.isPending}
+              >
+                {createShiftsMutation.isPending ? (
+                  <>
+                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                    Creating...
+                  </>
+                ) : (
+                  <>
+                    <Plus className="w-4 h-4 mr-2" />
+                    Create Event Shifts
+                  </>
+                )}
+              </Button>
+            )}
+            {Object.keys(assignments).length > 0 && (
+              <Button
+                onClick={handleSaveAssignments}
+                className="bg-green-600 hover:bg-green-700"
+                disabled={assignStaffMutation.isPending}
+              >
+                {assignStaffMutation.isPending ? (
+                  <>
+                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                    Saving...
+                  </>
+                ) : (
+                  <>
+                    <CheckCircle className="w-4 h-4 mr-2" />
+                    Save {Object.keys(assignments).length} Assignment{Object.keys(assignments).length > 1 ? 's' : ''}
+                  </>
+                )}
+              </Button>
+            )}
+          </div>
         </div>
 
         <div className="mb-6">
