@@ -1,7 +1,7 @@
 Deno.serve(async (req) => {
   try {
     // Login to Railway to get token
-    const loginResponse = await fetch('https://rodeo-fresh-production-7348.up.railway.app/api/auth/login', {
+    const loginResponse = await fetch('http://localhost:8080/api/auth/login', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -18,7 +18,7 @@ Deno.serve(async (req) => {
 
     const { token } = await loginResponse.json();
 
-    const url = 'https://rodeo-fresh-production-7348.up.railway.app/api/shifts';
+    const url = 'http://localhost:8080/api/shifts';
     
     const response = await fetch(url, {
       method: 'GET',
