@@ -1,7 +1,7 @@
 Deno.serve(async (req) => {
   try {
     const body = await req.json();
-    const { shift_id, staff_id, token } = body;
+    const { shift_id, staff_ids, token } = body;
 
     if (!token) {
       return Response.json({ error: 'Authentication token required' }, { status: 401 });
@@ -27,7 +27,7 @@ Deno.serve(async (req) => {
 
     const { token: railwayToken } = await loginResponse.json();
 
-    // Update shift with assigned staff
+    // Update shift with assigned staff (array of IDs)
     const updateResponse = await fetch(`https://rodeo-fresh-production-7348.up.railway.app/api/shifts/${shift_id}`, {
       method: 'PATCH',
       headers: {
@@ -35,7 +35,7 @@ Deno.serve(async (req) => {
         'Authorization': `Bearer ${railwayToken}`
       },
       body: JSON.stringify({
-        staff_id: staff_id || null
+        staff_ids: staff_ids || []
       })
     });
 

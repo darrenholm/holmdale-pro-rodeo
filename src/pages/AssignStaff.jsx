@@ -76,13 +76,21 @@ export default function AssignStaff() {
 
   const sortedDates = Object.keys(groupedShifts).sort();
 
-  const handleAssignment = (shiftId, staffId) => {
-    setAssignments({ ...assignments, [shiftId]: staffId });
+  const handleAddStaff = (shiftId, staffId) => {
+    const currentStaff = assignments[shiftId] || [];
+    if (!currentStaff.includes(staffId) && currentStaff.length < 6) {
+      setAssignments({ ...assignments, [shiftId]: [...currentStaff, staffId] });
+    }
+  };
+
+  const handleRemoveStaff = (shiftId, staffId) => {
+    const currentStaff = assignments[shiftId] || [];
+    setAssignments({ ...assignments, [shiftId]: currentStaff.filter(id => id !== staffId) });
   };
 
   const handleSaveAssignments = async () => {
-    const promises = Object.entries(assignments).map(([shiftId, staffId]) => 
-      assignStaffMutation.mutateAsync({ shiftId, staffId })
+    const promises = Object.entries(assignments).map(([shiftId, staffIds]) => 
+      assignStaffMutation.mutateAsync({ shiftId, staffIds })
     );
     await Promise.all(promises);
   };
