@@ -109,7 +109,8 @@ export default function StaffScheduling() {
   };
 
   const groupedShifts = shifts.reduce((acc, shift) => {
-    const date = shift.date;
+    // Parse date correctly - shift.date is ISO string, extract YYYY-MM-DD
+    const date = shift.date ? shift.date.split('T')[0] : '';
     if (!acc[date]) acc[date] = [];
     acc[date].push(shift);
     return acc;
