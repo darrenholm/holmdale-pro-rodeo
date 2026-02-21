@@ -117,7 +117,6 @@ export default function StaffScheduling() {
   };
 
   const groupedShifts = shifts.reduce((acc, shift) => {
-    // Parse date correctly - shift.date is ISO string, extract YYYY-MM-DD
     const date = shift.date ? shift.date.split('T')[0] : '';
     if (!acc[date]) acc[date] = {};
     if (!acc[date][shift.role]) acc[date][shift.role] = [];
@@ -125,7 +124,6 @@ export default function StaffScheduling() {
     return acc;
   }, {});
 
-  // Sort dates and shifts within each role
   const sortedDates = Object.keys(groupedShifts).sort();
   sortedDates.forEach(date => {
     Object.keys(groupedShifts[date]).forEach(role => {
@@ -295,7 +293,7 @@ export default function StaffScheduling() {
                 <CardHeader>
                   <CardTitle className="text-white flex items-center gap-2">
                     <Calendar className="w-5 h-5 text-green-500" />
-                    {format(new Date(date + 'T12:00:00'), 'EEEE, MMMM d, yyyy')}
+                    {format(new Date(date.replace(/-/g, '/') + ' 00:00:00'), 'EEEE, MMMM d, yyyy')}
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
