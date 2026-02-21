@@ -34,6 +34,9 @@ Deno.serve(async (req) => {
     }
 
     const shifts = await response.json();
+    console.log('Railway API response:', shifts);
+    console.log('Shifts data type:', Array.isArray(shifts) ? 'array' : typeof shifts);
+    console.log('Number of shifts from Railway:', Array.isArray(shifts) ? shifts.length : shifts.data?.length || 0);
     // Railway returns array directly, wrap in data property for frontend
     return Response.json({ success: true, data: Array.isArray(shifts) ? shifts : shifts.data || [] });
   } catch (error) {

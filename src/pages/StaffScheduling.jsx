@@ -28,9 +28,14 @@ export default function StaffScheduling() {
     queryKey: ['shifts'],
     queryFn: async () => {
       const result = await base44.functions.invoke('getShiftsFromRailway', {});
-      console.log('Shifts API Response:', result.data);
+      console.log('=== SHIFTS DEBUG ===');
+      console.log('Full API Response:', result);
+      console.log('result.data:', result.data);
       const shiftsData = result.data?.data || [];
-      console.log('Extracted shifts:', shiftsData);
+      console.log('Shifts received:', shiftsData);
+      console.log('Number of shifts:', shiftsData.length);
+      console.log('First shift:', shiftsData[0]);
+      console.log('===================');
       return shiftsData;
     }
   });
