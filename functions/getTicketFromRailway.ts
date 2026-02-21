@@ -24,7 +24,7 @@ Deno.serve(async (req) => {
     }
 
     const tokenData = await tokenResponse.json();
-    const railwayToken = tokenData.data?.token;
+    const railwayToken = tokenData.token || tokenData.data?.token;
 
     if (!railwayToken) {
       throw new Error('No token from Railway');
