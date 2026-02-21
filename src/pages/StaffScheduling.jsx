@@ -278,7 +278,7 @@ export default function StaffScheduling() {
                 <CardHeader>
                   <CardTitle className="text-white flex items-center gap-2">
                     <Calendar className="w-5 h-5 text-green-500" />
-                    {format(new Date(date), 'EEEE, MMMM d, yyyy')}
+                    {format(new Date(date + 'T12:00:00'), 'EEEE, MMMM d, yyyy')}
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
