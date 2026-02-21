@@ -34,7 +34,8 @@ Deno.serve(async (req) => {
     }
 
     const shifts = await response.json();
-    return Response.json({ success: true, data: shifts });
+    // Railway returns array directly, wrap in data property for frontend
+    return Response.json({ success: true, data: Array.isArray(shifts) ? shifts : shifts.data || [] });
   } catch (error) {
     console.error('[getShiftsFromRailway] Error:', error.message);
     return Response.json({ error: error.message }, { status: 500 });
