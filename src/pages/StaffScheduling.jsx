@@ -164,125 +164,7 @@ export default function StaffScheduling() {
           </Button>
         </div>
 
-        {showForm && (
-          <Card className="bg-stone-900 border-stone-800 mb-8">
-            <CardHeader>
-              <CardTitle className="text-white">
-                {editingShift ? 'Edit Shift' : 'Add New Shift'}
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <form onSubmit={handleSubmit} className="space-y-4">
-                <div className="grid md:grid-cols-2 gap-4">
-                  <div>
-                    <label className="text-white text-sm mb-2 block">Staff Name</label>
-                    <Input
-                      value={formData.staff_name}
-                      onChange={(e) => setFormData({ ...formData, staff_name: e.target.value })}
-                      className="bg-stone-800 border-stone-700 text-white"
-                      required
-                    />
-                  </div>
-                  <div>
-                    <label className="text-white text-sm mb-2 block">Role</label>
-                    <Select
-                      value={formData.role}
-                      onValueChange={(value) => setFormData({ ...formData, role: value })}
-                    >
-                      <SelectTrigger className="bg-stone-800 border-stone-700 text-white">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="gate">Gate</SelectItem>
-                        <SelectItem value="bar">Bar</SelectItem>
-                        <SelectItem value="ticket_booth">Ticket Booth</SelectItem>
-                        <SelectItem value="security">Security</SelectItem>
-                        <SelectItem value="general">General</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                </div>
 
-                <div className="grid md:grid-cols-3 gap-4">
-                  <div>
-                    <label className="text-white text-sm mb-2 block">Date</label>
-                    <Input
-                      type="date"
-                      value={formData.date}
-                      onChange={(e) => setFormData({ ...formData, date: e.target.value })}
-                      className="bg-stone-800 border-stone-700 text-white"
-                      required
-                    />
-                  </div>
-                  <div>
-                    <label className="text-white text-sm mb-2 block">Start Time</label>
-                    <Input
-                      type="time"
-                      value={formData.start_time}
-                      onChange={(e) => setFormData({ ...formData, start_time: e.target.value })}
-                      className="bg-stone-800 border-stone-700 text-white"
-                      required
-                    />
-                  </div>
-                  <div>
-                    <label className="text-white text-sm mb-2 block">End Time</label>
-                    <Input
-                      type="time"
-                      value={formData.end_time}
-                      onChange={(e) => setFormData({ ...formData, end_time: e.target.value })}
-                      className="bg-stone-800 border-stone-700 text-white"
-                      required
-                    />
-                  </div>
-                </div>
-
-                <div>
-                  <label className="text-white text-sm mb-2 block">Event (Optional)</label>
-                  <Select
-                    value={formData.event_id}
-                    onValueChange={(value) => setFormData({ ...formData, event_id: value })}
-                  >
-                    <SelectTrigger className="bg-stone-800 border-stone-700 text-white">
-                      <SelectValue placeholder="Select event (optional)" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value={null}>No Event</SelectItem>
-                      {events.map((event) => (
-                        <SelectItem key={event.id} value={event.id}>
-                          {event.title} - {event.date}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                <div>
-                  <label className="text-white text-sm mb-2 block">Notes</label>
-                  <Textarea
-                    value={formData.notes}
-                    onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
-                    className="bg-stone-800 border-stone-700 text-white"
-                    rows={3}
-                  />
-                </div>
-
-                <div className="flex gap-3">
-                  <Button type="submit" className="bg-green-600 hover:bg-green-700">
-                    {editingShift ? 'Update Shift' : 'Create Shift'}
-                  </Button>
-                  <Button
-                    type="button"
-                    onClick={resetForm}
-                    variant="outline"
-                    className="border-stone-700 text-white hover:bg-stone-800"
-                  >
-                    Cancel
-                  </Button>
-                </div>
-              </form>
-            </CardContent>
-          </Card>
-        )}
 
         {isLoading ? (
           <div className="text-white text-center py-8">Loading schedules...</div>
@@ -306,7 +188,10 @@ export default function StaffScheduling() {
                 <CardHeader>
                   <CardTitle className="text-white flex items-center gap-2">
                     <Calendar className="w-5 h-5 text-green-500" />
-                    {format(new Date(date.replace(/-/g, '/') + ' 00:00:00'), 'EEEE, MMMM d, yyyy')}
+                    {(() => {
+                      const [year, month, day] = date.split('-');
+                      return format(new Date(parseInt(year), parseInt(month) - 1, parseInt(day)), 'EEEE, MMMM d, yyyy');
+                    })()}
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
