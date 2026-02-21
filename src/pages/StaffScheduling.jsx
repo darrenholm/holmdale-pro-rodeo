@@ -117,7 +117,8 @@ export default function StaffScheduling() {
   };
 
   const groupedShifts = shifts.reduce((acc, shift) => {
-    const date = shift.date ? shift.date.split('T')[0] : '';
+    if (!shift.date) return acc;
+    const date = shift.date.split('T')[0];
     if (!acc[date]) acc[date] = {};
     if (!acc[date][shift.role]) acc[date][shift.role] = [];
     acc[date][shift.role].push(shift);
@@ -307,8 +308,8 @@ export default function StaffScheduling() {
                   <CardTitle className="text-white flex items-center gap-2">
                     <Calendar className="w-5 h-5 text-green-500" />
                     {(() => {
-                      const [year, month, day] = date.split('-').map(Number);
-                      return format(new Date(year, month - 1, day), 'EEEE, MMMM d, yyyy');
+                      const [year, month, day] = date.split('-');
+                      return format(new Date(parseInt(year), parseInt(month) - 1, parseInt(day)), 'EEEE, MMMM d, yyyy');
                     })()}
                   </CardTitle>
                 </CardHeader>
