@@ -5,12 +5,14 @@ Deno.serve(async (req) => {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        username: 'ww_admin',
-        password: 'SecurePass123!'
+        email: 'darren@holmgraphics.ca',
+        password: 'changeme123'
       })
     });
 
     if (!loginResponse.ok) {
+      const errorText = await loginResponse.text();
+      console.error('[Login Error]', errorText);
       throw new Error('Railway authentication failed');
     }
 
