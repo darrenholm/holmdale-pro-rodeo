@@ -1,11 +1,7 @@
 Deno.serve(async (req) => {
   try {
     const body = await req.json();
-    const { shift_id, staff_ids, token } = body;
-
-    if (!token) {
-      return Response.json({ error: 'Authentication token required' }, { status: 401 });
-    }
+    const { shift_id, staff_ids } = body;
 
     if (!shift_id) {
       return Response.json({ error: 'shift_id required' }, { status: 400 });
