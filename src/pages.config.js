@@ -72,6 +72,7 @@ import TestRailway from './pages/TestRailway';
 import TicketSalesReport from './pages/TicketSalesReport';
 import TrackOrder from './pages/TrackOrder';
 import UpdatePrices from './pages/UpdatePrices';
+import AssignStaff from './pages/AssignStaff';
 import __Layout from './Layout.jsx';
 
 
@@ -101,6 +102,7 @@ export const PAGES = {
     "TicketSalesReport": TicketSalesReport,
     "TrackOrder": TrackOrder,
     "UpdatePrices": UpdatePrices,
+    "AssignStaff": AssignStaff,
 }
 
 export const pagesConfig = {
