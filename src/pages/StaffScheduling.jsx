@@ -7,7 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 import { Calendar, Plus, Edit2, Trash2, Clock } from 'lucide-react';
-import { format } from 'date-fns';
+import { format, parseISO } from 'date-fns';
 
 export default function StaffScheduling() {
   const [showForm, setShowForm] = useState(false);
@@ -188,10 +188,7 @@ export default function StaffScheduling() {
                 <CardHeader>
                   <CardTitle className="text-white flex items-center gap-2">
                     <Calendar className="w-5 h-5 text-green-500" />
-                    {(() => {
-                      const [year, month, day] = date.split('-');
-                      return format(new Date(parseInt(year), parseInt(month) - 1, parseInt(day)), 'EEEE, MMMM d, yyyy');
-                    })()}
+                    {format(parseISO(date + 'T00:00:00Z'), 'EEEE, MMMM d, yyyy')}
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
