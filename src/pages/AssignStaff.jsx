@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
-import { railwayAuth } from '@/components/railwayAuth';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -20,8 +19,8 @@ export default function AssignStaff() {
   const { data: shiftsData, isLoading: shiftsLoading } = useQuery({
     queryKey: ['railway-shifts'],
     queryFn: async () => {
-      const result = await railwayAuth.callWithAuth('getShiftsFromRailway');
-      return result?.data || [];
+      const result = await base44.functions.invoke('getShiftsFromRailway', {});
+      return result.data?.data || [];
     }
   });
 
@@ -29,18 +28,18 @@ export default function AssignStaff() {
   const { data: staffData, isLoading: staffLoading } = useQuery({
     queryKey: ['railway-staff'],
     queryFn: async () => {
-      const result = await railwayAuth.callWithAuth('getStaffFromRailway');
-      return result?.data || [];
+      const result = await base44.functions.invoke('getStaffFromRailway', {});
+      return result.data?.data || [];
     }
   });
 
   const assignStaffMutation = useMutation({
     mutationFn: async ({ shiftId, staffIds }) => {
-      const result = await railwayAuth.callWithAuth('assignStaffToShift', {
+      const result = await base44.functions.invoke('assignStaffToShift', {
         shift_id: shiftId,
         staff_ids: staffIds
       });
-      return result;
+      return result.data;
     },
     onSuccess: () => {
       queryClient.invalidateQueries(['railway-shifts']);
