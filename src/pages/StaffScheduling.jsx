@@ -28,16 +28,21 @@ export default function StaffScheduling() {
   const { data: shifts = [], isLoading } = useQuery({
     queryKey: ['shifts', selectedDate],
     queryFn: async () => {
+      const result = await base44.functions.invoke('getShiftsFromRailway', {});
+      const allShifts = result.data?.data || [];
       if (selectedDate) {
-        return await base44.entities.Shift.filter({ date: selectedDate }, 'start_time');
+        return allShifts.filter(s => s.date === selectedDate);
       }
-      return await base44.entities.Shift.list('date', 100);
+      return allShifts;
     }
   });
 
   const { data: events = [] } = useQuery({
     queryKey: ['events'],
-    queryFn: () => base44.entities.Event.list('date', 50)
+    queryFn: async () => {
+      const result = await base44.functions.invoke('getEventsFromRailway', {});
+      return result.data?.data || [];
+    }
   });
 
   const createMutation = useMutation({
