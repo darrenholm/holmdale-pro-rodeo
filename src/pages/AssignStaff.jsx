@@ -35,10 +35,10 @@ export default function AssignStaff() {
   });
 
   const assignStaffMutation = useMutation({
-    mutationFn: async ({ shiftId, staffId }) => {
+    mutationFn: async ({ shiftId, staffIds }) => {
       const result = await railwayAuth.callWithAuth('assignStaffToShift', {
         shift_id: shiftId,
-        staff_id: staffId
+        staff_ids: staffIds
       });
       return result;
     },
@@ -198,8 +198,9 @@ export default function AssignStaff() {
                 <CardContent>
                   <div className="space-y-3">
                     {groupedShifts[date].map((shift) => {
-                      const assignedStaffId = assignments[shift.id] || shift.staff_id;
-                      const assignedStaff = staff.find(s => s.id === assignedStaffId);
+                      const currentAssignments = assignments[shift.id] || (shift.staff_ids || []);
+                      const assignedStaffList = currentAssignments.map(id => staff.find(s => s.id === id)).filter(Boolean);
+                      const availableSlots = 6 - currentAssignments.length;
 
                       return (
                         <div
@@ -216,36 +217,61 @@ export default function AssignStaff() {
                                   <Clock className="w-4 h-4" />
                                   {shift.start_time} - {shift.end_time}
                                 </span>
+                                <Badge variant="outline" className="text-gray-400 border-gray-600">
+                                  {currentAssignments.length}/6 Staff
+                                </Badge>
                               </div>
                               {shift.notes && (
-                                <p className="text-gray-500 text-sm">{shift.notes}</p>
+                                <p className="text-gray-500 text-sm mb-3">{shift.notes}</p>
+                              )}
+                              
+                              {assignedStaffList.length > 0 && (
+                                <div className="flex flex-wrap gap-2 mt-2">
+                                  {assignedStaffList.map((member) => (
+                                    <Badge 
+                                      key={member.id} 
+                                      className="bg-green-600 text-white flex items-center gap-1"
+                                    >
+                                      <Users className="w-3 h-3" />
+                                      {member.name}
+                                      <button
+                                        onClick={() => handleRemoveStaff(shift.id, member.id)}
+                                        className="ml-1 hover:text-red-300"
+                                      >
+                                        <XCircle className="w-3 h-3" />
+                                      </button>
+                                    </Badge>
+                                  ))}
+                                </div>
                               )}
                             </div>
 
                             <div className="flex items-center gap-3">
-                              {assignedStaff && (
-                                <div className="flex items-center gap-2">
-                                  <Users className="w-4 h-4 text-green-500" />
-                                  <span className="text-white text-sm">{assignedStaff.name}</span>
-                                </div>
+                              {currentAssignments.length < 6 && (
+                                <Select
+                                  value=""
+                                  onValueChange={(value) => handleAddStaff(shift.id, value)}
+                                >
+                                  <SelectTrigger className="bg-stone-700 border-stone-600 text-white w-48">
+                                    <SelectValue placeholder="Add staff..." />
+                                  </SelectTrigger>
+                                  <SelectContent>
+                                    {staff
+                                      .filter(member => !currentAssignments.includes(member.id))
+                                      .map((member) => (
+                                        <SelectItem key={member.id} value={member.id}>
+                                          {member.name} {member.role && `(${member.role})`}
+                                        </SelectItem>
+                                      ))}
+                                  </SelectContent>
+                                </Select>
                               )}
-                              
-                              <Select
-                                value={assignedStaffId || ''}
-                                onValueChange={(value) => handleAssignment(shift.id, value)}
-                              >
-                                <SelectTrigger className="bg-stone-700 border-stone-600 text-white w-48">
-                                  <SelectValue placeholder="Assign staff..." />
-                                </SelectTrigger>
-                                <SelectContent>
-                                  <SelectItem value={null}>Unassigned</SelectItem>
-                                  {staff.map((member) => (
-                                    <SelectItem key={member.id} value={member.id}>
-                                      {member.name} {member.role && `(${member.role})`}
-                                    </SelectItem>
-                                  ))}
-                                </SelectContent>
-                              </Select>
+                              {currentAssignments.length >= 6 && (
+                                <span className="text-green-400 text-sm flex items-center gap-1">
+                                  <CheckCircle className="w-4 h-4" />
+                                  Fully Staffed
+                                </span>
+                              )}
                             </div>
                           </div>
                         </div>
