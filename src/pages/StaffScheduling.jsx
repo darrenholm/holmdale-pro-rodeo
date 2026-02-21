@@ -12,7 +12,6 @@ import { format } from 'date-fns';
 export default function StaffScheduling() {
   const [showForm, setShowForm] = useState(false);
   const [editingShift, setEditingShift] = useState(null);
-  const [selectedDate, setSelectedDate] = useState('');
   const [formData, setFormData] = useState({
     staff_name: '',
     date: '',
@@ -26,14 +25,10 @@ export default function StaffScheduling() {
   const queryClient = useQueryClient();
 
   const { data: shifts = [], isLoading } = useQuery({
-    queryKey: ['shifts', selectedDate],
+    queryKey: ['shifts'],
     queryFn: async () => {
       const result = await base44.functions.invoke('getShiftsFromRailway', {});
-      const allShifts = result.data?.data || [];
-      if (selectedDate) {
-        return allShifts.filter(s => s.date === selectedDate);
-      }
-      return allShifts;
+      return result.data?.data || [];
     }
   });
 
@@ -144,16 +139,6 @@ export default function StaffScheduling() {
             <Plus className="w-4 h-4 mr-2" />
             Add Shift
           </Button>
-        </div>
-
-        <div className="mb-6">
-          <Input
-            type="date"
-            value={selectedDate}
-            onChange={(e) => setSelectedDate(e.target.value)}
-            className="bg-stone-900 border-stone-700 text-white max-w-xs"
-            placeholder="Filter by date"
-          />
         </div>
 
         {showForm && (
