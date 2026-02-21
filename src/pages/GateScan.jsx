@@ -349,15 +349,30 @@ export default function GateScan() {
     setRfidTagId('');
 
     if (newScanned.length >= totalWristbandsNeeded) {
-      // All wristbands scanned, update ticket
+      // All wristbands scanned, update ticket in Railway
       const updatedWristbands = newScanned.map((tag_id) => ({
         tag_id,
         is_19_plus: false // Age verification happens at bar/ID check, not gate
       }));
 
-      await base44.entities.TicketOrder.update(ticket.id, {
-        rfid_wristbands: updatedWristbands
+      console.log('Saving RFID wristbands to Railway:', updatedWristbands);
+
+      // Get Railway token
+      const loginResponse = await base44.functions.invoke('loginRailway', {});
+      const railwayToken = loginResponse.data.token;
+
+      // Update ticket in Railway with wristbands and scan status
+      await base44.functions.invoke('scanTicketRailway', {
+        id: ticket.id,
+        token: railwayToken,
+        scanData: {
+          rfid_wristbands: updatedWristbands,
+          scanned: true,
+          scanned_at: new Date().toISOString()
+        }
       });
+
+      console.log('RFID wristbands saved successfully');
 
       setResult({
         success: true,
