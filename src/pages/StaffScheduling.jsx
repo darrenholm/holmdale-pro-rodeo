@@ -125,9 +125,22 @@ export default function StaffScheduling() {
   }, {});
 
   const sortedDates = Object.keys(groupedShifts).sort();
+
+  const roleOrder = ['gate', 'bar', 'ticket_booth', 'security', 'general'];
+  const sortedGroupedShifts = {};
+
   sortedDates.forEach(date => {
-    Object.keys(groupedShifts[date]).forEach(role => {
-      groupedShifts[date][role].sort((a, b) => a.start_time.localeCompare(b.start_time));
+    sortedGroupedShifts[date] = {};
+    const roles = Object.keys(groupedShifts[date]).sort((a, b) => {
+      const indexA = roleOrder.indexOf(a);
+      const indexB = roleOrder.indexOf(b);
+      return (indexA === -1 ? 999 : indexA) - (indexB === -1 ? 999 : indexB);
+    });
+
+    roles.forEach(role => {
+      sortedGroupedShifts[date][role] = groupedShifts[date][role].sort((a, b) => 
+        a.start_time.localeCompare(b.start_time)
+      );
     });
   });
 
@@ -279,7 +292,7 @@ export default function StaffScheduling() {
               <p className="text-red-400">Error loading shifts: {error.message}</p>
             </CardContent>
           </Card>
-        ) : Object.keys(groupedShifts).length === 0 ? (
+        ) : sortedDates.length === 0 ? (
           <Card className="bg-stone-900 border-stone-800">
             <CardContent className="p-12 text-center">
               <Calendar className="w-16 h-16 text-gray-600 mx-auto mb-4" />
@@ -298,7 +311,7 @@ export default function StaffScheduling() {
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-6">
-                    {Object.keys(groupedShifts[date]).map((role) => (
+                    {Object.keys(sortedGroupedShifts[date]).map((role) => (
                       <div key={role} className="space-y-2">
                         <h3 className="text-white font-semibold px-2 flex items-center gap-2">
                           <span className={`px-3 py-1 rounded-full text-sm ${roleColors[role]}`}>
@@ -306,7 +319,7 @@ export default function StaffScheduling() {
                           </span>
                         </h3>
                         <div className="space-y-2">
-                          {groupedShifts[date][role].map((shift) => (
+                          {sortedGroupedShifts[date][role].map((shift) => (
                             <div
                               key={shift.id}
                               className="bg-stone-800 rounded-lg p-4 flex items-center justify-between"
