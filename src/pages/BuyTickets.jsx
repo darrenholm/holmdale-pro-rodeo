@@ -94,44 +94,31 @@ export default function BuyTickets() {
               }
               console.log('[BuyTickets] Found event:', foundEvent.title);
 
-              // Calculate tier data from Railway event response
-              const tier1Sold = parseInt(foundEvent.tier1_sold || 0);
-              const tier2Sold = parseInt(foundEvent.tier2_sold || 0);
-              const tier3Sold = parseInt(foundEvent.tier3_sold || 0);
-              
-              const tier1Quantity = parseInt(foundEvent.tier1_quantity || 1000);
-              const tier2Quantity = parseInt(foundEvent.tier2_quantity || 1000);
-              const tier3Quantity = parseInt(foundEvent.tier3_quantity || 1000);
-              
-              // Determine current tier
-              let currentTier = 1;
-              if (tier1Sold >= tier1Quantity) {
-                  currentTier = 2;
-                  if (tier2Sold >= tier2Quantity) {
-                      currentTier = 3;
-                  }
-              }
-              
+              // Fetch current tier data from Railway endpoint
+              const tierResponse = await base44.functions.invoke('getEventCurrentTier', { eventId });
+              const tierData = tierResponse.data;
+
               foundEvent.tierData = {
-                  currentTier,
+                  currentTier: tierData.current_tier,
+                  ticketsSold: tierData.tickets_sold,
                   tier1: {
-                      quantity: tier1Quantity,
-                      sold: tier1Sold,
-                      price: parseFloat(foundEvent.tier1_adult_price || 30)
+                      quantity: tierData.tier1_quantity,
+                      sold: tierData.tier1_sold,
+                      price: tierData.tier1_adult_price
                   },
                   tier2: {
-                      quantity: tier2Quantity,
-                      sold: tier2Sold,
-                      price: parseFloat(foundEvent.tier2_adult_price || 35)
+                      quantity: tierData.tier2_quantity,
+                      sold: tierData.tier2_sold,
+                      price: tierData.tier2_adult_price
                   },
                   tier3: {
-                      quantity: tier3Quantity,
-                      sold: tier3Sold,
-                      price: parseFloat(foundEvent.tier3_adult_price || 40)
+                      quantity: tierData.tier3_quantity,
+                      sold: tierData.tier3_sold,
+                      price: tierData.tier3_adult_price
                   },
-                  adultPrice: parseFloat(foundEvent.tier1_adult_price || 30),
+                  adultPrice: tierData.current_adult_price,
                   childPrice: 10,
-                  familyPrice: parseFloat(foundEvent.tier1_family_price || 70)
+                  familyPrice: tierData.current_family_price
               };
 
               return foundEvent;
