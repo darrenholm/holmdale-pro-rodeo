@@ -24,11 +24,14 @@ export default function StaffScheduling() {
 
   const queryClient = useQueryClient();
 
-  const { data: shifts = [], isLoading } = useQuery({
+  const { data: shifts = [], isLoading, error } = useQuery({
     queryKey: ['shifts'],
     queryFn: async () => {
       const result = await base44.functions.invoke('getShiftsFromRailway', {});
-      return result.data?.data || [];
+      console.log('Shifts API Response:', result.data);
+      const shiftsData = result.data?.data || [];
+      console.log('Extracted shifts:', shiftsData);
+      return shiftsData;
     }
   });
 
@@ -264,6 +267,12 @@ export default function StaffScheduling() {
 
         {isLoading ? (
           <div className="text-white text-center py-8">Loading schedules...</div>
+        ) : error ? (
+          <Card className="bg-stone-900 border-stone-800">
+            <CardContent className="p-12 text-center">
+              <p className="text-red-400">Error loading shifts: {error.message}</p>
+            </CardContent>
+          </Card>
         ) : Object.keys(groupedShifts).length === 0 ? (
           <Card className="bg-stone-900 border-stone-800">
             <CardContent className="p-12 text-center">
