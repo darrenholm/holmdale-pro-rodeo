@@ -307,11 +307,7 @@ export default function StaffScheduling() {
                 <CardHeader>
                   <CardTitle className="text-white flex items-center gap-2">
                     <Calendar className="w-5 h-5 text-green-500" />
-                    {(() => {
-                      const [year, month, day] = date.split('-').map(Number);
-                      const utcDate = new Date(Date.UTC(year, month - 1, day));
-                      return format(utcDate, 'EEEE, MMMM d, yyyy');
-                    })()}
+                    {date}
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
