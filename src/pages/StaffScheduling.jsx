@@ -119,15 +119,18 @@ export default function StaffScheduling() {
   const groupedShifts = shifts.reduce((acc, shift) => {
     // Parse date correctly - shift.date is ISO string, extract YYYY-MM-DD
     const date = shift.date ? shift.date.split('T')[0] : '';
-    if (!acc[date]) acc[date] = [];
-    acc[date].push(shift);
+    if (!acc[date]) acc[date] = {};
+    if (!acc[date][shift.role]) acc[date][shift.role] = [];
+    acc[date][shift.role].push(shift);
     return acc;
   }, {});
 
-  // Sort dates and shifts within each date
+  // Sort dates and shifts within each role
   const sortedDates = Object.keys(groupedShifts).sort();
   sortedDates.forEach(date => {
-    groupedShifts[date].sort((a, b) => a.start_time.localeCompare(b.start_time));
+    Object.keys(groupedShifts[date]).forEach(role => {
+      groupedShifts[date][role].sort((a, b) => a.start_time.localeCompare(b.start_time));
+    });
   });
 
   return (
@@ -296,46 +299,54 @@ export default function StaffScheduling() {
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="space-y-3">
-                    {groupedShifts[date].map((shift) => (
-                      <div
-                        key={shift.id}
-                        className="bg-stone-800 rounded-lg p-4 flex items-center justify-between"
-                      >
-                        <div className="flex-1">
-                          <div className="flex items-center gap-3 mb-2">
-                            <h3 className="text-white font-semibold">{shift.staff_name}</h3>
-                            <span className={`px-3 py-1 rounded-full text-sm ${roleColors[shift.role]}`}>
-                              {shift.role.replace('_', ' ')}
-                            </span>
-                          </div>
-                          <div className="flex items-center gap-4 text-gray-400 text-sm">
-                            <span className="flex items-center gap-1">
-                              <Clock className="w-4 h-4" />
-                              {shift.start_time} - {shift.end_time}
-                            </span>
-                            {shift.notes && (
-                              <span className="text-gray-500">• {shift.notes}</span>
-                            )}
-                          </div>
-                        </div>
-                        <div className="flex gap-2">
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            onClick={() => handleEdit(shift)}
-                            className="border-stone-700 text-white hover:bg-stone-700"
-                          >
-                            <Edit2 className="w-4 h-4" />
-                          </Button>
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            onClick={() => deleteMutation.mutate(shift.id)}
-                            className="border-red-800 text-red-400 hover:bg-red-950"
-                          >
-                            <Trash2 className="w-4 h-4" />
-                          </Button>
+                  <div className="space-y-6">
+                    {Object.keys(groupedShifts[date]).map((role) => (
+                      <div key={role} className="space-y-2">
+                        <h3 className="text-white font-semibold px-2 flex items-center gap-2">
+                          <span className={`px-3 py-1 rounded-full text-sm ${roleColors[role]}`}>
+                            {role.replace('_', ' ')}
+                          </span>
+                        </h3>
+                        <div className="space-y-2">
+                          {groupedShifts[date][role].map((shift) => (
+                            <div
+                              key={shift.id}
+                              className="bg-stone-800 rounded-lg p-4 flex items-center justify-between"
+                            >
+                              <div className="flex-1">
+                                <div className="flex items-center gap-3 mb-2">
+                                  <h4 className="text-white font-semibold">{shift.staff_name}</h4>
+                                </div>
+                                <div className="flex items-center gap-4 text-gray-400 text-sm">
+                                  <span className="flex items-center gap-1">
+                                    <Clock className="w-4 h-4" />
+                                    {shift.start_time} - {shift.end_time}
+                                  </span>
+                                  {shift.notes && (
+                                    <span className="text-gray-500">• {shift.notes}</span>
+                                  )}
+                                </div>
+                              </div>
+                              <div className="flex gap-2">
+                                <Button
+                                  size="sm"
+                                  variant="outline"
+                                  onClick={() => handleEdit(shift)}
+                                  className="border-stone-700 text-white hover:bg-stone-700"
+                                >
+                                  <Edit2 className="w-4 h-4" />
+                                </Button>
+                                <Button
+                                  size="sm"
+                                  variant="outline"
+                                  onClick={() => deleteMutation.mutate(shift.id)}
+                                  className="border-red-800 text-red-400 hover:bg-red-950"
+                                >
+                                  <Trash2 className="w-4 h-4" />
+                                </Button>
+                              </div>
+                            </div>
+                          ))}
                         </div>
                       </div>
                     ))}
