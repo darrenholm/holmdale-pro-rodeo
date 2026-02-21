@@ -344,44 +344,43 @@ export default function GateScan() {
       return;
     }
 
-    const newScanned = [...wristbandsScanned, scannedRfidTag];
-    setWristbandsScanned(newScanned);
-    setRfidTagId('');
-
-    if (newScanned.length >= totalWristbandsNeeded) {
-      // All wristbands scanned, update ticket in Railway
-      const updatedWristbands = newScanned.map((tag_id) => ({
-        tag_id,
-        is_19_plus: false // Age verification happens at bar/ID check, not gate
-      }));
-
-      console.log('Saving RFID wristbands to Railway:', updatedWristbands);
-
+    try {
       // Get Railway token
       const loginResponse = await base44.functions.invoke('loginRailway', {});
       const railwayToken = loginResponse.data.token;
 
-      // Update ticket in Railway with wristbands and scan status
+      console.log('Saving RFID tag to Railway:', scannedRfidTag);
+
+      // Save this wristband immediately to Railway using new endpoint
       await base44.functions.invoke('scanTicketRailway', {
         id: ticket.id,
         token: railwayToken,
         scanData: {
-          rfid_wristbands: updatedWristbands,
-          scanned: true,
-          scanned_at: new Date().toISOString()
+          rfid_tag_id: scannedRfidTag
         }
       });
 
-      console.log('RFID wristbands saved successfully');
+      console.log('RFID tag saved successfully');
 
-      setResult({
-        success: true,
-        message: 'Entry approved!',
-        ticket: { ...ticket, rfid_wristbands: updatedWristbands }
-      });
-      setStep(STEP.SUCCESS);
-    } else {
-      setCurrentWristbandIndex(newScanned.length);
+      const newScanned = [...wristbandsScanned, scannedRfidTag];
+      setWristbandsScanned(newScanned);
+      setRfidTagId('');
+
+      if (newScanned.length >= totalWristbandsNeeded) {
+        // All wristbands scanned
+        setResult({
+          success: true,
+          message: 'Entry approved!',
+          ticket: { ...ticket, rfid_tag_id: scannedRfidTag }
+        });
+        setStep(STEP.SUCCESS);
+      } else {
+        setCurrentWristbandIndex(newScanned.length);
+      }
+    } catch (error) {
+      console.error('Error saving RFID:', error);
+      alert('Failed to save RFID tag: ' + error.message);
+      setRfidTagId('');
     }
   };
 

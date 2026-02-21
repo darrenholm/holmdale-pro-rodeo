@@ -19,7 +19,7 @@ Deno.serve(async (req) => {
     console.log('Request body:', scanData);
 
     const result = await railwayRequest(ADMIN_ENDPOINTS.SCAN_TICKET, {
-      method: 'PUT',
+      method: 'POST',
       token,
       body: scanData || {},
       params: { id }
