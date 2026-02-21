@@ -1,4 +1,4 @@
-const BASE_URL = 'http://localhost:8080/api';
+const BASE_URL = 'https://rodeo-fresh-production-7348.up.railway.app/api';
 
 const PUBLIC_ENDPOINTS = {
   GET_EVENTS: '/events',
