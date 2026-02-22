@@ -43,15 +43,7 @@ export default function BarSales() {
             document.body.appendChild(script);
         }
 
-        // Auto-start scanner when page loads
-        const timer = setTimeout(() => {
-            if (step === 'scan' && !isScanning) {
-                scanRFID();
-            }
-        }, 100);
-
         return () => {
-            clearTimeout(timer);
             try {
                 if (monerisCheckoutRef.current?.closeCheckout) {
                     monerisCheckoutRef.current.closeCheckout();
@@ -61,6 +53,13 @@ export default function BarSales() {
             }
         };
     }, []);
+
+    useEffect(() => {
+        // Auto-start scanner when on scan step
+        if (step === 'scan' && !isScanning) {
+            scanRFID();
+        }
+    }, [step]);
 
     useEffect(() => {
         if (showCheckout && checkoutTicket && typeof window.monerisCheckout !== 'undefined') {
@@ -111,6 +110,7 @@ export default function BarSales() {
         if (isScanning) return;
         
         setIsScanning(true);
+        setError('');
         isProcessingRef.current = false;
         
         try {
@@ -120,7 +120,7 @@ export default function BarSales() {
                 
                 await ndef.scan();
                 
-                ndef.addEventListener('reading', async ({ serialNumber }) => {
+                ndef.onreading = async ({ serialNumber }) => {
                     if (isProcessingRef.current) return;
                     isProcessingRef.current = true;
                     
@@ -146,9 +146,11 @@ export default function BarSales() {
                         setCustomerName(ticket.customer_name);
                     }
                     
+                    // Stop scanning after successful read
+                    ndef.onreading = null;
                     setStep('select');
                     setIsScanning(false);
-                }, { once: true });
+                };
                 
             } else {
                 alert('NFC not supported on this device');
