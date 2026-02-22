@@ -351,16 +351,20 @@ export default function GateScan() {
 
       console.log('Saving RFID tag to Railway:', scannedRfidTag);
 
+      // Calculate bar credits per wristband if ticket has bar credits
+      const barCreditsPerWristband = ticket.bar_credits ? Math.floor(ticket.bar_credits / totalWristbandsNeeded) : 0;
+
       // Save this wristband immediately to Railway using new endpoint
       await base44.functions.invoke('scanTicketRailway', {
         id: ticket.id,
         token: railwayToken,
         scanData: {
-          rfid_tag_id: scannedRfidTag
+          rfid_tag_id: scannedRfidTag,
+          bar_credits: barCreditsPerWristband
         }
       });
 
-      console.log('RFID tag saved successfully');
+      console.log('RFID tag saved with bar credits:', barCreditsPerWristband);
 
       const newScanned = [...wristbandsScanned, scannedRfidTag];
       setWristbandsScanned(newScanned);

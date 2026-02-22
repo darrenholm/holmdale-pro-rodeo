@@ -1,7 +1,7 @@
 Deno.serve(async (req) => {
     try {
       const body = await req.json();
-      const { tickets, eventId, customerEmail, customerName, customerPhone } = body;
+      const { tickets, barTickets, barCredits, eventId, customerEmail, customerName, customerPhone } = body;
 
       if (!tickets || !eventId || !customerEmail || !customerName) {
         return Response.json({ error: 'Missing required fields' }, { status: 400 });
@@ -69,7 +69,8 @@ Deno.serve(async (req) => {
     const generalSubtotal = (tickets.general || 0) * adultPrice;
     const childSubtotal = (tickets.child || 0) * childPrice;
     const familySubtotal = (tickets.family || 0) * familyPrice;
-    const subtotal = generalSubtotal + childSubtotal + familySubtotal;
+    const barTicketsSubtotal = (barTickets || 0) * 7;
+    const subtotal = generalSubtotal + childSubtotal + familySubtotal + barTicketsSubtotal;
     const hst = subtotal * 0.13;
     const total = subtotal + hst;
 
@@ -110,6 +111,7 @@ Deno.serve(async (req) => {
         quantity_adult: quantityAdult,
         quantity_child: quantityChild,
         tickets: tickets,
+        bar_credits: barCredits || 0,
         customer_name: customerName,
         customer_email: customerEmail,
         customer_phone: customerPhone || '',
