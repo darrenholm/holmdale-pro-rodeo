@@ -59,29 +59,42 @@ export default function BarSales() {
         let ndef = null;
 
         async function startScan() {
-            if (isScanning) return;
+            console.log('[NFC] startScan called, isScanning:', isScanning);
+            if (isScanning) {
+                console.log('[NFC] Already scanning, returning');
+                return;
+            }
             isScanning = true;
             setIsScanning(true);
             setError('');
+            console.log('[NFC] Scanner state set to true');
 
             try {
                 if ('NDEFReader' in window) {
+                    console.log('[NFC] NDEFReader available, creating instance');
                     ndef = new NDEFReader();
                     
                     ndef.onreading = async (event) => {
+                        console.log('[NFC] Tag detected! Event:', event);
+                        console.log('[NFC] Serial number:', event.serialNumber);
                         const tagId = event.serialNumber;
                         setRfidTagId(tagId);
                         
+                        console.log('[NFC] Fetching tickets...');
                         const allTickets = await base44.entities.TicketOrder.list();
+                        console.log('[NFC] Total tickets:', allTickets.length);
                         const tickets = allTickets.filter(t => 
                             t.rfid_wristbands && t.rfid_wristbands.some(w => w.tag_id === tagId)
                         );
+                        console.log('[NFC] Matching tickets:', tickets.length);
                         
                         if (tickets.length > 0) {
                             const ticket = tickets[0];
                             const wristband = ticket.rfid_wristbands.find(w => w.tag_id === tagId);
+                            console.log('[NFC] Wristband found:', wristband);
                             
                             if (!wristband.is_19_plus) {
+                                console.log('[NFC] Wristband not 19+');
                                 setError('This wristband is not verified for 19+. Please visit ID check station first.');
                                 setIsScanning(false);
                                 isScanning = false;
@@ -92,20 +105,26 @@ export default function BarSales() {
                             setCustomerName(ticket.customer_name);
                         }
                         
+                        console.log('[NFC] Moving to select step');
                         setStep('select');
                         setIsScanning(false);
                         isScanning = false;
                         ndef = null;
                     };
 
+                    console.log('[NFC] Starting scan...');
                     await ndef.scan();
+                    console.log('[NFC] Scan started successfully, waiting for tag...');
                 } else {
+                    console.log('[NFC] NDEFReader NOT available');
                     alert('NFC not supported on this device');
                     setIsScanning(false);
                     isScanning = false;
                 }
             } catch (error) {
-                console.error('NFC Error:', error);
+                console.error('[NFC] Error in startScan:', error);
+                console.error('[NFC] Error name:', error.name);
+                console.error('[NFC] Error message:', error.message);
                 setError('Failed to start scanner: ' + error.message);
                 setIsScanning(false);
                 isScanning = false;
