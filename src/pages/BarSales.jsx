@@ -30,6 +30,7 @@ export default function BarSales() {
     const [error, setError] = useState('');
     const monerisCheckoutRef = useRef(null);
     const ndefReaderRef = useRef(null);
+    const isProcessingRef = useRef(false);
     const queryClient = useQueryClient();
 
     useEffect(() => {
@@ -100,21 +101,18 @@ export default function BarSales() {
 
     const scanRFID = async () => {
         setIsScanning(true);
+        isProcessingRef.current = false;
+        
         try {
             if ('NDEFReader' in window) {
-                // Clean up any existing reader
-                if (ndefReaderRef.current) {
-                    try {
-                        ndefReaderRef.current.removeEventListener('reading', ndefReaderRef.current._handler);
-                    } catch (e) {
-                        console.log('No existing handler to remove');
-                    }
-                }
-
                 const ndef = new NDEFReader();
                 await ndef.scan();
                 
                 const handler = async ({ serialNumber }) => {
+                    // Prevent multiple reads
+                    if (isProcessingRef.current) return;
+                    isProcessingRef.current = true;
+                    
                     const tagId = serialNumber;
                     setRfidTagId(tagId);
                     
@@ -131,20 +129,17 @@ export default function BarSales() {
                         if (!wristband.is_19_plus) {
                             setError('This wristband is not verified for 19+. Please visit ID check station first.');
                             setIsScanning(false);
+                            isProcessingRef.current = false;
                             return;
                         }
                         
                         setCustomerName(ticket.customer_name);
                     }
                     
-                    // Remove the event listener after successful scan
-                    ndef.removeEventListener('reading', handler);
-                    
                     setStep('select');
                     setIsScanning(false);
                 };
 
-                ndef._handler = handler;
                 ndef.addEventListener('reading', handler);
                 ndefReaderRef.current = ndef;
             } else {
@@ -155,6 +150,7 @@ export default function BarSales() {
             console.error('NFC Error:', error);
             alert('Failed to scan RFID. Please try again.');
             setIsScanning(false);
+            isProcessingRef.current = false;
         }
     };
 
@@ -206,6 +202,7 @@ export default function BarSales() {
         setShowCheckout(false);
         setCheckoutTicket(null);
         setError('');
+        isProcessingRef.current = false;
     };
 
     if (showCheckout) {
