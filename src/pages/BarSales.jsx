@@ -55,9 +55,70 @@ export default function BarSales() {
     }, []);
 
     useEffect(() => {
-        // Auto-start scanner when on scan step
-        if (step === 'scan' && !isScanning) {
-            scanRFID();
+        let isScanning = false;
+        let ndef = null;
+
+        async function startScan() {
+            if (isScanning) return;
+            isScanning = true;
+            setIsScanning(true);
+            setError('');
+
+            try {
+                if ('NDEFReader' in window) {
+                    ndef = new NDEFReader();
+                    
+                    ndef.onreading = async (event) => {
+                        const tagId = event.serialNumber;
+                        setRfidTagId(tagId);
+                        
+                        const allTickets = await base44.entities.TicketOrder.list();
+                        const tickets = allTickets.filter(t => 
+                            t.rfid_wristbands && t.rfid_wristbands.some(w => w.tag_id === tagId)
+                        );
+                        
+                        if (tickets.length > 0) {
+                            const ticket = tickets[0];
+                            const wristband = ticket.rfid_wristbands.find(w => w.tag_id === tagId);
+                            
+                            if (!wristband.is_19_plus) {
+                                setError('This wristband is not verified for 19+. Please visit ID check station first.');
+                                setIsScanning(false);
+                                isScanning = false;
+                                ndef = null;
+                                return;
+                            }
+                            
+                            setCustomerName(ticket.customer_name);
+                        }
+                        
+                        setStep('select');
+                        setIsScanning(false);
+                        isScanning = false;
+                        ndef = null;
+                    };
+
+                    await ndef.scan();
+                } else {
+                    alert('NFC not supported on this device');
+                    setIsScanning(false);
+                    isScanning = false;
+                }
+            } catch (error) {
+                console.error('NFC Error:', error);
+                setError('Failed to start scanner: ' + error.message);
+                setIsScanning(false);
+                isScanning = false;
+            }
+        }
+
+        if (step === 'scan') {
+            const timer = setTimeout(() => startScan(), 500);
+            return () => {
+                clearTimeout(timer);
+                isScanning = false;
+                ndef = null;
+            };
         }
     }, [step]);
 
@@ -106,63 +167,7 @@ export default function BarSales() {
         }
     }, [showCheckout, checkoutTicket, rfidTagId, queryClient]);
 
-    const scanRFID = async () => {
-        if (isScanning) return;
-        
-        setIsScanning(true);
-        setError('');
-        isProcessingRef.current = false;
-        
-        try {
-            if ('NDEFReader' in window) {
-                const ndef = new NDEFReader();
-                ndefReaderRef.current = ndef;
-                
-                await ndef.scan();
-                
-                ndef.onreading = async ({ serialNumber }) => {
-                    if (isProcessingRef.current) return;
-                    isProcessingRef.current = true;
-                    
-                    const tagId = serialNumber;
-                    setRfidTagId(tagId);
-                    
-                    const allTickets = await base44.entities.TicketOrder.list();
-                    const tickets = allTickets.filter(t => 
-                        t.rfid_wristbands && t.rfid_wristbands.some(w => w.tag_id === tagId)
-                    );
-                    
-                    if (tickets.length > 0) {
-                        const ticket = tickets[0];
-                        const wristband = ticket.rfid_wristbands.find(w => w.tag_id === tagId);
-                        
-                        if (!wristband.is_19_plus) {
-                            setError('This wristband is not verified for 19+. Please visit ID check station first.');
-                            setIsScanning(false);
-                            isProcessingRef.current = false;
-                            return;
-                        }
-                        
-                        setCustomerName(ticket.customer_name);
-                    }
-                    
-                    // Stop scanning after successful read
-                    ndef.onreading = null;
-                    setStep('select');
-                    setIsScanning(false);
-                };
-                
-            } else {
-                alert('NFC not supported on this device');
-                setIsScanning(false);
-            }
-        } catch (error) {
-            console.error('NFC Error:', error);
-            setError('Failed to start scanner: ' + error.message);
-            setIsScanning(false);
-            isProcessingRef.current = false;
-        }
-    };
+
 
     const createCheckout = useMutation({
         mutationFn: async (checkoutData) => {
@@ -312,23 +317,18 @@ export default function BarSales() {
                                 </div>
                                 <h3 className="text-2xl font-bold text-white mb-2">Scan RFID Wristband</h3>
                                 <p className="text-stone-400 mb-8">Hold the wristband near the device to scan</p>
-                                <Button
-                                    onClick={scanRFID}
-                                    disabled={isScanning}
-                                    className="bg-green-500 hover:bg-green-600 text-stone-900 px-8 py-6 text-lg"
-                                >
+                                <div className="flex items-center justify-center">
                                     {isScanning ? (
-                                        <>
-                                            <Loader2 className="w-5 h-5 mr-2 animate-spin" />
-                                            Scanning...
-                                        </>
+                                        <div className="flex items-center gap-2 text-green-400">
+                                            <Loader2 className="w-8 h-8 animate-spin" />
+                                            <span className="text-xl">Scanning...</span>
+                                        </div>
                                     ) : (
-                                        <>
-                                            <Scan className="w-5 h-5 mr-2" />
-                                            Start Scan
-                                        </>
+                                        <Badge variant="outline" className="text-stone-400 border-stone-600">
+                                            Scanner Ready
+                                        </Badge>
                                     )}
-                                </Button>
+                                </div>
 
                             </div>
                         )}
