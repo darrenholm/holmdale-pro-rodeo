@@ -29,6 +29,7 @@ export default function BarSales() {
     const [checkoutTicket, setCheckoutTicket] = useState(null);
     const [error, setError] = useState('');
     const monerisCheckoutRef = useRef(null);
+    const ndefReaderRef = useRef(null);
     const queryClient = useQueryClient();
 
     useEffect(() => {
@@ -101,10 +102,19 @@ export default function BarSales() {
         setIsScanning(true);
         try {
             if ('NDEFReader' in window) {
+                // Clean up any existing reader
+                if (ndefReaderRef.current) {
+                    try {
+                        ndefReaderRef.current.removeEventListener('reading', ndefReaderRef.current._handler);
+                    } catch (e) {
+                        console.log('No existing handler to remove');
+                    }
+                }
+
                 const ndef = new NDEFReader();
                 await ndef.scan();
                 
-                ndef.addEventListener('reading', async ({ serialNumber }) => {
+                const handler = async ({ serialNumber }) => {
                     const tagId = serialNumber;
                     setRfidTagId(tagId);
                     
@@ -127,9 +137,16 @@ export default function BarSales() {
                         setCustomerName(ticket.customer_name);
                     }
                     
+                    // Remove the event listener after successful scan
+                    ndef.removeEventListener('reading', handler);
+                    
                     setStep('select');
                     setIsScanning(false);
-                });
+                };
+
+                ndef._handler = handler;
+                ndef.addEventListener('reading', handler);
+                ndefReaderRef.current = ndef;
             } else {
                 alert('NFC not supported on this device');
                 setIsScanning(false);
