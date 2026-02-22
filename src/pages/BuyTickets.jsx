@@ -51,6 +51,7 @@ export default function BuyTickets() {
         child: 0,
         family: 0
     });
+    const [barTickets, setBarTickets] = useState(0);
     const [customerInfo, setCustomerInfo] = useState({
         name: '',
         email: '',
@@ -255,7 +256,8 @@ export default function BuyTickets() {
     const generalSubtotal = quantities.general * adultPrice;
     const childSubtotal = quantities.child * childPrice;
     const familySubtotal = quantities.family * familyPrice;
-    const subtotal = generalSubtotal + childSubtotal + familySubtotal;
+    const barTicketsSubtotal = barTickets * 7; // $7 per pack of 10
+    const subtotal = generalSubtotal + childSubtotal + familySubtotal + barTicketsSubtotal;
     const hst = subtotal * 0.13;
     const totalPrice = subtotal + hst;
     const totalQuantity = quantities.general + quantities.child + quantities.family;
@@ -276,6 +278,8 @@ export default function BuyTickets() {
         try {
             const checkoutData = {
                 tickets: quantities,
+                barTickets: barTickets,
+                barCredits: barTickets * 7, // $7 worth of credits per pack
                 eventId: eventId,
                 customerEmail: customerInfo.email,
                 customerName: customerInfo.name,
@@ -586,6 +590,56 @@ export default function BuyTickets() {
                                     })}
                                 </CardContent>
                             </Card>
+
+                            {/* Bar Tickets */}
+                            <Card className="bg-stone-900 border-stone-800">
+                                <CardHeader>
+                                    <CardTitle className="text-white flex items-center gap-2">
+                                        🍺 Bar Tickets (Optional)
+                                    </CardTitle>
+                                    <p className="text-stone-400 text-sm mt-2">
+                                        Pre-purchase bar tickets and get them loaded onto your wristband at entry! Each pack includes 10 tickets ($0.70 each).
+                                    </p>
+                                </CardHeader>
+                                <CardContent>
+                                    <div className="bg-stone-800/50 rounded-xl p-6">
+                                        <div className="flex items-center justify-between mb-4">
+                                            <div>
+                                                <h3 className="text-white font-semibold mb-1">Bar Ticket Pack (10 tickets)</h3>
+                                                <p className="text-stone-400 text-sm">Auto-loaded to your wristband at check-in</p>
+                                            </div>
+                                            <div className="text-right">
+                                                <p className="text-2xl font-bold text-green-400">$7.00</p>
+                                                <p className="text-stone-500 text-sm">per pack</p>
+                                            </div>
+                                        </div>
+                                        <div className="flex items-center gap-3 pt-3 border-t border-stone-700">
+                                            <Button
+                                                type="button"
+                                                variant="outline"
+                                                size="icon"
+                                                onClick={() => setBarTickets(Math.max(0, barTickets - 1))}
+                                                className="border-stone-600 text-white hover:bg-stone-700 h-8 w-8"
+                                            >
+                                                <Minus className="w-3 h-3" />
+                                            </Button>
+                                            <span className="text-white font-semibold w-12 text-center">{barTickets}</span>
+                                            <Button
+                                                type="button"
+                                                variant="outline"
+                                                size="icon"
+                                                onClick={() => setBarTickets(barTickets + 1)}
+                                                className="border-stone-600 text-white hover:bg-stone-700 h-8 w-8"
+                                            >
+                                                <Plus className="w-3 h-3" />
+                                            </Button>
+                                            <span className="text-stone-400 text-sm ml-auto">
+                                                = {barTickets * 10} bar tickets (${(barTickets * 7).toFixed(2)})
+                                            </span>
+                                        </div>
+                                    </div>
+                                </CardContent>
+                            </Card>
                             
                             {/* Customer Info */}
                              <Card className="bg-stone-900 border-stone-800">
@@ -675,12 +729,18 @@ export default function BuyTickets() {
                                         </div>
                                     )}
                                     {quantities.family > 0 && (
-                                        <div className="flex justify-between text-stone-300">
-                                            <span>{quantities.family}x Family Packages</span>
-                                            <span>${(quantities.family * familyPrice).toFixed(2)}</span>
-                                        </div>
+                                       <div className="flex justify-between text-stone-300">
+                                           <span>{quantities.family}x Family Packages</span>
+                                           <span>${(quantities.family * familyPrice).toFixed(2)}</span>
+                                       </div>
                                     )}
-                                    {totalQuantity > 0 && (
+                                    {barTickets > 0 && (
+                                       <div className="flex justify-between text-stone-300">
+                                           <span>{barTickets}x Bar Ticket Packs</span>
+                                           <span>${(barTickets * 7).toFixed(2)}</span>
+                                       </div>
+                                    )}
+                                    {(totalQuantity > 0 || barTickets > 0) && (
                                         <>
                                             <div className="flex justify-between text-stone-300">
                                                 <span>Subtotal</span>
