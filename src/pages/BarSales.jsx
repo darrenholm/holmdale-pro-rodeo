@@ -85,29 +85,31 @@ export default function BarSales() {
                         const tagId = event.serialNumber;
                         setRfidTagId(tagId);
                         
-                        addDebugLog('Fetching tickets...');
-                        const allTickets = await base44.entities.TicketOrder.list();
-                        addDebugLog('Total tickets: ' + allTickets.length);
-                        const tickets = allTickets.filter(t => 
-                            t.rfid_wristbands && t.rfid_wristbands.some(w => w.tag_id === tagId)
-                        );
-                        addDebugLog('Matching tickets: ' + tickets.length);
-                        
-                        if (tickets.length > 0) {
-                            const ticket = tickets[0];
-                            const wristband = ticket.rfid_wristbands.find(w => w.tag_id === tagId);
-                            addDebugLog('Wristband found');
+                        addDebugLog('Fetching ticket from Railway...');
+                        try {
+                            const response = await base44.functions.invoke('getTicketFromRailway', { rfid_tag_id: tagId });
+                            addDebugLog('Railway response received');
+                            const ticketData = response.data?.data;
                             
-                            if (!wristband.is_19_plus) {
-                                addDebugLog('Not 19+');
-                                setError('This wristband is not verified for 19+. Please visit ID check station first.');
-                                setIsScanning(false);
-                                isScanning = false;
-                                ndef = null;
-                                return;
+                            if (ticketData) {
+                                addDebugLog('Ticket found');
+                                
+                                if (!ticketData.is_19_plus) {
+                                    addDebugLog('Not 19+');
+                                    setError('This wristband is not verified for 19+. Please visit ID check station first.');
+                                    setIsScanning(false);
+                                    isScanning = false;
+                                    ndef = null;
+                                    return;
+                                }
+                                
+                                setCustomerName(ticketData.customer_name || 'Customer');
+                                addDebugLog('Customer: ' + ticketData.customer_name);
+                            } else {
+                                addDebugLog('No ticket found for this tag');
                             }
-                            
-                            setCustomerName(ticket.customer_name);
+                        } catch (err) {
+                            addDebugLog('Error: ' + err.message);
                         }
                         
                         addDebugLog('Moving to select step');
