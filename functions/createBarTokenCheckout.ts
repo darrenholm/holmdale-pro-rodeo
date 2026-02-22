@@ -11,12 +11,18 @@ Deno.serve(async (req) => {
             return Response.json({ error: 'Missing required fields' }, { status: 400 });
         }
 
-        // Fetch customer name from ticket order
-        const allTickets = await base44.asServiceRole.entities.TicketOrder.list();
-        const tickets = allTickets.filter(t => 
-            t.rfid_wristbands && t.rfid_wristbands.some(w => w.tag_id === rfidTagId)
-        );
-        const customerName = tickets.length > 0 ? tickets[0].customer_name : 'Bar Customer';
+        // Fetch customer name from Railway ticket
+        let customerName = 'Bar Customer';
+        try {
+            const ticketResponse = await base44.functions.invoke('getTicketFromRailway', { 
+                rfid_tag_id: rfidTagId 
+            });
+            if (ticketResponse.data?.data?.customer_name) {
+                customerName = ticketResponse.data.data.customer_name;
+            }
+        } catch (err) {
+            console.log('Could not fetch customer name:', err.message);
+        }
 
         // Price is $0.07 per ticket including tax
         const totalPrice = ticketQuantity * 0.07;

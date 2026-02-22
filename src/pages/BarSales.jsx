@@ -168,23 +168,18 @@ export default function BarSales() {
 
             myCheckout.setCallback('payment_complete', async (data) => {
                 console.log('Payment complete:', data);
+                addDebugLog('Payment complete!');
                 
-                // Update the most recent pending purchase to completed
-                const purchases = await base44.entities.BarPurchase.filter({ 
-                    rfid_tag_id: rfidTagId,
-                    status: 'pending'
-                });
-                
-                if (purchases.length > 0) {
-                    await base44.entities.BarPurchase.update(purchases[0].id, {
-                        transaction_id: data.ticket,
-                        status: 'completed'
-                    });
+                // Record purchase completion
+                try {
+                    // You can add Railway API call here to save bar purchase if needed
+                    console.log('Bar purchase completed for RFID:', rfidTagId);
+                } catch (err) {
+                    console.error('Error recording purchase:', err);
                 }
 
                 setShowCheckout(false);
                 setStep('success');
-                queryClient.invalidateQueries(['barPurchases']);
             });
 
             myCheckout.startCheckout(checkoutTicket);
@@ -202,34 +197,29 @@ export default function BarSales() {
 
     const handlePurchase = async () => {
         try {
+            addDebugLog('Starting purchase...');
             const totalPrice = selectedQuantity * TICKET_PRICE;
             
-            // Create pending purchase record first
-            const purchase = await base44.entities.BarPurchase.create({
-                rfid_tag_id: rfidTagId,
-                customer_name: customerName,
-                ticket_quantity: selectedQuantity,
-                total_price: totalPrice,
-                status: 'pending'
-            });
-
+            addDebugLog('Creating checkout...');
             const result = await createCheckout.mutateAsync({
                 rfidTagId,
                 ticketQuantity: selectedQuantity,
                 customerName
             });
+            addDebugLog('Checkout created');
 
             if (result.ticket) {
+                addDebugLog('Opening Moneris checkout');
                 setCheckoutTicket(result.ticket);
                 setShowCheckout(true);
             } else {
-                // Mark as failed if checkout creation fails
-                await base44.entities.BarPurchase.update(purchase.id, { status: 'failed' });
+                addDebugLog('No ticket in response');
                 alert('Failed to create checkout session');
             }
         } catch (error) {
+            addDebugLog('Error: ' + error.message);
             console.error('Checkout error:', error);
-            alert('Payment checkout failed');
+            alert('Payment checkout failed: ' + error.message);
         }
     };
 
