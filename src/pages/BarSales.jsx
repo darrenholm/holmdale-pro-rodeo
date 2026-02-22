@@ -44,11 +44,14 @@ export default function BarSales() {
         }
 
         // Auto-start scanner when page loads
-        if (step === 'scan') {
-            scanRFID();
-        }
+        const timer = setTimeout(() => {
+            if (step === 'scan' && !isScanning) {
+                scanRFID();
+            }
+        }, 100);
 
         return () => {
+            clearTimeout(timer);
             try {
                 if (monerisCheckoutRef.current?.closeCheckout) {
                     monerisCheckoutRef.current.closeCheckout();
@@ -105,7 +108,7 @@ export default function BarSales() {
     }, [showCheckout, checkoutTicket, rfidTagId, queryClient]);
 
     const scanRFID = async () => {
-        if (isScanning) return; // Prevent multiple scan initiations
+        if (isScanning) return;
         
         setIsScanning(true);
         isProcessingRef.current = false;
@@ -113,25 +116,26 @@ export default function BarSales() {
         try {
             if ('NDEFReader' in window) {
                 const ndef = new NDEFReader();
+                ndefReaderRef.current = ndef;
                 
-                const handler = async ({ serialNumber }) => {
-                    // Prevent multiple reads
+                await ndef.scan();
+                
+                ndef.addEventListener('reading', async ({ serialNumber }) => {
                     if (isProcessingRef.current) return;
                     isProcessingRef.current = true;
                     
                     const tagId = serialNumber;
                     setRfidTagId(tagId);
                     
-                    // Look up customer from linked ticket
                     const allTickets = await base44.entities.TicketOrder.list();
                     const tickets = allTickets.filter(t => 
                         t.rfid_wristbands && t.rfid_wristbands.some(w => w.tag_id === tagId)
                     );
+                    
                     if (tickets.length > 0) {
                         const ticket = tickets[0];
                         const wristband = ticket.rfid_wristbands.find(w => w.tag_id === tagId);
                         
-                        // Check if wristband is verified for 19+
                         if (!wristband.is_19_plus) {
                             setError('This wristband is not verified for 19+. Please visit ID check station first.');
                             setIsScanning(false);
@@ -144,18 +148,15 @@ export default function BarSales() {
                     
                     setStep('select');
                     setIsScanning(false);
-                };
-
-                ndef.addEventListener('reading', handler, { once: true });
-                await ndef.scan();
-                ndefReaderRef.current = ndef;
+                }, { once: true });
+                
             } else {
                 alert('NFC not supported on this device');
                 setIsScanning(false);
             }
         } catch (error) {
             console.error('NFC Error:', error);
-            alert('Failed to scan RFID. Please try again.');
+            setError('Failed to start scanner: ' + error.message);
             setIsScanning(false);
             isProcessingRef.current = false;
         }
