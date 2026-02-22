@@ -28,10 +28,16 @@ export default function BarSales() {
     const [showCheckout, setShowCheckout] = useState(false);
     const [checkoutTicket, setCheckoutTicket] = useState(null);
     const [error, setError] = useState('');
+    const [debugLog, setDebugLog] = useState([]);
     const monerisCheckoutRef = useRef(null);
     const ndefReaderRef = useRef(null);
     const isProcessingRef = useRef(false);
     const queryClient = useQueryClient();
+
+    const addDebugLog = (message) => {
+        const timestamp = new Date().toLocaleTimeString();
+        setDebugLog(prev => [...prev, `[${timestamp}] ${message}`].slice(-10));
+    };
 
     useEffect(() => {
         // Load Moneris Checkout script
@@ -59,42 +65,41 @@ export default function BarSales() {
         let ndef = null;
 
         async function startScan() {
-            console.log('[NFC] startScan called, isScanning:', isScanning);
+            addDebugLog('startScan called');
             if (isScanning) {
-                console.log('[NFC] Already scanning, returning');
+                addDebugLog('Already scanning, returning');
                 return;
             }
             isScanning = true;
             setIsScanning(true);
             setError('');
-            console.log('[NFC] Scanner state set to true');
+            addDebugLog('Scanner state set to true');
 
             try {
                 if ('NDEFReader' in window) {
-                    console.log('[NFC] NDEFReader available, creating instance');
+                    addDebugLog('NDEFReader available');
                     ndef = new NDEFReader();
                     
                     ndef.onreading = async (event) => {
-                        console.log('[NFC] Tag detected! Event:', event);
-                        console.log('[NFC] Serial number:', event.serialNumber);
+                        addDebugLog('Tag detected! SN: ' + event.serialNumber);
                         const tagId = event.serialNumber;
                         setRfidTagId(tagId);
                         
-                        console.log('[NFC] Fetching tickets...');
+                        addDebugLog('Fetching tickets...');
                         const allTickets = await base44.entities.TicketOrder.list();
-                        console.log('[NFC] Total tickets:', allTickets.length);
+                        addDebugLog('Total tickets: ' + allTickets.length);
                         const tickets = allTickets.filter(t => 
                             t.rfid_wristbands && t.rfid_wristbands.some(w => w.tag_id === tagId)
                         );
-                        console.log('[NFC] Matching tickets:', tickets.length);
+                        addDebugLog('Matching tickets: ' + tickets.length);
                         
                         if (tickets.length > 0) {
                             const ticket = tickets[0];
                             const wristband = ticket.rfid_wristbands.find(w => w.tag_id === tagId);
-                            console.log('[NFC] Wristband found:', wristband);
+                            addDebugLog('Wristband found');
                             
                             if (!wristband.is_19_plus) {
-                                console.log('[NFC] Wristband not 19+');
+                                addDebugLog('Not 19+');
                                 setError('This wristband is not verified for 19+. Please visit ID check station first.');
                                 setIsScanning(false);
                                 isScanning = false;
@@ -105,26 +110,24 @@ export default function BarSales() {
                             setCustomerName(ticket.customer_name);
                         }
                         
-                        console.log('[NFC] Moving to select step');
+                        addDebugLog('Moving to select step');
                         setStep('select');
                         setIsScanning(false);
                         isScanning = false;
                         ndef = null;
                     };
 
-                    console.log('[NFC] Starting scan...');
+                    addDebugLog('Starting ndef.scan()...');
                     await ndef.scan();
-                    console.log('[NFC] Scan started successfully, waiting for tag...');
+                    addDebugLog('Scan started, waiting for tag');
                 } else {
-                    console.log('[NFC] NDEFReader NOT available');
+                    addDebugLog('NDEFReader NOT available');
                     alert('NFC not supported on this device');
                     setIsScanning(false);
                     isScanning = false;
                 }
             } catch (error) {
-                console.error('[NFC] Error in startScan:', error);
-                console.error('[NFC] Error name:', error.name);
-                console.error('[NFC] Error message:', error.message);
+                addDebugLog('ERROR: ' + error.message);
                 setError('Failed to start scanner: ' + error.message);
                 setIsScanning(false);
                 isScanning = false;
@@ -336,7 +339,7 @@ export default function BarSales() {
                                 </div>
                                 <h3 className="text-2xl font-bold text-white mb-2">Scan RFID Wristband</h3>
                                 <p className="text-stone-400 mb-8">Hold the wristband near the device to scan</p>
-                                <div className="flex items-center justify-center">
+                                <div className="flex items-center justify-center mb-6">
                                     {isScanning ? (
                                         <div className="flex items-center gap-2 text-green-400">
                                             <Loader2 className="w-8 h-8 animate-spin" />
@@ -349,6 +352,16 @@ export default function BarSales() {
                                     )}
                                 </div>
 
+                                {debugLog.length > 0 && (
+                                    <div className="bg-stone-800/50 rounded-lg p-4 text-left max-w-md mx-auto">
+                                        <p className="text-xs text-stone-500 mb-2 font-mono">Debug Log:</p>
+                                        <div className="space-y-1 text-xs text-stone-300 font-mono max-h-40 overflow-y-auto">
+                                            {debugLog.map((log, i) => (
+                                                <div key={i}>{log}</div>
+                                            ))}
+                                        </div>
+                                    </div>
+                                )}
                             </div>
                         )}
 
