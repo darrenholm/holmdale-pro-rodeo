@@ -43,6 +43,11 @@ export default function BarSales() {
             document.body.appendChild(script);
         }
 
+        // Auto-start scanner when page loads
+        if (step === 'scan') {
+            scanRFID();
+        }
+
         return () => {
             try {
                 if (monerisCheckoutRef.current?.closeCheckout) {
@@ -100,13 +105,14 @@ export default function BarSales() {
     }, [showCheckout, checkoutTicket, rfidTagId, queryClient]);
 
     const scanRFID = async () => {
+        if (isScanning) return; // Prevent multiple scan initiations
+        
         setIsScanning(true);
         isProcessingRef.current = false;
         
         try {
             if ('NDEFReader' in window) {
                 const ndef = new NDEFReader();
-                await ndef.scan();
                 
                 const handler = async ({ serialNumber }) => {
                     // Prevent multiple reads
@@ -140,7 +146,8 @@ export default function BarSales() {
                     setIsScanning(false);
                 };
 
-                ndef.addEventListener('reading', handler);
+                ndef.addEventListener('reading', handler, { once: true });
+                await ndef.scan();
                 ndefReaderRef.current = ndef;
             } else {
                 alert('NFC not supported on this device');
