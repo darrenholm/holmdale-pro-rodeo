@@ -237,7 +237,7 @@ Deno.serve(async (req) => {
     // Send email
     console.log('Sending confirmation email to:', ticketOrder.customer_email);
     const emailResult = await resend.emails.send({
-      from: 'Holmdale Pro Rodeo <info@holmdalerodeo.ca>',
+      from: 'Holmdale Pro Rodeo <noreply@holmdalerodeo.app.base44.com>',
       to: ticketOrder.customer_email,
       subject: `Your Tickets for ${event.title} - Confirmation #${ticketOrder.confirmation_code}`,
       html: emailHtml
