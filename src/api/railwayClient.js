@@ -197,6 +197,12 @@ const functions = {
   async invoke(functionName, params = {}) {
     // Map old function names to direct API calls
     const FUNCTION_MAP = {
+      // Auth - handled automatically but kept for compatibility
+      'loginRailway':                  async () => {
+        const token = await api.login();
+        return { token };
+      },
+
       // Direct GET endpoints
       'getEventsFromRailway':          () => api.get('/events'),
       'getProductsFromRailway':        () => api.get('/products'),
@@ -231,7 +237,7 @@ const functions = {
         }
         return { success: true, ticket: foundTicket };
       },
-      'scanTicketRailway':             () => api.post(`/ticket-orders/${params.id}/scan`, params),
+      'scanTicketRailway':             () => api.post(`/ticket-orders/${params.id}/scan`, { rfid_tag_id: params.scanData?.rfid_tag_id, bar_credits: params.scanData?.bar_credits }),
       'searchTickets':                 () => api.post('/ticket-orders/search', params),
       'searchRefundableTickets':       () => api.post('/ticket-orders/search-refundable', params),
       'insertTicketToRailway':         () => api.post('/ticket-orders', params),
