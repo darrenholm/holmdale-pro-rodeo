@@ -207,7 +207,30 @@ const functions = {
       'getTicketByConfirmationRailway':() => api.get(`/ticket-orders/confirmation/${params.code}`),
       
       // Ticket operations
-      'getTicketFromRailway':          () => api.get(`/ticket-orders?rfid_tag_id=${params.rfid_tag_id}`),
+      'getTicketFromRailway':          async () => {
+        // Fetch all tickets and search by confirmation code or RFID
+        const allTickets = await api.get('/ticket-orders');
+        const tickets = Array.isArray(allTickets) ? allTickets : allTickets.data || [];
+        const identifier = params.identifier || params.rfid_tag_id;
+        
+        let foundTicket = null;
+        if (identifier && (identifier.includes('-') || identifier.length < 10)) {
+          // Likely confirmation code
+          foundTicket = tickets.find(t => t.confirmation_code === identifier);
+        } else if (identifier) {
+          // Likely RFID
+          foundTicket = tickets.find(t => 
+            t.rfid_wristbands && 
+            Array.isArray(t.rfid_wristbands) &&
+            t.rfid_wristbands.some(w => w.tag_id === identifier)
+          );
+        }
+        
+        if (!foundTicket) {
+          return { success: false, message: 'Ticket not found', type: 'not_found' };
+        }
+        return { success: true, ticket: foundTicket };
+      },
       'scanTicketRailway':             () => api.post(`/ticket-orders/${params.id}/scan`, params),
       'searchTickets':                 () => api.post('/ticket-orders/search', params),
       'searchRefundableTickets':       () => api.post('/ticket-orders/search-refundable', params),
