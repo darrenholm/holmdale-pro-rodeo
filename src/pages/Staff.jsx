@@ -3,8 +3,9 @@ import { Link } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { QrCode, Ticket, CreditCard, LogOut, Radio, DollarSign, Mail, BadgeCheck, Wine, RefreshCw, Calendar } from 'lucide-react';
+import { QrCode, Ticket, CreditCard, LogOut, Radio, DollarSign, Mail, BadgeCheck, Wine, RefreshCw, Calendar, UtensilsCrossed, ClipboardList } from 'lucide-react';
 import { createPageUrl } from '@/utils';
+import { LOGO_URL } from '@/lib/constants';
 
 const STAFF_PASSWORD = 'staff2026'; // Change this to your desired password
 
@@ -43,7 +44,8 @@ export default function Staff() {
     return (
       <div className="min-h-screen bg-stone-950 flex items-center justify-center p-4">
         <Card className="bg-stone-900 border-stone-800 w-full max-w-md">
-          <CardHeader>
+          <CardHeader className="items-center">
+            <img src={LOGO_URL} alt="Holmdale Pro Rodeo" className="h-20 w-auto mb-2" />
             <CardTitle className="text-white text-2xl text-center">Staff Access</CardTitle>
           </CardHeader>
           <CardContent>
@@ -78,7 +80,10 @@ export default function Staff() {
     <div className="min-h-screen bg-stone-950 p-4 pt-20">
       <div className="max-w-4xl mx-auto">
         <div className="flex justify-between items-center mb-8">
-          <h1 className="text-3xl font-bold text-white">Staff Dashboard</h1>
+          <div className="flex items-center gap-4">
+            <img src={LOGO_URL} alt="Holmdale Pro Rodeo" className="h-12 w-auto hidden sm:block" />
+            <h1 className="text-3xl font-bold text-white">Staff Dashboard</h1>
+          </div>
           <Button
             onClick={handleLogout}
             variant="outline"
@@ -176,6 +181,26 @@ export default function Staff() {
                 <RefreshCw className="w-16 h-16 text-green-500 mx-auto mb-4" />
                 <h2 className="text-2xl font-bold text-white mb-2">Refund Tickets</h2>
                 <p className="text-gray-400">Process ticket refunds</p>
+              </CardContent>
+            </Card>
+          </Link>
+
+          <Link to={createPageUrl('FoodKiosk')}>
+            <Card className="bg-stone-900 border-stone-800 hover:border-green-600 transition-all cursor-pointer h-full">
+              <CardContent className="p-8 text-center">
+                <UtensilsCrossed className="w-16 h-16 text-green-500 mx-auto mb-4" />
+                <h2 className="text-2xl font-bold text-white mb-2">Food Kiosk</h2>
+                <p className="text-gray-400">Customer food ordering screen</p>
+              </CardContent>
+            </Card>
+          </Link>
+
+          <Link to={createPageUrl('FoodAdmin')}>
+            <Card className="bg-stone-900 border-stone-800 hover:border-green-600 transition-all cursor-pointer h-full">
+              <CardContent className="p-8 text-center">
+                <ClipboardList className="w-16 h-16 text-green-500 mx-auto mb-4" />
+                <h2 className="text-2xl font-bold text-white mb-2">Menu Manager</h2>
+                <p className="text-gray-400">Edit food booth menu & prices</p>
               </CardContent>
             </Card>
           </Link>

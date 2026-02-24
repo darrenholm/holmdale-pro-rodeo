@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { base44 } from '@/api/base44Client';
+import { api, entities } from '@/api/railwayClient';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Scan, Wine, AlertCircle, ArrowLeft, Loader2, CheckCircle } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
+import { LOGO_URL } from '@/lib/constants';
 
 export default function Bartender() {
     const [step, setStep] = useState('scan'); // scan, redeem, success
@@ -39,7 +40,7 @@ export default function Bartender() {
                     setRfidTagId(tagId);
                     
                     // Look up all active bar purchases by RFID tag
-                    const purchases = await base44.entities.BarPurchase.filter({ 
+                    const purchases = await entities.BarPurchase.filter({ 
                         rfid_tag_id: tagId
                     });
                     
@@ -92,7 +93,7 @@ export default function Bartender() {
             // Update all bar purchases proportionally
             const purchaseIds = barPurchaseId.split(',');
             const purchasesToUpdate = await Promise.all(
-                purchaseIds.map(id => base44.entities.BarPurchase.filter({ id }))
+                purchaseIds.map(id => entities.BarPurchase.filter({ id }))
             );
             
             let drinksToDistribute = drinks;
@@ -102,7 +103,7 @@ export default function Bartender() {
                 const available = (purchase.ticket_quantity || 0) - (purchase.drinks_redeemed || 0);
                 const drinksForThisPurchase = Math.min(available, drinksToDistribute);
                 
-                await base44.entities.BarPurchase.update(purchase.id, {
+                await entities.BarPurchase.update(purchase.id, {
                     drinks_redeemed: (purchase.drinks_redeemed || 0) + drinksForThisPurchase
                 });
                 

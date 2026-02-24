@@ -4,6 +4,7 @@ import { Link, useLocation } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { Ticket } from 'lucide-react';
 import { Button } from "@/components/ui/button";
+import { LOGO_URL } from '@/lib/constants';
 
 const navLinks = [
   { name: 'Home', page: 'Home' },
@@ -23,13 +24,15 @@ export default function Sidebar() {
 
   return (
     <motion.div
-      className="hidden md:fixed md:left-0 md:top-0 md:h-screen md:w-48 md:bg-green-500 md:flex md:flex-col md:pt-8 md:px-6 md:z-40 md:shadow-lg"
+      className="hidden md:fixed md:left-0 md:top-0 md:h-screen md:w-48 md:bg-green-500 md:flex md:flex-col md:pt-6 md:px-4 md:z-40 md:shadow-lg"
       initial={{ x: -256 }}
       animate={{ x: 0 }}
       transition={{ duration: 0.3 }}>
       
-      {/* Logo placeholder */}
-      <div className="mb-12 h-16"></div>
+      {/* Logo */}
+      <Link to={createPageUrl('Home')} className="flex justify-center mb-8">
+        <img src={LOGO_URL} alt="Holmdale Pro Rodeo" className="h-20 w-auto drop-shadow-lg" />
+      </Link>
       
       {/* Navigation Links */}
       <nav className="flex flex-col gap-2 flex-1">
@@ -46,7 +49,6 @@ export default function Sidebar() {
           </Link>
         ))}
       </nav>
-
 
     </motion.div>
   );

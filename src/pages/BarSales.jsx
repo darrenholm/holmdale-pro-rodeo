@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
-import { base44 } from '@/api/base44Client';
+import { api, functions } from '@/api/railwayClient';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -9,6 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Scan, DollarSign, CheckCircle, ArrowLeft, Loader2 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
+import { LOGO_URL } from '@/lib/constants';
 
 const ticketOptions = [
     { quantity: 1, label: '1 Ticket', color: 'bg-blue-500' },
@@ -87,7 +88,7 @@ export default function BarSales() {
                         
                         addDebugLog('Fetching ticket from Railway...');
                         try {
-                            const response = await base44.functions.invoke('getTicketFromRailway', { rfid_tag_id: tagId });
+                            const response = await functions.invoke('getTicketFromRailway', { rfid_tag_id: tagId });
                             addDebugLog('Railway response received');
                             const ticketData = response.data?.data;
                             
@@ -190,7 +191,7 @@ export default function BarSales() {
 
     const createCheckout = useMutation({
         mutationFn: async (checkoutData) => {
-            const response = await base44.functions.invoke('createBarTokenCheckout', checkoutData);
+            const response = await functions.invoke('createBarTokenCheckout', checkoutData);
             return response.data;
         }
     });

@@ -56,6 +56,8 @@ import CheckoutCancel from './pages/CheckoutCancel';
 import CheckoutSuccess from './pages/CheckoutSuccess';
 import Contact from './pages/Contact';
 import Events from './pages/Events';
+import FoodAdmin from './pages/FoodAdmin';
+import FoodKiosk from './pages/FoodKiosk';
 import GateScan from './pages/GateScan';
 import Home from './pages/Home';
 import IDCheck from './pages/IDCheck';
@@ -86,6 +88,8 @@ export const PAGES = {
     "CheckoutSuccess": CheckoutSuccess,
     "Contact": Contact,
     "Events": Events,
+    "FoodAdmin": FoodAdmin,
+    "FoodKiosk": FoodKiosk,
     "GateScan": GateScan,
     "Home": Home,
     "IDCheck": IDCheck,

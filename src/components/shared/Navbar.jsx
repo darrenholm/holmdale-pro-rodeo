@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Menu, X, Ticket } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
+import { LOGO_URL } from '@/lib/constants';
 
 const navLinks = [
 { name: 'Home', page: 'Home' },
@@ -42,20 +43,30 @@ export default function Navbar() {
         transition={{ duration: 0.5 }}>
 
                 <div className="max-w-7xl mx-auto px-6 py-4">
-                    <div className="py-4 flex items-center justify-between">
+                    <div className="py-2 flex items-center justify-between">
                         {/* Logo */}
                         <Link to={createPageUrl('Home')} className="flex items-center gap-2">
+                            <img src={LOGO_URL} alt="Holmdale Pro Rodeo" className="h-10 w-auto" />
                         </Link>
                         
-                        {/* Desktop Navigation - Moved to Sidebar */}
-                        
-
+                        {/* Desktop Navigation */}
+                        <div className="hidden md:flex items-center gap-6">
+                            {navLinks.map((link) => (
+                                <Link
+                                    key={link.page}
+                                    to={createPageUrl(link.page)}
+                                    className={`text-sm font-semibold transition-colors ${
+                                        isActivePage(link.page) ? 'text-green-400' : 'text-stone-300 hover:text-white'
+                                    }`}
+                                >
+                                    {link.name}
+                                </Link>
+                            ))}
+                        </div>
                         
                         {/* Mobile Menu Button */}
-                        <button className="bg-green-500 text-white p-2 md:hidden"
-
+                        <button className="text-white p-2 md:hidden"
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}>
-
                             {isMobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
                         </button>
                     </div>
@@ -71,8 +82,8 @@ export default function Navbar() {
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: -20 }}
           transition={{ duration: 0.3 }}>
-
-                        <div className="flex flex-col gap-6">
+                        <div className="flex flex-col items-center gap-4 pt-8">
+                            <img src={LOGO_URL} alt="Holmdale Pro Rodeo" className="h-16 w-auto mb-4" />
                             {navLinks.map((link) =>
             <Link
               key={link.page}
@@ -83,7 +94,6 @@ export default function Navbar() {
               'text-green-400' :
               'text-white'}`
               }>
-
                                     {link.name}
                                 </Link>
             )}
