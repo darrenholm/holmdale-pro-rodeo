@@ -105,6 +105,34 @@ class RailwayClient {
     return await response.json();
   }
 
+  // Public request — no authentication needed
+  async publicRequest(endpoint, options = {}) {
+    const { method = 'GET', body = null } = options;
+
+    const headers = { 'Content-Type': 'application/json' };
+    const config = { method, headers };
+    if (body) {
+      config.body = JSON.stringify(body);
+    }
+
+    const response = await fetch(`${this.baseUrl}${endpoint}`, config);
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      const error = new Error(`Railway API error: ${response.status}`);
+      error.status = response.status;
+      error.details = errorText;
+      throw error;
+    }
+
+    if (response.status === 204) return null;
+    return await response.json();
+  }
+
+  // Public convenience methods
+  publicGet(endpoint) { return this.publicRequest(endpoint); }
+  publicPost(endpoint, body) { return this.publicRequest(endpoint, { method: 'POST', body }); }
+
   // Convenience methods
   get(endpoint) { 
     return this.request(endpoint); 
@@ -175,17 +203,67 @@ function createEntityHelper(client, basePath) {
   };
 }
 
+// Public entity helper — no auth for customer-facing data
+function createPublicEntityHelper(client, basePath) {
+  return {
+    async list(sort, limit) {
+      let url = basePath;
+      const params = new URLSearchParams();
+      if (sort) params.set('sort', sort);
+      if (limit) params.set('limit', limit);
+      const qs = params.toString();
+      if (qs) url += `?${qs}`;
+      return client.publicGet(url);
+    },
+
+    async filter(filters) {
+      let url = basePath;
+      const params = new URLSearchParams();
+      Object.entries(filters).forEach(([key, value]) => {
+        params.set(key, value);
+      });
+      const qs = params.toString();
+      if (qs) url += `?${qs}`;
+      return client.publicGet(url);
+    },
+
+    async getById(id) {
+      return client.publicGet(`${basePath}/${id}`);
+    },
+
+    // Write operations still use auth
+    async create(data) {
+      return client.post(basePath, data);
+    },
+
+    async bulkCreate(items) {
+      return client.post(`${basePath}/bulk`, items);
+    },
+
+    async update(id, data) {
+      return client.put(`${basePath}/${id}`, data);
+    },
+
+    async delete(id) {
+      return client.delete(`${basePath}/${id}`);
+    }
+  };
+}
+
 // ─── Singleton Instances ────────────────────────────────────
 
 const api = new RailwayClient(RAILWAY_API_URL);
 
 const entities = {
+  // Public entities (customer-facing, no auth needed)
+  Event:       createPublicEntityHelper(api, '/events'),
+  Product:     createPublicEntityHelper(api, '/products'),
+  
+  // Authenticated entities (staff/admin only)
   TicketOrder: createEntityHelper(api, '/ticket-orders'),
   Staff:       createEntityHelper(api, '/staff'),
   Shift:       createEntityHelper(api, '/shifts'),
   BarPurchase: createEntityHelper(api, '/bar-credits'),
-  Product:     createEntityHelper(api, '/products'),
-  Event:       createEntityHelper(api, '/events'),
   Order:       createEntityHelper(api, '/orders'),
 };
 
@@ -203,16 +281,27 @@ const functions = {
         return { token };
       },
 
-      // Direct GET endpoints
-      'getEventsFromRailway':          () => api.get('/events'),
-      'getProductsFromRailway':        () => api.get('/products'),
-      'getProductByIdRailway':         () => api.get(`/products/${params.id}`),
+      // PUBLIC endpoints (no auth needed — customer-facing)
+      'getEventsFromRailway':          () => api.publicGet('/events'),
+      'getProductsFromRailway':        () => api.publicGet('/products'),
+      'getProductByIdRailway':         () => api.publicGet(`/products/${params.id}`),
+      'getEventCurrentTier':           () => api.publicGet(`/events/${params.eventId}/tier`),
+      'getEventTierData':              () => api.publicGet(`/events/${params.eventId}/tier-data`),
+      'getTicketByConfirmationRailway':() => api.publicGet(`/ticket-orders/confirmation/${params.code}`),
+      'createTicketCheckoutMoneris':   () => api.publicPost('/moneris/ticket-checkout', params),
+      'handleTicketPaymentSuccess':    () => api.publicPost('/email/ticket-confirmation', params),
+      'sendTicketConfirmation':        () => api.publicPost('/email/send-confirmation', params),
+      'lookupTicketOrder':             () => api.publicPost('/ticket-orders/lookup', params),
+      'createBarTokenCheckout':        () => api.publicPost('/moneris/bar-checkout', params),
+      'createMerchandiseCheckout':     () => api.publicPost('/moneris/merch-checkout', params),
+      'getShippingRates':              () => api.publicPost('/shipping/rates', params),
+
+      // AUTHENTICATED endpoints (staff/admin only)
       'getShiftsFromRailway':          () => api.get('/shifts'),
       'getStaffFromRailway':           () => api.get('/staff'),
       'getDashboardStatsRailway':      () => api.get('/dashboard/stats'),
-      'getTicketByConfirmationRailway':() => api.get(`/ticket-orders/confirmation/${params.code}`),
       
-      // Ticket operations
+      // Ticket operations (staff authenticated)
       'getTicketFromRailway':          async () => {
         // Fetch all tickets and search by confirmation code or RFID
         const allTickets = await api.get('/ticket-orders');
@@ -237,19 +326,22 @@ const functions = {
         }
         return { success: true, ticket: foundTicket };
       },
-      'scanTicketRailway':             () => api.post(`/ticket-orders/${params.id}/scan`, { rfid_tag_id: params.scanData?.rfid_tag_id, bar_credits: params.scanData?.bar_credits }),
+      'scanTicketRailway':             async () => {
+        const ticketId = params.id;
+        const rfidTagId = params.scanData?.rfid_tag_id;
+        console.log('scanTicketRailway - ticketId:', ticketId, 'rfid:', rfidTagId);
+        if (!ticketId) throw new Error('No ticket ID provided');
+        return api.post(`/ticket-orders/${encodeURIComponent(ticketId)}/scan`, { rfid_tag_id: rfidTagId });
+      },
       'searchTickets':                 () => api.post('/ticket-orders/search', params),
       'searchRefundableTickets':       () => api.post('/ticket-orders/search-refundable', params),
       'insertTicketToRailway':         () => api.post('/ticket-orders', params),
-      'lookupTicketOrder':             () => api.post('/ticket-orders/lookup', params),
       'manualConfirmTicket':           () => api.post(`/ticket-orders/${params.id}/confirm`, params),
       
-      // Events
+      // Events (staff authenticated)
       'createEventRailway':            () => api.post('/events', params),
       'updateEventRailway':            () => api.put(`/events/${params.id}`, params),
       'deleteEventRailway':            () => api.delete(`/events/${params.id}`),
-      'getEventCurrentTier':           () => api.get(`/events/${params.eventId}/tier`),
-      'getEventTierData':              () => api.get(`/events/${params.eventId}/tier-data`),
       'updateEventPrices':             () => api.put(`/events/${params.id}/prices`, params),
       'fixEventPrices':                () => api.post('/events/fix-prices', params),
       
@@ -258,23 +350,17 @@ const functions = {
       'createEventShifts':             () => api.post('/shifts/create-for-event', params),
       'importStaffFromSQL':            () => api.post('/staff/import', params),
       
-      // Moneris / Payments (these need server-side routes)
-      'createTicketCheckoutMoneris':   () => api.post('/moneris/ticket-checkout', params),
-      'createBarTokenCheckout':        () => api.post('/moneris/bar-checkout', params),
-      'createMerchandiseCheckout':     () => api.post('/moneris/merch-checkout', params),
+      // Moneris / Payments (staff-only)
       'refundTicket':                  () => api.post('/moneris/refund', params),
       
-      // Email
-      'handleTicketPaymentSuccess':    () => api.post('/email/ticket-confirmation', params),
-      'sendTicketConfirmation':        () => api.post('/email/send-confirmation', params),
+      // Email (staff-only)
       'resendTicketEmail':             () => api.post('/email/resend-ticket', params),
       'testSimpleEmail':               () => api.post('/email/test', params),
       
       // Reports
       'getTodayTicketSales':           () => api.get('/reports/today-sales'),
       
-      // Shipping
-      'getShippingRates':              () => api.post('/shipping/rates', params),
+      // Shipping (staff)
       'createShipment':                () => api.post('/shipping/create', params),
       'trackShipment':                 () => api.get(`/shipping/track/${params.tracking_number}`),
 
