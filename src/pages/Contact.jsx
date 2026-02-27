@@ -22,7 +22,7 @@ const contactInfo = [
     {
         icon: Mail,
         title: 'Email',
-        details: ['info@holmdalerodeo.com', 'tickets@holmdalerodeo.com']
+        details: ['info@holmdalerodeo.com']
     }
 ];
 
