@@ -68,7 +68,6 @@ import RFIDTest from './pages/RFIDTest';
 import RefundTickets from './pages/RefundTickets';
 import ResendTicket from './pages/ResendTicket';
 import Shop from './pages/Shop';
-import Staff from './pages/Staff';
 import StaffList from './pages/StaffList';
 import StaffScheduling from './pages/StaffScheduling';
 import TestRailway from './pages/TestRailway';
@@ -100,7 +99,6 @@ export const PAGES = {
     "RefundTickets": RefundTickets,
     "ResendTicket": ResendTicket,
     "Shop": Shop,
-    "Staff": Staff,
     "StaffList": StaffList,
     "StaffScheduling": StaffScheduling,
     "TestRailway": TestRailway,
