@@ -55,7 +55,7 @@ import BuyTickets from './pages/BuyTickets';
 import CheckoutCancel from './pages/CheckoutCancel';
 import CheckoutSuccess from './pages/CheckoutSuccess';
 import Contact from './pages/Contact';
-import Events from './pages/Events';
+import Events from './pages/Events';h
 import FoodAdmin from './pages/FoodAdmin';
 import FoodKiosk from './pages/FoodKiosk';
 import GateScan from './pages/GateScan';
