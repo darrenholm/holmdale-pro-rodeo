@@ -125,7 +125,7 @@ export default function Events() {
                                                     <div className="flex flex-wrap gap-4 text-sm">
                                                         <div className="flex items-center gap-2 text-stone-300">
                                                             <Calendar className="w-4 h-4 text-green-500" />
-                                                            <span>{event.id === '696b7bdc81676e7ff80617a1' ? 'July 31 - August 2, 2026' : format(new Date(event.date), 'EEEE, MMMM d, yyyy')}</span>
+                                                            <span>{format(new Date(event.date), 'EEEE, MMMM d, yyyy')}</span>
                                                         </div>
                                                         <div className="flex items-center gap-2 text-stone-300">
                                                             <Clock className="w-4 h-4 text-green-500" />
