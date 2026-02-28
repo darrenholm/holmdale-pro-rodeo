@@ -10,7 +10,7 @@ const navLinks = [
   { name: 'Home', page: 'Home' },
   { name: 'About', page: 'About' },
   { name: 'Contact', page: 'Contact' },
-  { name: 'Staff', page: 'Staff' }
+  
 ];
 
 export default function Sidebar() {

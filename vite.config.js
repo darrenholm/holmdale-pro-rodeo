@@ -6,7 +6,10 @@ import path from 'path'
 export default defineConfig({
   logLevel: 'error',
   plugins: [
-    react(),
+    react({
+      jsxRuntime: 'automatic',
+      include: '**/*.{jsx,js}',
+    }),
   ],
   resolve: {
     alias: {

@@ -45,7 +45,7 @@ export default function BuyTickets() {
     const urlParams = new URLSearchParams(window.location.search);
     const eventId = urlParams.get('eventId');
     const queryClient = useQueryClient();
-    
+
     const [quantities, setQuantities] = useState({
         general: 0,
         child: 0,
@@ -76,7 +76,7 @@ export default function BuyTickets() {
             }
         };
     }, []);
-    
+
     const { data: event, isLoading, error } = useQuery({
       queryKey: ['event', eventId],
       queryFn: async () => {
@@ -130,7 +130,7 @@ export default function BuyTickets() {
       enabled: !!eventId,
       retry: false
     });
-    
+
     useEffect(() => {
         // Load Moneris Checkout script
         if (!document.getElementById('moneris-checkout-script')) {
@@ -220,7 +220,7 @@ export default function BuyTickets() {
             queryClient.invalidateQueries({ queryKey: ['event', eventId] });
         }
     });
-    
+
     // Calculate tier-based pricing from Railway
     const tierData = event?.tierData;
     const currentTier = tierData?.currentTier || 1;
@@ -245,22 +245,21 @@ export default function BuyTickets() {
             }
         }
     }
-    
+
     // Get prices for each ticket type
     const adultPrice = tierData?.adultPrice || (currentTier === 1 ? 30 : currentTier === 2 ? 35 : 40);
     const childPrice = tierData?.childPrice || 10;
     const familyPrice = tierData?.familyPrice || (currentTier === 1 ? 70 : currentTier === 2 ? 80 : 90);
-    
+
     // Calculate totals across all ticket types
     const generalSubtotal = quantities.general * adultPrice;
     const childSubtotal = quantities.child * childPrice;
     const familySubtotal = quantities.family * familyPrice;
-    
     const subtotal = generalSubtotal + childSubtotal + familySubtotal;
     const hst = subtotal * 0.13;
     const totalPrice = subtotal + hst;
     const totalQuantity = quantities.general + quantities.child + quantities.family;
-    
+
     const handleSubmit = async (e) => {
         e.preventDefault();
 
@@ -299,7 +298,7 @@ export default function BuyTickets() {
             alert('Payment checkout failed. Please check your payment credentials and try again.');
         }
     };
-    
+
     if (!eventId) {
         return (
             <div className="min-h-screen bg-stone-950 pt-24 pb-20 px-6 flex items-center justify-center">
@@ -367,7 +366,7 @@ export default function BuyTickets() {
             </div>
         );
     }
-    
+
     if (orderComplete) {
         return (
             <div className="min-h-screen bg-stone-950 pt-24 pb-20 px-6 flex items-center justify-center">
@@ -382,12 +381,12 @@ export default function BuyTickets() {
                         </div>
                         <h2 className="text-3xl font-bold text-white mb-2">Order Confirmed!</h2>
                         <p className="text-stone-400 mb-6">Thank you for your purchase. Your tickets have been reserved.</p>
-                        
+
                         <div className="bg-stone-800 rounded-xl p-6 mb-6">
                             <p className="text-stone-400 text-sm mb-2">Confirmation Code</p>
                             <p className="text-3xl font-bold text-green-400 font-mono">{confirmationCode}</p>
                         </div>
-                        
+
                         <div className="text-left bg-stone-800/50 rounded-xl p-4 mb-6 space-y-2">
                             <div className="flex justify-between">
                                 <span className="text-stone-400">Event</span>
@@ -416,11 +415,11 @@ export default function BuyTickets() {
                                 <span className="text-green-400 font-bold">${totalPrice.toFixed(2)}</span>
                             </div>
                         </div>
-                        
+
                         <p className="text-stone-500 text-sm mb-6">
                             A confirmation email has been sent to {customerInfo.email}
                         </p>
-                        
+
                         <Link to={createPageUrl('Events')}>
                             <Button className="w-full bg-green-500 hover:bg-green-600 text-stone-900">
                                 Browse More Events
@@ -431,7 +430,7 @@ export default function BuyTickets() {
             </div>
         );
     }
-    
+
     if (showCheckout) {
         return (
             <div className="min-h-screen bg-stone-950 pt-24 pb-20 px-6">
@@ -453,21 +452,21 @@ export default function BuyTickets() {
         <div className="min-h-screen bg-stone-950 pt-24 pb-20 px-6">
             <div className="max-w-6xl mx-auto">
                 {/* Back Button */}
-                <Link 
+                <Link
                     to={createPageUrl('Events')}
                     className="inline-flex items-center gap-2 text-stone-400 hover:text-green-400 transition-colors mb-8"
                 >
                     <ArrowLeft className="w-4 h-4" />
                     Back to Events
                 </Link>
-                
+
                 <div className="grid lg:grid-cols-3 gap-8">
                         {/* Main Content */}
                         <div className="lg:col-span-2 space-y-6">
                             {/* Event Info */}
                             <Card className="bg-stone-900 border-stone-800 overflow-hidden">
                                 <div className="relative h-48 md:h-64">
-                                    <img 
+                                    <img
                                         src={event?.image_url || 'https://images.unsplash.com/photo-1570042225831-d98fa7577f1e?w=1200&q=80'}
                                         alt={event?.title}
                                         className="w-full h-full object-cover"
@@ -492,7 +491,7 @@ export default function BuyTickets() {
                                     </div>
                                 </div>
                             </Card>
-                            
+
                             {/* Ticket Selection */}
                             <Card className="bg-stone-900 border-stone-800">
                                 <CardHeader>
@@ -521,7 +520,7 @@ export default function BuyTickets() {
                                     {ticketTypes.map((type) => {
                                         const isAvailable = ticketsRemaining > 0;
                                         const quantity = quantities[type.id];
-                                        
+
                                         let price = 0;
                                         if (type.id === 'general') {
                                             price = adultPrice;
@@ -530,7 +529,7 @@ export default function BuyTickets() {
                                         } else if (type.id === 'family') {
                                             price = familyPrice;
                                         }
-                                        
+
                                         return (
                                             <div key={type.id} className={`p-4 rounded-xl border-2 transition-all ${
                                                 quantity > 0 ? 'border-green-500 bg-green-500/10' : isAvailable ? 'border-stone-700 bg-stone-800/50' : 'border-stone-800 bg-stone-800/30 opacity-50'
@@ -540,16 +539,16 @@ export default function BuyTickets() {
                                                         <h3 className="text-white font-semibold mb-1">{type.name}</h3>
                                                         <p className="text-stone-400 text-sm">{type.description}</p>
                                                         {type.id !== 'child' && (
-                                                            <Badge 
-                                                                variant="outline" 
+                                                            <Badge
+                                                                variant="outline"
                                                                 className={`mt-2 ${isAvailable ? 'border-green-500/50 text-green-400' : 'border-red-500/50 text-red-400'}`}
                                                             >
                                                                 {isAvailable ? `Tier ${currentTier} pricing` : 'Sold Out'}
                                                             </Badge>
                                                         )}
                                                         {type.id === 'child' && isAvailable && (
-                                                            <Badge 
-                                                                variant="outline" 
+                                                            <Badge
+                                                                variant="outline"
                                                                 className="mt-2 border-green-500/50 text-green-400"
                                                             >
                                                                 Fixed price
@@ -590,7 +589,6 @@ export default function BuyTickets() {
                                 </CardContent>
                             </Card>
 
-                            
                             {/* Customer Info */}
                              <Card className="bg-stone-900 border-stone-800">
                                  <CardHeader>
@@ -637,8 +635,8 @@ export default function BuyTickets() {
                                                 />
                                             </div>
                                         </div>
-                                        
-                                        <Button 
+
+                                        <Button
                                                              type="submit"
                                                              disabled={createCheckout.isPending || totalQuantity === 0}
                                                              className="w-full bg-green-500 hover:bg-green-600 text-stone-900 font-semibold py-6 text-lg"
@@ -658,7 +656,7 @@ export default function BuyTickets() {
                                 </CardContent>
                             </Card>
                         </div>
-                        
+
                         {/* Order Summary */}
                         <div>
                             <Card className="bg-stone-900 border-stone-800 sticky top-28">
@@ -684,7 +682,7 @@ export default function BuyTickets() {
                                            <span>${(quantities.family * familyPrice).toFixed(2)}</span>
                                        </div>
                                     )}
-                                    {(totalQuantity > 0) && (
+                                    {totalQuantity > 0 && (
                                         <>
                                             <div className="flex justify-between text-stone-300">
                                                 <span>Subtotal</span>
@@ -705,7 +703,7 @@ export default function BuyTickets() {
                                     {totalQuantity === 0 && (
                                         <div className="text-center text-stone-400 py-4">Select tickets above to see pricing</div>
                                     )}
-                                    
+
                                     <div className="bg-stone-800/50 rounded-lg p-4 text-sm text-stone-400">
                                         <p className="flex items-start gap-2">
                                             <CheckCircle className="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" />
