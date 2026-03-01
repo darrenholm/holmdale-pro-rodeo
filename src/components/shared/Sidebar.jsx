@@ -8,9 +8,9 @@ import { LOGO_URL } from '@/lib/constants';
 
 const navLinks = [
   { name: 'Home', page: 'Home' },
-  { name: 'Tickets', page: 'Events' },
   { name: 'About', page: 'About' },
   { name: 'Contact', page: 'Contact' },
+  
 ];
 
 export default function Sidebar() {
