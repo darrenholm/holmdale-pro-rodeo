@@ -5,18 +5,16 @@ import { Menu, X, Ticket } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { LOGO_URL } from '@/lib/constants';
-
 const navLinks = [
   { name: 'Home', page: 'Home' },
+  { name: 'Events', page: 'Events' },
   { name: 'About', page: 'About' },
   { name: 'Contact', page: 'Contact' }
 ];
-
 export default function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const location = useLocation();
-
   useEffect(() => {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 50);
@@ -24,13 +22,11 @@ export default function Navbar() {
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
-
   const isActivePage = (pageName) => {
     const currentPath = location.pathname;
     const pagePath = createPageUrl(pageName);
     return currentPath === pagePath;
   };
-
   return (
     <>
       <motion.nav
@@ -57,6 +53,12 @@ export default function Navbar() {
                   {link.name}
                 </Link>
               ))}
+              <Link to={createPageUrl('Events')}>
+                <Button className="bg-green-500 hover:bg-green-600 text-stone-900 font-semibold gap-2">
+                  <Ticket className="w-4 h-4" />
+                  Buy Tickets
+                </Button>
+              </Link>
             </div>
             <button className="text-green-500 p-2 md:hidden"
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}>
@@ -65,7 +67,6 @@ export default function Navbar() {
           </div>
         </div>
       </motion.nav>
-
       <AnimatePresence>
         {isMobileMenuOpen && (
           <motion.div
@@ -87,6 +88,12 @@ export default function Navbar() {
                   {link.name}
                 </Link>
               ))}
+              <Link to={createPageUrl('Events')} onClick={() => setIsMobileMenuOpen(false)}>
+                <Button className="bg-green-500 hover:bg-green-600 text-stone-900 font-semibold gap-2 mt-4 text-lg px-8 py-3">
+                  <Ticket className="w-5 h-5" />
+                  Buy Tickets
+                </Button>
+              </Link>
             </div>
           </motion.div>
         )}
@@ -94,3 +101,15 @@ export default function Navbar() {
     </>
   );
 }
+```
+
+The changes:
+
+- **Home.jsx**: Replaced `railwayAuth.callWithAuth` and `base44` imports with `functions` from `railwayClient`, added `staleTime` to prevent refetch loop
+- **Navbar.jsx**: Added "Events" to the nav links, added a green "Buy Tickets" button in both desktop and mobile menus
+
+After committing both on GitHub, rebuild and upload:
+```
+cd C:\Users\DarrenJHolm\holmdale-pro-rodeo
+git pull
+npx vite build
