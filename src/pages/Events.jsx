@@ -1,8 +1,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { useQuery } from '@tanstack/react-query';
-import { base44 } from '@/api/base44Client';
-import { railwayAuth } from '@/components/railwayAuth';
+import { functions } from '@/api/railwayClient';
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -17,7 +16,7 @@ export default function Events() {
         queryKey: ['events'],
         queryFn: async () => {
             try {
-                const result = await railwayAuth.callWithAuth('getEventsFromRailway');
+                const result = await functions.invoke('getEventsFromRailway');
                 console.log('Events fetched:', result);
                 return result.data || [];
             } catch (error) {
@@ -26,16 +25,13 @@ export default function Events() {
             }
         },
         retry: 1,
-        staleTime: 0
+        staleTime: 5 * 60 * 1000,
+        refetchOnWindowFocus: false
     });
-    
-    console.log('Events page - events:', events);
-    console.log('Events page - isLoading:', isLoading);
     
     return (
         <div className="min-h-screen bg-stone-950 pt-24 pb-20 px-6">
             <div className="max-w-7xl mx-auto">
-                {/* Header */}
                 <div className="text-center mb-16">
                     <motion.span 
                         className="inline-block text-green-500 text-sm font-semibold tracking-wider uppercase mb-4"
@@ -61,7 +57,6 @@ export default function Events() {
                     </motion.p>
                 </div>
                 
-                {/* Events List */}
                 {isLoading ? (
                     <div className="grid gap-6">
                         {[1, 2, 3].map((i) => (
@@ -94,7 +89,6 @@ export default function Events() {
                             >
                                 <Card className="bg-stone-900 border-stone-800 overflow-hidden group hover:border-green-500/30 transition-all duration-300">
                                     <div className="flex flex-col lg:flex-row">
-                                        {/* Image */}
                                         <div className="relative lg:w-80 h-56 lg:h-auto overflow-hidden">
                                             <img 
                                                 src={event.image_url || 'https://images.unsplash.com/photo-1570042225831-d98fa7577f1e?w=600&q=80'}
@@ -108,7 +102,6 @@ export default function Events() {
                                             )}
                                         </div>
                                         
-                                        {/* Content */}
                                         <div className="flex-1 p-6 lg:p-8">
                                             <div className="flex flex-col lg:flex-row lg:items-start justify-between gap-6">
                                                 <div className="flex-1">
@@ -138,7 +131,6 @@ export default function Events() {
                                                     </div>
                                                 </div>
                                                 
-                                                {/* Pricing & CTA */}
                                                 <div className="lg:text-right">
                                                     <div className="mb-4">
                                                         <span className="text-stone-500 text-sm block mb-1">{event.id === '696b7bdc81676e7ff80617a1' ? 'Entry Fee' : 'Starting at'}</span>
