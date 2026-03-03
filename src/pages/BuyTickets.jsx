@@ -1,8 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { base44 } from '@/api/base44Client';
-import { railwayAuth } from '@/components/railwayAuth';
+import { functions } from '@/api/railwayClient';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -65,7 +64,6 @@ export default function BuyTickets() {
     const monerisCheckoutRef = useRef(null);
 
     useEffect(() => {
-        // Cleanup on unmount
         return () => {
             try {
                 if (monerisCheckoutRef.current?.closeCheckout) {
@@ -82,20 +80,17 @@ export default function BuyTickets() {
       queryFn: async () => {
           console.log('[BuyTickets] Fetching event with ID:', eventId);
           try {
-              const result = await railwayAuth.callWithAuth('getEventsFromRailway');
-              console.log('[BuyTickets] Railway API result:', result);
+              const result = await functions.invoke('getEventsFromRailway');
               const events = result?.data || [];
               console.log('[BuyTickets] Found events:', events.length);
               const foundEvent = events.find(e => e.id === eventId);
               if (!foundEvent) {
                   console.error('[BuyTickets] Event not found with ID:', eventId);
-                  console.log('[BuyTickets] Available event IDs:', events.map(e => e.id));
                   throw new Error(`Event not found: ${eventId}`);
               }
               console.log('[BuyTickets] Found event:', foundEvent.title);
 
-              // Fetch current tier data from Railway endpoint
-              const tierResponse = await base44.functions.invoke('getEventCurrentTier', { eventId });
+              const tierResponse = await functions.invoke('getEventCurrentTier', { eventId });
               const tierData = tierResponse.data;
 
               foundEvent.tierData = {
@@ -128,11 +123,14 @@ export default function BuyTickets() {
           }
       },
       enabled: !!eventId,
-      retry: false
+      retry: false,
+      staleTime: 5 * 60 * 1000,
+      refetchOnWindowFocus: false,
+      refetchOnMount: false,
+      refetchOnReconnect: false
     });
     
     useEffect(() => {
-        // Load Moneris Checkout script
         if (!document.getElementById('moneris-checkout-script')) {
             const script = document.createElement('script');
             script.id = 'moneris-checkout-script';
@@ -174,8 +172,7 @@ export default function BuyTickets() {
             myCheckout.setCallback('payment_complete', async (data) => {
                 console.log('Payment complete:', data);
                 try {
-                    // Send to backend to update status and send email with QR code
-                    const result = await base44.functions.invoke('handleTicketPaymentSuccess', {
+                    const result = await functions.invoke('handleTicketPaymentSuccess', {
                         confirmation_code: confirmationCode
                     });
                     console.log('Email sent:', result);
@@ -193,9 +190,8 @@ export default function BuyTickets() {
     const createCheckout = useMutation({
         mutationFn: async (checkoutData) => {
             try {
-                const response = await base44.functions.invoke('createTicketCheckoutMoneris', checkoutData);
+                const response = await functions.invoke('createTicketCheckoutMoneris', checkoutData);
                 console.log('[Checkout] Response:', response);
-                console.log('[Checkout] Response.data:', response.data);
                 return response.data;
             } catch (error) {
                 console.error('[Checkout] Error:', error);
@@ -207,7 +203,7 @@ export default function BuyTickets() {
     const createOrder = useMutation({
         mutationFn: async (orderData) => {
             const code = `WW-${Date.now().toString(36).toUpperCase()}`;
-            const order = await base44.entities.TicketOrder.create({
+            const order = await functions.invoke('insertTicketToRailway', {
                 ...orderData,
                 confirmation_code: code,
                 status: 'pending'
@@ -221,11 +217,9 @@ export default function BuyTickets() {
         }
     });
     
-    // Calculate tier-based pricing from Railway
     const tierData = event?.tierData;
     const currentTier = tierData?.currentTier || 1;
 
-    // Calculate remaining in CURRENT tier
     let ticketsRemaining = 1000;
     let nextTierPrice = null;
     let nextTierAvailable = null;
@@ -233,9 +227,7 @@ export default function BuyTickets() {
     if (tierData && tierData[`tier${currentTier}`]) {
         const currentTierData = tierData[`tier${currentTier}`];
         ticketsRemaining = Math.max(0, (currentTierData.quantity || 1000) - (currentTierData.sold || 0));
-        console.log(`[BuyTickets] Tier ${currentTier}: ${currentTierData.quantity} total - ${currentTierData.sold} sold = ${ticketsRemaining} remaining`);
 
-        // Get next tier info if available
         if (currentTier < 3) {
             const nextTier = currentTier + 1;
             const nextTierData = tierData[`tier${nextTier}`];
@@ -246,12 +238,10 @@ export default function BuyTickets() {
         }
     }
     
-    // Get prices for each ticket type
     const adultPrice = tierData?.adultPrice || (currentTier === 1 ? 30 : currentTier === 2 ? 35 : 40);
     const childPrice = tierData?.childPrice || 10;
     const familyPrice = tierData?.familyPrice || (currentTier === 1 ? 70 : currentTier === 2 ? 80 : 90);
     
-    // Calculate totals across all ticket types
     const generalSubtotal = quantities.general * adultPrice;
     const childSubtotal = quantities.child * childPrice;
     const familySubtotal = quantities.family * familyPrice;
@@ -285,7 +275,6 @@ export default function BuyTickets() {
                 customerPhone: customerInfo.phone
             };
 
-            // Get Moneris checkout ticket
             const result = await createCheckout.mutateAsync(checkoutData);
             if (result.ticket) {
                 setConfirmationCode(result.confirmation_code);
@@ -452,7 +441,6 @@ export default function BuyTickets() {
     return (
         <div className="min-h-screen bg-stone-950 pt-24 pb-20 px-6">
             <div className="max-w-6xl mx-auto">
-                {/* Back Button */}
                 <Link 
                     to={createPageUrl('Events')}
                     className="inline-flex items-center gap-2 text-stone-400 hover:text-green-400 transition-colors mb-8"
@@ -462,9 +450,7 @@ export default function BuyTickets() {
                 </Link>
                 
                 <div className="grid lg:grid-cols-3 gap-8">
-                        {/* Main Content */}
                         <div className="lg:col-span-2 space-y-6">
-                            {/* Event Info */}
                             <Card className="bg-stone-900 border-stone-800 overflow-hidden">
                                 <div className="relative h-48 md:h-64">
                                     <img 
@@ -493,7 +479,6 @@ export default function BuyTickets() {
                                 </div>
                             </Card>
                             
-                            {/* Ticket Selection */}
                             <Card className="bg-stone-900 border-stone-800">
                                 <CardHeader>
                                     <CardTitle className="text-white flex items-center gap-2">
@@ -590,18 +575,15 @@ export default function BuyTickets() {
                                 </CardContent>
                             </Card>
 
-                            
-                            {/* Customer Info */}
-                             <Card className="bg-stone-900 border-stone-800">
-                                 <CardHeader>
-                                     <CardTitle className="text-white flex items-center gap-2">
-                                         <Users className="w-5 h-5 text-green-500" />
-                                         Ticket Details
-                                     </CardTitle>
-                                 </CardHeader>
-                                 <CardContent>
-                                     <form onSubmit={handleSubmit} className="space-y-6">
-                                         {/* Customer Info */}
+                            <Card className="bg-stone-900 border-stone-800">
+                                <CardHeader>
+                                    <CardTitle className="text-white flex items-center gap-2">
+                                        <Users className="w-5 h-5 text-green-500" />
+                                        Ticket Details
+                                    </CardTitle>
+                                </CardHeader>
+                                <CardContent>
+                                    <form onSubmit={handleSubmit} className="space-y-6">
                                         <div className="grid md:grid-cols-2 gap-4">
                                             <div>
                                                 <Label htmlFor="name" className="text-stone-300">Full Name</Label>
@@ -639,27 +621,26 @@ export default function BuyTickets() {
                                         </div>
                                         
                                         <Button 
-                                                             type="submit"
-                                                             disabled={createCheckout.isPending || totalQuantity === 0}
-                                                             className="w-full bg-green-500 hover:bg-green-600 text-stone-900 font-semibold py-6 text-lg"
-                                                         >
-                                                             {createCheckout.isPending ? (
-                                                                 <>
-                                                                     <Loader2 className="w-5 h-5 mr-2 animate-spin" />
-                                                                     Redirecting to Checkout...
-                                                                 </>
-                                                             ) : (
-                                                                 <>
-                                                                     Complete Purchase - ${totalPrice.toFixed(2)}
-                                                                 </>
-                                                             )}
-                                                         </Button>
+                                            type="submit"
+                                            disabled={createCheckout.isPending || totalQuantity === 0}
+                                            className="w-full bg-green-500 hover:bg-green-600 text-stone-900 font-semibold py-6 text-lg"
+                                        >
+                                            {createCheckout.isPending ? (
+                                                <>
+                                                    <Loader2 className="w-5 h-5 mr-2 animate-spin" />
+                                                    Redirecting to Checkout...
+                                                </>
+                                            ) : (
+                                                <>
+                                                    Complete Purchase - ${totalPrice.toFixed(2)}
+                                                </>
+                                            )}
+                                        </Button>
                                     </form>
                                 </CardContent>
                             </Card>
                         </div>
                         
-                        {/* Order Summary */}
                         <div>
                             <Card className="bg-stone-900 border-stone-800 sticky top-28">
                                 <CardHeader>
