@@ -1,26 +1,25 @@
 import React from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { base44 } from '@/api/base44Client';
-import { railwayAuth } from '@/components/railwayAuth';
-
+import { functions } from '@/api/railwayClient';
 import HeroSection from '../components/home/HeroSection';
 import FeaturesSection from '../components/home/FeaturesSection';
 import GallerySection from '../components/home/GallerySection';
 import CTASection from '../components/home/CTASection';
-
 export default function Home() {
     const { data: events = [], isLoading } = useQuery({
         queryKey: ['events'],
         queryFn: async () => {
             try {
-                const result = await railwayAuth.callWithAuth('getEventsFromRailway');
+                const result = await functions.invoke('getEventsFromRailway');
                 return result.data || [];
             } catch (error) {
                 console.error('Failed to fetch events:', error);
                 return [];
             }
         },
-        retry: 1
+        retry: 1,
+        staleTime: 5 * 60 * 1000,
+        refetchOnWindowFocus: false
     });
     
     const featuredEvent = events.find(e => e.is_featured) || events[0];
