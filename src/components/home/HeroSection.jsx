@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Button } from "@/components/ui/button";
-import { ChevronDown, Calendar, MapPin } from 'lucide-react';
+import { ChevronDown, Calendar, MapPin, Ticket } from 'lucide-react';
 import { format } from 'date-fns';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
@@ -143,6 +143,14 @@ export default function HeroSection({ featuredEvent }) {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.4 }}>
 
+                    <Link to={createPageUrl('Events')}>
+                        <Button
+              size="lg"
+              className="bg-green-500 hover:bg-green-600 text-stone-900 px-8 py-6 text-lg font-semibold transition-all duration-300 gap-2">
+                            <Ticket className="w-5 h-5" />
+                            Buy Tickets
+                        </Button>
+                    </Link>
                     <Link to={createPageUrl('About')}>
                         <Button
               size="lg"
