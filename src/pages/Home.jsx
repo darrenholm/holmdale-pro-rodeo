@@ -2,6 +2,7 @@ import React from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { functions } from '@/api/railwayClient';
 import HeroSection from '../components/home/HeroSection';
+import FeaturedEvents from '../components/home/FeaturedEvents';
 import FeaturesSection from '../components/home/FeaturesSection';
 import GallerySection from '../components/home/GallerySection';
 import CTASection from '../components/home/CTASection';
@@ -27,6 +28,7 @@ export default function Home() {
     return (
         <div className="min-h-screen bg-stone-950">
             <HeroSection featuredEvent={featuredEvent} />
+            <FeaturedEvents events={events} isLoading={isLoading} />
             <FeaturesSection />
             <GallerySection />
             <CTASection />
