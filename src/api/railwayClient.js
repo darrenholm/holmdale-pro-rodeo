@@ -19,7 +19,7 @@ const RAILWAY_API_URL = import.meta.env.VITE_RAILWAY_API_URL
 
 const TOKEN_KEY = 'railway_auth_token';
 const AUTH_EMAIL = 'darren@holmgraphics.ca';
-const AUTH_PASSWORD = 'changeme123';
+const AUTH_PASSWORD = 'Mimaki@1';
 
 // ─── Core API Client ────────────────────────────────────────
 
