@@ -101,15 +101,3 @@ export default function Navbar() {
     </>
   );
 }
-```
-
-The changes:
-
-- **Home.jsx**: Replaced `railwayAuth.callWithAuth` and `base44` imports with `functions` from `railwayClient`, added `staleTime` to prevent refetch loop
-- **Navbar.jsx**: Added "Events" to the nav links, added a green "Buy Tickets" button in both desktop and mobile menus
-
-After committing both on GitHub, rebuild and upload:
-```
-cd C:\Users\DarrenJHolm\holmdale-pro-rodeo
-git pull
-npx vite build
