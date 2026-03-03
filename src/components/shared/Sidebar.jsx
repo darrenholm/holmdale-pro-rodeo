@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { LOGO_URL } from '@/lib/constants';
 const navLinks = [
   { name: 'Home', page: 'Home' },
-  { name: 'Events', page: 'Events' },
+  { name: 'Tickets', page: 'Events' },
   { name: 'About', page: 'About' },
   { name: 'Contact', page: 'Contact' },
 ];
@@ -25,12 +25,10 @@ export default function Sidebar() {
       animate={{ x: 0 }}
       transition={{ duration: 0.3 }}>
       
-      {/* Logo */}
       <Link to={createPageUrl('Home')} className="flex justify-center mb-8">
         <img src={LOGO_URL} alt="Holmdale Pro Rodeo" className="h-20 w-auto drop-shadow-lg" />
       </Link>
       
-      {/* Navigation Links */}
       <nav className="flex flex-col gap-2 flex-1">
         {navLinks.map((link) => (
           <Link
@@ -46,7 +44,6 @@ export default function Sidebar() {
         ))}
       </nav>
 
-      {/* Buy Tickets Button */}
       <div className="mb-6">
         <Link to={createPageUrl('Events')}>
           <Button className="w-full bg-stone-900 hover:bg-stone-800 text-white font-semibold gap-2 py-3">
