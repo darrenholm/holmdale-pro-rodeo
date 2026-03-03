@@ -5,23 +5,19 @@ import { createPageUrl } from '@/utils';
 import { Ticket } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { LOGO_URL } from '@/lib/constants';
-
 const navLinks = [
   { name: 'Home', page: 'Home' },
+  { name: 'Events', page: 'Events' },
   { name: 'About', page: 'About' },
   { name: 'Contact', page: 'Contact' },
-  
 ];
-
 export default function Sidebar() {
   const location = useLocation();
-
   const isActivePage = (pageName) => {
     const currentPath = location.pathname;
     const pagePath = createPageUrl(pageName);
     return currentPath === pagePath;
   };
-
   return (
     <motion.div
       className="hidden md:fixed md:left-0 md:top-0 md:h-screen md:w-48 md:bg-green-500 md:flex md:flex-col md:pt-6 md:px-4 md:z-40 md:shadow-lg"
@@ -50,6 +46,15 @@ export default function Sidebar() {
         ))}
       </nav>
 
+      {/* Buy Tickets Button */}
+      <div className="mb-6">
+        <Link to={createPageUrl('Events')}>
+          <Button className="w-full bg-stone-900 hover:bg-stone-800 text-white font-semibold gap-2 py-3">
+            <Ticket className="w-4 h-4" />
+            Buy Tickets
+          </Button>
+        </Link>
+      </div>
     </motion.div>
   );
 }
