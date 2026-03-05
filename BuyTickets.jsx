@@ -718,4 +718,3 @@ export default function BuyTickets() {
         </div>
     );
 }
-
