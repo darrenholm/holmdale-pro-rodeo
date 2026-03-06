@@ -166,32 +166,27 @@ export default function BuyTickets() {
                 setShowCheckout(false);
                 setCheckoutTicket(null);
             });
+myCheckout.setCallback('payment_receipt', async (data) => {
+    console.log('Payment receipt:', data);
+    
+    // Confirm payment on receipt (payment_complete may not always fire)
+    try {
+        const result = await functions.invoke('handleTicketPaymentSuccess', {
+            confirmation_code: confirmationCode
+        });
+        console.log('Payment confirmed:', result);
+    } catch (error) {
+        console.error('Error processing payment:', error);
+    }
+    
+    monerisCheckoutRef.current = null;
+    setOrderComplete(true);
+    setShowCheckout(false);
+});
 
-            myCheckout.setCallback('payment_receipt', (data) => {
-                console.log('Payment receipt:', data);
-            });
-
-            myCheckout.setCallback('payment_complete', async (data) => {
-                console.log('Payment complete:', data);
-                
-                // IMPORTANT: Confirm payment FIRST, before changing any state
-                try {
-                    const result = await functions.invoke('handleTicketPaymentSuccess', {
-                        confirmation_code: confirmationCode
-                    });
-                    console.log('Payment confirmed:', result);
-                } catch (error) {
-                    console.error('Error processing payment:', error);
-                }
-                
-                // Clear the ref so cleanup doesn't try to close destroyed iframe
-                monerisCheckoutRef.current = null;
-                
-                // NOW update state
-                setOrderComplete(true);
-                setShowCheckout(false);
-            });
-
+myCheckout.setCallback('payment_complete', (data) => {
+    console.log('Payment complete:', data);
+});
             myCheckout.startCheckout(checkoutTicket);
         }
     }, [showCheckout, checkoutTicket, confirmationCode]);
