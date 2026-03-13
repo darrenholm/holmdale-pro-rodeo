@@ -19,7 +19,7 @@ export const base44 = {
   auth: {
     me: async () => {
       const token = api.getToken();
-      if (token) return { role: 'admin' };
+      if (token) return await api.get('/auth/me');
       throw new Error('Not authenticated');
     },
     logout: () => {
