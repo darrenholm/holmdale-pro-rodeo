@@ -62,6 +62,8 @@ export default function BuyTickets() {
     const [checkoutTicket, setCheckoutTicket] = useState(null);
     const checkoutRef = useRef(null);
     const monerisCheckoutRef = useRef(null);
+    // ✅ FIX: ref to hold confirmation code so Moneris callbacks always have the latest value
+    const confirmationCodeRef = useRef('');
 
     useEffect(() => {
         return () => {
@@ -166,30 +168,32 @@ export default function BuyTickets() {
                 setShowCheckout(false);
                 setCheckoutTicket(null);
             });
-myCheckout.setCallback('payment_receipt', async (data) => {
-    console.log('Payment receipt:', data);
-    
-    // Confirm payment on receipt (payment_complete may not always fire)
-    try {
-        const result = await functions.invoke('handleTicketPaymentSuccess', {
-            confirmation_code: confirmationCode
-        });
-        console.log('Payment confirmed:', result);
-    } catch (error) {
-        console.error('Error processing payment:', error);
-    }
-    
-    monerisCheckoutRef.current = null;
-    setOrderComplete(true);
-    setShowCheckout(false);
-});
 
-myCheckout.setCallback('payment_complete', (data) => {
-    console.log('Payment complete:', data);
-});
+            // ✅ FIX: Use confirmationCodeRef.current instead of confirmationCode state
+            // (state is stale in this closure, ref always has the latest value)
+            myCheckout.setCallback('payment_receipt', async (data) => {
+                console.log('Payment receipt:', data);
+                console.log('Using confirmation code:', confirmationCodeRef.current);
+                try {
+                    const result = await functions.invoke('handleTicketPaymentSuccess', {
+                        confirmation_code: confirmationCodeRef.current
+                    });
+                    console.log('Payment confirmed:', result);
+                } catch (error) {
+                    console.error('Error processing payment:', error);
+                }
+                monerisCheckoutRef.current = null;
+                setOrderComplete(true);
+                setShowCheckout(false);
+            });
+
+            myCheckout.setCallback('payment_complete', (data) => {
+                console.log('Payment complete:', data);
+            });
+
             myCheckout.startCheckout(checkoutTicket);
         }
-    }, [showCheckout, checkoutTicket, confirmationCode]);
+    }, [showCheckout, checkoutTicket]);
 
     const createCheckout = useMutation({
         mutationFn: async (checkoutData) => {
@@ -216,6 +220,7 @@ myCheckout.setCallback('payment_complete', (data) => {
         },
         onSuccess: (data) => {
             setConfirmationCode(data.code);
+            confirmationCodeRef.current = data.code;
             setOrderComplete(true);
             queryClient.invalidateQueries({ queryKey: ['event', eventId] });
         }
@@ -281,7 +286,9 @@ myCheckout.setCallback('payment_complete', (data) => {
 
             const result = await createCheckout.mutateAsync(checkoutData);
             if (result.ticket) {
+                // ✅ FIX: Set both state (for display) and ref (for Moneris callback)
                 setConfirmationCode(result.confirmation_code);
+                confirmationCodeRef.current = result.confirmation_code;
                 setCheckoutTicket(result.ticket);
                 setShowCheckout(true);
             } else {
