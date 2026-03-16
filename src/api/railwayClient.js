@@ -18,8 +18,8 @@ const RAILWAY_API_URL = import.meta.env.VITE_RAILWAY_API_URL
   || 'https://rodeo-fresh-production-7348.up.railway.app/api';
 
 const TOKEN_KEY = 'railway_auth_token';
-const AUTH_EMAIL = 'darren@holmgraphics.ca';
-const AUTH_PASSWORD = 'Mimaki@1';
+const AUTH_EMAIL = import.meta.env.VITE_AUTH_EMAIL || 'darren@holmgraphics.ca';
+const AUTH_PASSWORD = import.meta.env.VITE_AUTH_PASSWORD;
 
 // ─── Core API Client ────────────────────────────────────────
 
