@@ -36,7 +36,7 @@
  *   }
  *
  *   export const pagesConfig = {
- *       mainPage: "Home",
+ *       mainPage: "Home", // v2
  *       Pages: PAGES,
  *       Layout: __Layout,
  *   };
@@ -108,7 +108,7 @@ export const PAGES = {
 }
 
 export const pagesConfig = {
-    mainPage: "Home",
+    mainPage: "Home", // v2
     Pages: PAGES,
     Layout: __Layout,
 };
