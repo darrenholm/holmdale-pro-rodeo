@@ -126,10 +126,10 @@ export default function BuyTickets() {
       },
       enabled: !!eventId,
       retry: false,
-      staleTime: 60 * 1000,
-      refetchOnWindowFocus: false,
-      refetchOnMount: false,
-      refetchOnReconnect: false
+      staleTime: 0,
+      refetchOnWindowFocus: true,
+      refetchOnMount: true,
+      refetchOnReconnect: true
     });
     
     useEffect(() => {
