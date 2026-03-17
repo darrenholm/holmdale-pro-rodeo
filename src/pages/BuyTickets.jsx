@@ -235,7 +235,7 @@ export default function BuyTickets() {
 
     if (tierData && tierData[`tier${currentTier}`]) {
         const currentTierData = tierData[`tier${currentTier}`];
-        ticketsRemaining = Math.max(0, (currentTierData.quantity || 1000) - (currentTierData.sold || 0));
+        ticketsRemaining = Math.max(0, (currentTierData.quantity || 1000) - (tierData.ticketsSold || 0));
 
         if (currentTier < 3) {
             const nextTier = currentTier + 1;
