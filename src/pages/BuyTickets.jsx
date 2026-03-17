@@ -126,7 +126,7 @@ export default function BuyTickets() {
       },
       enabled: !!eventId,
       retry: false,
-      staleTime: 5 * 60 * 1000,
+      staleTime: 60 * 1000,
       refetchOnWindowFocus: false,
       refetchOnMount: false,
       refetchOnReconnect: false
