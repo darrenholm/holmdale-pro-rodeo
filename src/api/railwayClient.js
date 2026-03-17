@@ -285,7 +285,7 @@ const functions = {
       'getEventsFromRailway':          () => api.publicGet('/events'),
       'getProductsFromRailway':        () => api.publicGet('/products'),
       'getProductByIdRailway':         () => api.publicGet(`/products/${params.id}`),
-      'getEventCurrentTier':           () => api.publicGet(`/events/${params.eventId}/tier`),
+      'getEventCurrentTier':           () => api.publicGet(`/events/${params.eventId}/tier?v=2`),
       'getEventTierData':              () => api.publicGet(`/events/${params.eventId}/tier-data`),
       'getTicketByConfirmationRailway':() => api.publicGet(`/ticket-orders/confirmation/${params.code}`),
       'createTicketCheckoutMoneris':   () => api.publicPost('/moneris/ticket-checkout', params),
