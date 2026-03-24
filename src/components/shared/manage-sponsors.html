@@ -292,7 +292,7 @@ function renderSigns(q) {
         <td class="name">${s.location||''}</td>
         <td>${s.cross_street||''}</td>
         <td>${s.installed?'<span class="badge bg">Yes</span>':'<span class="badge by">No</span>'}</td>
-        <td>${s.install_date?new Date(s.install_date).toLocaleDateString():''}</td>
+        <td>${s.install_date?new Date(event.date + 'Z').toLocaleDateString('en-CA', { timeZone: 'UTC', ... })
         <td>${s.removed?'<span class="badge br">Yes</span>':'<span class="badge by">No</span>'}</td>
         <td><button class="btn btn-sm btn-gray" onclick="openEdit('signs',${s.id})">Edit</button></td>
     </tr>`).join('')}</tbody></table>`;
