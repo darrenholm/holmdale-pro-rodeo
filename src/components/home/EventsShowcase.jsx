@@ -76,7 +76,7 @@ export default function EventsShowcase({ events }) {
                                     <div className="space-y-2 mb-4">
                                         <div className="flex items-center gap-2 text-stone-400 text-sm">
                                             <Calendar className="w-4 h-4 text-green-500" />
-                                            <span>{event.id === '696b7bdc81676e7ff80617a1' ? 'July 31 - August 2, 2026' : format(new Date(event.date), 'EEEE, MMMM d, yyyy')}</span>
+                                            <span>{event.id === '696b7bdc81676e7ff80617a1' ? 'July 31 - August 2, 2026' : format(new Date(event.date.replace('T00:00:00.000Z', 'T12:00:00.000Z')), 'EEEE, MMMM d, yyyy')}</span>
                                         </div>
                                         <div className="flex items-center gap-2 text-stone-400 text-sm">
                                             <Clock className="w-4 h-4 text-green-500" />
