@@ -10,7 +10,7 @@ import { Calendar, Clock, MapPin, ArrowRight, Ticket } from 'lucide-react';
 import { format } from 'date-fns';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
-h
+
 export default function Events() {
     const { data: events = [], isLoading, error } = useQuery({
         queryKey: ['events'],
@@ -28,26 +28,26 @@ export default function Events() {
         staleTime: 5 * 60 * 1000,
         refetchOnWindowFocus: false
     });
-    
+
     return (
         <div className="min-h-screen bg-stone-950 pt-24 pb-20 px-6">
             <div className="max-w-7xl mx-auto">
                 <div className="text-center mb-16">
-                    <motion.span 
+                    <motion.span
                         className="inline-block text-green-500 text-sm font-semibold tracking-wider uppercase mb-4"
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
                     >
                         Plan Your Visit
                     </motion.span>
-                    <motion.h1 
+                    <motion.h1
                         className="text-4xl md:text-6xl font-bold text-white mb-4"
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                     >
                         Upcoming Events
                     </motion.h1>
-                    <motion.p 
+                    <motion.p
                         className="text-stone-400 max-w-2xl mx-auto text-lg"
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
@@ -56,7 +56,7 @@ export default function Events() {
                         Choose your event and secure your seats for an unforgettable rodeo experience
                     </motion.p>
                 </div>
-                
+
                 {isLoading ? (
                     <div className="grid gap-6">
                         {[1, 2, 3].map((i) => (
@@ -90,7 +90,7 @@ export default function Events() {
                                 <Card className="bg-stone-900 border-stone-800 overflow-hidden group hover:border-green-500/30 transition-all duration-300">
                                     <div className="flex flex-col lg:flex-row">
                                         <div className="relative lg:w-80 h-56 lg:h-auto overflow-hidden">
-                                            <img 
+                                            <img
                                                 src={event.image_url || 'https://images.unsplash.com/photo-1570042225831-d98fa7577f1e?w=600&q=80'}
                                                 alt={event.title}
                                                 className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
@@ -101,20 +101,20 @@ export default function Events() {
                                                 </Badge>
                                             )}
                                         </div>
-                                        
+
                                         <div className="flex-1 p-6 lg:p-8">
                                             <div className="flex flex-col lg:flex-row lg:items-start justify-between gap-6">
                                                 <div className="flex-1">
                                                     <h3 className="text-2xl font-bold text-white mb-4 group-hover:text-green-400 transition-colors">
                                                         {event.title}
                                                     </h3>
-                                                    
+
                                                     {event.description && (
                                                         <p className="text-stone-400 mb-4 line-clamp-2">
                                                             {event.description}
                                                         </p>
                                                     )}
-                                                    
+
                                                     <div className="flex flex-wrap gap-4 text-sm">
                                                         <div className="flex items-center gap-2 text-stone-300">
                                                             <Calendar className="w-4 h-4 text-green-500" />
@@ -130,7 +130,7 @@ export default function Events() {
                                                         </div>
                                                     </div>
                                                 </div>
-                                                
+
                                                 <div className="lg:text-right">
                                                     <div className="mb-4">
                                                         <span className="text-stone-500 text-sm block mb-1">{event.id === '696b7bdc81676e7ff80617a1' ? 'Entry Fee' : 'Starting at'}</span>
@@ -138,7 +138,7 @@ export default function Events() {
                                                             ${event.id === '696b7bdc81676e7ff80617a1' ? '0' : (event.general_price || 30)}
                                                         </span>
                                                     </div>
-                                                    
+
                                                     <div className="flex flex-wrap gap-2 lg:justify-end mb-4">
                                                         {event.general_available > 0 && (
                                                             <Badge variant="outline" className="border-green-500/50 text-green-400">
@@ -156,7 +156,7 @@ export default function Events() {
                                                             </Badge>
                                                         )}
                                                     </div>
-                                                    
+
                                                     {event.id !== '696b7bdc81676e7ff80617a1' && (
                                                         <Link to={`${createPageUrl('BuyTickets')}?eventId=${event.id}`}>
                                                             <Button className="bg-green-500 hover:bg-green-600 text-stone-900 font-semibold w-full lg:w-auto group/btn">
