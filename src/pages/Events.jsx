@@ -10,7 +10,7 @@ import { Calendar, Clock, MapPin, ArrowRight, Ticket } from 'lucide-react';
 import { format } from 'date-fns';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
-
+h
 export default function Events() {
     const { data: events = [], isLoading, error } = useQuery({
         queryKey: ['events'],
@@ -118,7 +118,7 @@ export default function Events() {
                                                     <div className="flex flex-wrap gap-4 text-sm">
                                                         <div className="flex items-center gap-2 text-stone-300">
                                                             <Calendar className="w-4 h-4 text-green-500" />
-                                                            <span>{format(new Date(event.date), 'EEEE, MMMM d, yyyy')}</span>
+                                                            <span>{format(new Date(event.date.replace('T00:00:00.000Z', 'T12:00:00.000Z')), 'EEEE, MMMM d, yyyy')}</span>
                                                         </div>
                                                         <div className="flex items-center gap-2 text-stone-300">
                                                             <Clock className="w-4 h-4 text-green-500" />
