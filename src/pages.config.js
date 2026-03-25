@@ -50,6 +50,7 @@
 import About from './pages/About';
 import AssignStaff from './pages/AssignStaff';
 import BarSales from './pages/BarSales';
+import BuyADrink from './pages/BuyADrink';
 import Bartender from './pages/Bartender';
 import BuyTickets from './pages/BuyTickets';
 import CheckoutCancel from './pages/CheckoutCancel';
@@ -81,6 +82,7 @@ export const PAGES = {
     "About": About,
     "AssignStaff": AssignStaff,
     "BarSales": BarSales,
+    "BuyADrink": BuyADrink,
     "Bartender": Bartender,
     "BuyTickets": BuyTickets,
     "CheckoutCancel": CheckoutCancel,
