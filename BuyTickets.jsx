@@ -60,6 +60,8 @@ export default function BuyTickets() {
     const [isInIframe, setIsInIframe] = useState(window.self !== window.top);
     const [showCheckout, setShowCheckout] = useState(false);
     const [checkoutTicket, setCheckoutTicket] = useState(null);
+    const [paymentStatus, setPaymentStatus] = useState(null); // 'approved' | 'declined' | null
+    const [paymentMessage, setPaymentMessage] = useState('');
     const checkoutRef = useRef(null);
     const monerisCheckoutRef = useRef(null);
 
@@ -161,10 +163,10 @@ export default function BuyTickets() {
 
             myCheckout.setCallback('error_event', (error) => {
                 console.error('Moneris error:', error);
-                alert('Payment error occurred');
                 monerisCheckoutRef.current = null;
                 setShowCheckout(false);
-                setCheckoutTicket(null);
+                setPaymentStatus('declined');
+                setPaymentMessage('A payment error occurred. Please try again.');
             });
 
             myCheckout.setCallback('payment_receipt', (data) => {
@@ -174,22 +176,22 @@ export default function BuyTickets() {
             myCheckout.setCallback('payment_complete', async (data) => {
                 console.log('Payment complete:', data);
                 
-                // IMPORTANT: Confirm payment FIRST, before changing any state
                 try {
                     const result = await functions.invoke('handleTicketPaymentSuccess', {
                         confirmation_code: confirmationCode
                     });
                     console.log('Payment confirmed:', result);
+                    monerisCheckoutRef.current = null;
+                    setShowCheckout(false);
+                    setPaymentStatus('approved');
+                    setPaymentMessage('Your payment was approved! Your tickets have been confirmed and a QR code has been sent to your email.');
                 } catch (error) {
                     console.error('Error processing payment:', error);
+                    monerisCheckoutRef.current = null;
+                    setShowCheckout(false);
+                    setPaymentStatus('declined');
+                    setPaymentMessage('Your payment was declined. Please try again with a different card.');
                 }
-                
-                // Clear the ref so cleanup doesn't try to close destroyed iframe
-                monerisCheckoutRef.current = null;
-                
-                // NOW update state
-                setOrderComplete(true);
-                setShowCheckout(false);
             });
 
             myCheckout.startCheckout(checkoutTicket);
@@ -365,7 +367,59 @@ export default function BuyTickets() {
             </div>
         );
     }
-    
+
+    // Payment status popup
+    if (paymentStatus) {
+        return (
+            <div className="min-h-screen bg-stone-950 pt-24 pb-20 px-6 flex items-center justify-center">
+                <motion.div
+                    initial={{ opacity: 0, scale: 0.9 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    className="max-w-lg w-full"
+                >
+                    <Card className="bg-stone-900 border-stone-800 p-8 text-center">
+                        {paymentStatus === 'approved' ? (
+                            <>
+                                <div className="w-20 h-20 rounded-full bg-green-500/20 flex items-center justify-center mx-auto mb-6">
+                                    <CheckCircle className="w-10 h-10 text-green-500" />
+                                </div>
+                                <h2 className="text-3xl font-bold text-white mb-4">Payment Approved!</h2>
+                                <p className="text-stone-400 mb-8">{paymentMessage}</p>
+                                <Button
+                                    className="w-full bg-green-500 hover:bg-green-600 text-stone-900 font-semibold py-4"
+                                    onClick={() => {
+                                        setPaymentStatus(null);
+                                        setOrderComplete(true);
+                                    }}
+                                >
+                                    OK — View My Order
+                                </Button>
+                            </>
+                        ) : (
+                            <>
+                                <div className="w-20 h-20 rounded-full bg-red-500/20 flex items-center justify-center mx-auto mb-6">
+                                    <AlertCircle className="w-10 h-10 text-red-500" />
+                                </div>
+                                <h2 className="text-3xl font-bold text-white mb-4">Payment Declined</h2>
+                                <p className="text-stone-400 mb-8">{paymentMessage}</p>
+                                <Button
+                                    className="w-full bg-green-500 hover:bg-green-600 text-stone-900 font-semibold py-4"
+                                    onClick={() => {
+                                        setPaymentStatus(null);
+                                        setShowCheckout(false);
+                                        setCheckoutTicket(null);
+                                    }}
+                                >
+                                    OK — Try Again
+                                </Button>
+                            </>
+                        )}
+                    </Card>
+                </motion.div>
+            </div>
+        );
+    }
+
     if (orderComplete) {
         return (
             <div className="min-h-screen bg-stone-950 pt-24 pb-20 px-6 flex items-center justify-center">
@@ -459,261 +513,252 @@ export default function BuyTickets() {
                 </Link>
                 
                 <div className="grid lg:grid-cols-3 gap-8">
-                        <div className="lg:col-span-2 space-y-6">
-                            <Card className="bg-stone-900 border-stone-800 overflow-hidden">
-                                <div className="relative h-48 md:h-64">
-                                    <img 
-                                        src={event?.image_url || 'https://images.unsplash.com/photo-1570042225831-d98fa7577f1e?w=1200&q=80'}
-                                        alt={event?.title}
-                                        className="w-full h-full object-cover"
-                                    />
-                                    <div className="absolute inset-0 bg-gradient-to-t from-stone-900 to-transparent" />
-                                    <div className="absolute bottom-0 left-0 right-0 p-6">
-                                        <h1 className="text-3xl font-bold text-white mb-2">{event?.title}</h1>
-                                        <div className="flex flex-wrap gap-4 text-sm text-stone-300">
-                                            <div className="flex items-center gap-2">
-                                                <Calendar className="w-4 h-4 text-green-500" />
-                                                {event?.id === '696b7bdc81676e7ff80617a1' ? 'July 31 - August 2, 2026' : format(new Date(event?.date), 'EEEE, MMMM d, yyyy')}
-                                            </div>
-                                            <div className="flex items-center gap-2">
-                                                <Clock className="w-4 h-4 text-green-500" />
-                                                {event?.time}
-                                            </div>
-                                            <div className="flex items-center gap-2">
-                                                <MapPin className="w-4 h-4 text-green-500" />
-                                                {event?.venue || 'Main Arena'}
-                                            </div>
+                    <div className="lg:col-span-2 space-y-6">
+                        <Card className="bg-stone-900 border-stone-800 overflow-hidden">
+                            <div className="relative h-48 md:h-64">
+                                <img 
+                                    src={event?.image_url || 'https://images.unsplash.com/photo-1570042225831-d98fa7577f1e?w=1200&q=80'}
+                                    alt={event?.title}
+                                    className="w-full h-full object-cover"
+                                />
+                                <div className="absolute inset-0 bg-gradient-to-t from-stone-900 to-transparent" />
+                                <div className="absolute bottom-0 left-0 right-0 p-6">
+                                    <h1 className="text-3xl font-bold text-white mb-2">{event?.title}</h1>
+                                    <div className="flex flex-wrap gap-4 text-sm text-stone-300">
+                                        <div className="flex items-center gap-2">
+                                            <Calendar className="w-4 h-4 text-green-500" />
+                                            {event?.id === '696b7bdc81676e7ff80617a1' ? 'July 31 - August 2, 2026' : format(new Date(event?.date), 'EEEE, MMMM d, yyyy')}
+                                        </div>
+                                        <div className="flex items-center gap-2">
+                                            <Clock className="w-4 h-4 text-green-500" />
+                                            {event?.time}
+                                        </div>
+                                        <div className="flex items-center gap-2">
+                                            <MapPin className="w-4 h-4 text-green-500" />
+                                            {event?.venue || 'Main Arena'}
                                         </div>
                                     </div>
                                 </div>
-                            </Card>
-                            
-                            <Card className="bg-stone-900 border-stone-800">
-                                <CardHeader>
-                                    <CardTitle className="text-white flex items-center gap-2">
-                                        <Ticket className="w-5 h-5 text-green-500" />
-                                        Select Ticket Type
-                                    </CardTitle>
-                                    <div className="mt-4 bg-green-500/10 border border-green-500/30 rounded-lg p-4">
-                                        <div className="flex items-center justify-between">
-                                            <div>
-                                                <p className="text-white font-semibold">Tier {currentTier}: {ticketsRemaining} tickets remaining</p>
-                                                <p className="text-stone-300 text-sm">${tierData?.[`tier${currentTier}`]?.price || (currentTier === 1 ? '30' : currentTier === 2 ? '35' : '40')}/ticket</p>
-                                            </div>
-                                            <Badge className="bg-green-500 text-stone-900 text-lg px-4 py-1">
-                                                CURRENT
-                                            </Badge>
-                                        </div>
-                                        {nextTierPrice && (
-                                            <p className="text-stone-400 text-xs mt-3 pt-3 border-t border-green-500/20">
-                                                Next tier: {nextTierAvailable} tickets at ${nextTierPrice}/ticket
-                                            </p>
-                                        )}
-                                    </div>
-                                </CardHeader>
-                                <CardContent className="space-y-4">
-                                    {ticketTypes.map((type) => {
-                                        const isAvailable = ticketsRemaining > 0;
-                                        const quantity = quantities[type.id];
-                                        
-                                        let price = 0;
-                                        if (type.id === 'general') {
-                                            price = adultPrice;
-                                        } else if (type.id === 'child') {
-                                            price = childPrice;
-                                        } else if (type.id === 'family') {
-                                            price = familyPrice;
-                                        }
-                                        
-                                        return (
-                                            <div key={type.id} className={`p-4 rounded-xl border-2 transition-all ${
-                                                quantity > 0 ? 'border-green-500 bg-green-500/10' : isAvailable ? 'border-stone-700 bg-stone-800/50' : 'border-stone-800 bg-stone-800/30 opacity-50'
-                                            }`}>
-                                                <div className="flex items-start justify-between mb-3">
-                                                    <div>
-                                                        <h3 className="text-white font-semibold mb-1">{type.name}</h3>
-                                                        <p className="text-stone-400 text-sm">{type.description}</p>
-                                                        {type.id !== 'child' && (
-                                                            <Badge 
-                                                                variant="outline" 
-                                                                className={`mt-2 ${isAvailable ? 'border-green-500/50 text-green-400' : 'border-red-500/50 text-red-400'}`}
-                                                            >
-                                                                {isAvailable ? `Tier ${currentTier} pricing` : 'Sold Out'}
-                                                            </Badge>
-                                                        )}
-                                                        {type.id === 'child' && isAvailable && (
-                                                            <Badge 
-                                                                variant="outline" 
-                                                                className="mt-2 border-green-500/50 text-green-400"
-                                                            >
-                                                                Fixed price
-                                                            </Badge>
-                                                        )}
-                                                    </div>
-                                                    <div className="text-right">
-                                                        <p className="text-2xl font-bold text-green-400">${price.toFixed(2)}</p>
-                                                        <p className="text-stone-500 text-sm">per ticket</p>
-                                                    </div>
-                                                </div>
-                                                {isAvailable && (
-                                                    <div className="flex items-center gap-3 pt-3 border-t border-stone-700">
-                                                        <Button
-                                                            type="button"
-                                                            variant="outline"
-                                                            size="icon"
-                                                            onClick={() => setQuantities({...quantities, [type.id]: Math.max(0, quantity - 1)})}
-                                                            className="border-stone-600 text-white hover:bg-stone-700 h-8 w-8"
-                                                        >
-                                                            <Minus className="w-3 h-3" />
-                                                        </Button>
-                                                        <span className="text-white font-semibold w-8 text-center">{quantity}</span>
-                                                        <Button
-                                                            type="button"
-                                                            variant="outline"
-                                                            size="icon"
-                                                            onClick={() => setQuantities({...quantities, [type.id]: quantity + 1})}
-                                                            className="border-stone-600 text-white hover:bg-stone-700 h-8 w-8"
-                                                        >
-                                                            <Plus className="w-3 h-3" />
-                                                        </Button>
-                                                    </div>
-                                                )}
-                                            </div>
-                                        );
-                                    })}
-                                </CardContent>
-                            </Card>
-
-                            <Card className="bg-stone-900 border-stone-800">
-                                <CardHeader>
-                                    <CardTitle className="text-white flex items-center gap-2">
-                                        <Users className="w-5 h-5 text-green-500" />
-                                        Ticket Details
-                                    </CardTitle>
-                                </CardHeader>
-                                <CardContent>
-                                    <form onSubmit={handleSubmit} className="space-y-6">
-                                        <div className="grid md:grid-cols-2 gap-4">
-                                            <div>
-                                                <Label htmlFor="name" className="text-stone-300">Full Name</Label>
-                                                <Input
-                                                    id="name"
-                                                    value={customerInfo.name}
-                                                    onChange={(e) => setCustomerInfo({ ...customerInfo, name: e.target.value })}
-                                                    className="mt-2 bg-stone-800 border-stone-700 text-white"
-                                                    placeholder="John Doe"
-                                                    required
-                                                />
-                                            </div>
-                                            <div>
-                                                <Label htmlFor="email" className="text-stone-300">Email Address</Label>
-                                                <Input
-                                                    id="email"
-                                                    type="email"
-                                                    value={customerInfo.email}
-                                                    onChange={(e) => setCustomerInfo({ ...customerInfo, email: e.target.value })}
-                                                    className="mt-2 bg-stone-800 border-stone-700 text-white"
-                                                    placeholder="john@example.com"
-                                                    required
-                                                />
-                                            </div>
-                                            <div>
-                                                <Label htmlFor="postal_code" className="text-stone-300">Postal Code</Label>
-                                                <Input
-                                                    id="postal_code"
-                                                    value={customerInfo.postal_code}
-                                                    onChange={(e) => setCustomerInfo({ ...customerInfo, postal_code: e.target.value })}
-                                                    className="mt-2 bg-stone-800 border-stone-700 text-white"
-                                                    placeholder="A1A 1A1"
-                                                />
-                                            </div>
-                                        </div>
-                                        
-                                        <Button 
-                                            type="submit"
-                                            disabled={createCheckout.isPending || totalQuantity === 0}
-                                            className="w-full bg-green-500 hover:bg-green-600 text-stone-900 font-semibold py-6 text-lg"
-                                        >
-                                            {createCheckout.isPending ? (
-                                                <>
-                                                    <Loader2 className="w-5 h-5 mr-2 animate-spin" />
-                                                    Redirecting to Checkout...
-                                                </>
-                                            ) : (
-                                                <>
-                                                    Complete Purchase - ${totalPrice.toFixed(2)}
-                                                </>
-                                            )}
-                                        </Button>
-                                    </form>
-                                </CardContent>
-                            </Card>
-                        </div>
+                            </div>
+                        </Card>
                         
-                        <div>
-                            <Card className="bg-stone-900 border-stone-800 sticky top-28">
-                                <CardHeader>
-                                    <CardTitle className="text-white">Order Summary</CardTitle>
-                                </CardHeader>
-                                <CardContent className="space-y-4">
-                                    {quantities.general > 0 && (
-                                        <div className="flex justify-between text-stone-300">
-                                            <span>{quantities.general}x General Admission</span>
-                                            <span>${(quantities.general * adultPrice).toFixed(2)}</span>
+                        <Card className="bg-stone-900 border-stone-800">
+                            <CardHeader>
+                                <CardTitle className="text-white flex items-center gap-2">
+                                    <Ticket className="w-5 h-5 text-green-500" />
+                                    Select Ticket Type
+                                </CardTitle>
+                                <div className="mt-4 bg-green-500/10 border border-green-500/30 rounded-lg p-4">
+                                    <div className="flex items-center justify-between">
+                                        <div>
+                                            <p className="text-white font-semibold">Tier {currentTier}: {ticketsRemaining} tickets remaining</p>
+                                            <p className="text-stone-300 text-sm">${tierData?.[`tier${currentTier}`]?.price || (currentTier === 1 ? '30' : currentTier === 2 ? '35' : '40')}/ticket</p>
                                         </div>
+                                        <Badge className="bg-green-500 text-stone-900 text-lg px-4 py-1">
+                                            CURRENT
+                                        </Badge>
+                                    </div>
+                                    {nextTierPrice && (
+                                        <p className="text-stone-400 text-xs mt-3 pt-3 border-t border-green-500/20">
+                                            Next tier: {nextTierAvailable} tickets at ${nextTierPrice}/ticket
+                                        </p>
                                     )}
-                                    {quantities.child > 0 && (
-                                        <div className="flex justify-between text-stone-300">
-                                            <span>{quantities.child}x Child Tickets</span>
-                                            <span>${(quantities.child * childPrice).toFixed(2)}</span>
-                                        </div>
-                                    )}
-                                    {quantities.family > 0 && (
-                                       <div className="flex justify-between text-stone-300">
-                                           <span>{quantities.family}x Family Packages</span>
-                                           <span>${(quantities.family * familyPrice).toFixed(2)}</span>
-                                       </div>
-                                    )}
-                                    {(totalQuantity > 0) && (
-                                        <>
-                                            <div className="flex justify-between text-stone-300">
-                                                <span>Subtotal</span>
-                                                <span>${subtotal.toFixed(2)}</span>
-                                            </div>
-                                            <div className="flex justify-between text-stone-300">
-                                                <span>HST (13%)</span>
-                                                <span>${hst.toFixed(2)}</span>
-                                            </div>
-                                            <div className="border-t border-stone-800 pt-4">
-                                                <div className="flex justify-between text-lg font-bold">
-                                                    <span className="text-white">Total</span>
-                                                    <span className="text-green-400">${totalPrice.toFixed(2)}</span>
+                                </div>
+                            </CardHeader>
+                            <CardContent className="space-y-4">
+                                {ticketTypes.map((type) => {
+                                    const isAvailable = ticketsRemaining > 0;
+                                    const quantity = quantities[type.id];
+                                    
+                                    let price = 0;
+                                    if (type.id === 'general') price = adultPrice;
+                                    else if (type.id === 'child') price = childPrice;
+                                    else if (type.id === 'family') price = familyPrice;
+                                    
+                                    return (
+                                        <div key={type.id} className={`p-4 rounded-xl border-2 transition-all ${
+                                            quantity > 0 ? 'border-green-500 bg-green-500/10' : isAvailable ? 'border-stone-700 bg-stone-800/50' : 'border-stone-800 bg-stone-800/30 opacity-50'
+                                        }`}>
+                                            <div className="flex items-start justify-between mb-3">
+                                                <div>
+                                                    <h3 className="text-white font-semibold mb-1">{type.name}</h3>
+                                                    <p className="text-stone-400 text-sm">{type.description}</p>
+                                                    {type.id !== 'child' && (
+                                                        <Badge 
+                                                            variant="outline" 
+                                                            className={`mt-2 ${isAvailable ? 'border-green-500/50 text-green-400' : 'border-red-500/50 text-red-400'}`}
+                                                        >
+                                                            {isAvailable ? `Tier ${currentTier} pricing` : 'Sold Out'}
+                                                        </Badge>
+                                                    )}
+                                                    {type.id === 'child' && isAvailable && (
+                                                        <Badge variant="outline" className="mt-2 border-green-500/50 text-green-400">
+                                                            Fixed price
+                                                        </Badge>
+                                                    )}
+                                                </div>
+                                                <div className="text-right">
+                                                    <p className="text-2xl font-bold text-green-400">${price.toFixed(2)}</p>
+                                                    <p className="text-stone-500 text-sm">per ticket</p>
                                                 </div>
                                             </div>
-                                        </>
-                                    )}
-                                    {totalQuantity === 0 && (
-                                        <div className="text-center text-stone-400 py-4">Select tickets above to see pricing</div>
-                                    )}
-                                    
-                                    <div className="bg-stone-800/50 rounded-lg p-4 text-sm text-stone-400">
-                                        <p className="flex items-start gap-2">
-                                            <CheckCircle className="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" />
-                                            Instant confirmation
-                                        </p>
-                                        <p className="flex items-start gap-2 mt-2">
-                                            <CheckCircle className="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" />
-                                            E-tickets sent to your email
-                                        </p>
-                                        <p className="flex items-start gap-2 mt-2">
-                                            <CheckCircle className="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" />
-                                            Show confirmation code at entry
-                                        </p>
+                                            {isAvailable && (
+                                                <div className="flex items-center gap-3 pt-3 border-t border-stone-700">
+                                                    <Button
+                                                        type="button"
+                                                        variant="outline"
+                                                        size="icon"
+                                                        onClick={() => setQuantities({...quantities, [type.id]: Math.max(0, quantity - 1)})}
+                                                        className="border-stone-600 text-white hover:bg-stone-700 h-8 w-8"
+                                                    >
+                                                        <Minus className="w-3 h-3" />
+                                                    </Button>
+                                                    <span className="text-white font-semibold w-8 text-center">{quantity}</span>
+                                                    <Button
+                                                        type="button"
+                                                        variant="outline"
+                                                        size="icon"
+                                                        onClick={() => setQuantities({...quantities, [type.id]: quantity + 1})}
+                                                        className="border-stone-600 text-white hover:bg-stone-700 h-8 w-8"
+                                                    >
+                                                        <Plus className="w-3 h-3" />
+                                                    </Button>
+                                                </div>
+                                            )}
+                                        </div>
+                                    );
+                                })}
+                            </CardContent>
+                        </Card>
+
+                        <Card className="bg-stone-900 border-stone-800">
+                            <CardHeader>
+                                <CardTitle className="text-white flex items-center gap-2">
+                                    <Users className="w-5 h-5 text-green-500" />
+                                    Ticket Details
+                                </CardTitle>
+                            </CardHeader>
+                            <CardContent>
+                                <form onSubmit={handleSubmit} className="space-y-6">
+                                    <div className="grid md:grid-cols-2 gap-4">
+                                        <div>
+                                            <Label htmlFor="name" className="text-stone-300">Full Name</Label>
+                                            <Input
+                                                id="name"
+                                                value={customerInfo.name}
+                                                onChange={(e) => setCustomerInfo({ ...customerInfo, name: e.target.value })}
+                                                className="mt-2 bg-stone-800 border-stone-700 text-white"
+                                                placeholder="John Doe"
+                                                required
+                                            />
+                                        </div>
+                                        <div>
+                                            <Label htmlFor="email" className="text-stone-300">Email Address</Label>
+                                            <Input
+                                                id="email"
+                                                type="email"
+                                                value={customerInfo.email}
+                                                onChange={(e) => setCustomerInfo({ ...customerInfo, email: e.target.value })}
+                                                className="mt-2 bg-stone-800 border-stone-700 text-white"
+                                                placeholder="john@example.com"
+                                                required
+                                            />
+                                        </div>
+                                        <div>
+                                            <Label htmlFor="postal_code" className="text-stone-300">Postal Code</Label>
+                                            <Input
+                                                id="postal_code"
+                                                value={customerInfo.postal_code}
+                                                onChange={(e) => setCustomerInfo({ ...customerInfo, postal_code: e.target.value })}
+                                                className="mt-2 bg-stone-800 border-stone-700 text-white"
+                                                placeholder="A1A 1A1"
+                                            />
+                                        </div>
                                     </div>
-                                </CardContent>
-                            </Card>
-                        </div>
+                                    
+                                    <Button 
+                                        type="submit"
+                                        disabled={createCheckout.isPending || totalQuantity === 0}
+                                        className="w-full bg-green-500 hover:bg-green-600 text-stone-900 font-semibold py-6 text-lg"
+                                    >
+                                        {createCheckout.isPending ? (
+                                            <>
+                                                <Loader2 className="w-5 h-5 mr-2 animate-spin" />
+                                                Redirecting to Checkout...
+                                            </>
+                                        ) : (
+                                            <>Complete Purchase - ${totalPrice.toFixed(2)}</>
+                                        )}
+                                    </Button>
+                                </form>
+                            </CardContent>
+                        </Card>
                     </div>
+                    
+                    <div>
+                        <Card className="bg-stone-900 border-stone-800 sticky top-28">
+                            <CardHeader>
+                                <CardTitle className="text-white">Order Summary</CardTitle>
+                            </CardHeader>
+                            <CardContent className="space-y-4">
+                                {quantities.general > 0 && (
+                                    <div className="flex justify-between text-stone-300">
+                                        <span>{quantities.general}x General Admission</span>
+                                        <span>${(quantities.general * adultPrice).toFixed(2)}</span>
+                                    </div>
+                                )}
+                                {quantities.child > 0 && (
+                                    <div className="flex justify-between text-stone-300">
+                                        <span>{quantities.child}x Child Tickets</span>
+                                        <span>${(quantities.child * childPrice).toFixed(2)}</span>
+                                    </div>
+                                )}
+                                {quantities.family > 0 && (
+                                    <div className="flex justify-between text-stone-300">
+                                        <span>{quantities.family}x Family Packages</span>
+                                        <span>${(quantities.family * familyPrice).toFixed(2)}</span>
+                                    </div>
+                                )}
+                                {totalQuantity > 0 && (
+                                    <>
+                                        <div className="flex justify-between text-stone-300">
+                                            <span>Subtotal</span>
+                                            <span>${subtotal.toFixed(2)}</span>
+                                        </div>
+                                        <div className="flex justify-between text-stone-300">
+                                            <span>HST (13%)</span>
+                                            <span>${hst.toFixed(2)}</span>
+                                        </div>
+                                        <div className="border-t border-stone-800 pt-4">
+                                            <div className="flex justify-between text-lg font-bold">
+                                                <span className="text-white">Total</span>
+                                                <span className="text-green-400">${totalPrice.toFixed(2)}</span>
+                                            </div>
+                                        </div>
+                                    </>
+                                )}
+                                {totalQuantity === 0 && (
+                                    <div className="text-center text-stone-400 py-4">Select tickets above to see pricing</div>
+                                )}
+                                
+                                <div className="bg-stone-800/50 rounded-lg p-4 text-sm text-stone-400">
+                                    <p className="flex items-start gap-2">
+                                        <CheckCircle className="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" />
+                                        Instant confirmation
+                                    </p>
+                                    <p className="flex items-start gap-2 mt-2">
+                                        <CheckCircle className="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" />
+                                        E-tickets sent to your email
+                                    </p>
+                                    <p className="flex items-start gap-2 mt-2">
+                                        <CheckCircle className="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" />
+                                        Show confirmation code at entry
+                                    </p>
+                                </div>
+                            </CardContent>
+                        </Card>
+                    </div>
+                </div>
             </div>
         </div>
     );
