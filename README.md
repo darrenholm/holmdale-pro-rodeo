@@ -1,39 +1,63 @@
-**Welcome to your Base44 project** 
+# holmdale-pro-rodeo
 
-**About**
+Public marketing and ticket-purchase site for Holmdale Pro Rodeo. Deployed at **holmdalerodeo.ca**.
 
-View and Edit  your app on [Base44.com](http://Base44.com) 
+## Stack
 
-This project contains everything you need to run your app locally.
+- Vite + React 18
+- React Router v6
+- Tailwind CSS + shadcn/ui
+- TanStack Query
+- Moneris (payment gateway)
 
-**Edit the code in your local development environment**
+## Backend API
 
-Any change pushed to the repo will also be reflected in the Base44 Builder.
+This frontend talks to the Railway-hosted Express API at `https://rodeo-fresh-production-7348.up.railway.app/api`. Source lives in the [`rodeo-fresh`](../rodeo-fresh) repo.
 
-**Prerequisites:** 
+Override the API base URL locally with `VITE_RAILWAY_API_URL` in `.env.local`.
 
-1. Clone the repository using the project's Git URL 
-2. Navigate to the project directory
-3. Install dependencies: `npm install`
-4. Create an `.env.local` file and set the right environment variables
+## Local development
 
-```
-VITE_BASE44_APP_ID=your_app_id
-VITE_BASE44_APP_BASE_URL=your_backend_url
-
-e.g.
-VITE_BASE44_APP_ID=cbef744a8545c389ef439ea6
-VITE_BASE44_APP_BASE_URL=https://my-to-do-list-81bfaad7.base44.app
+```bash
+npm install
+npm run dev
 ```
 
-Run the app: `npm run dev`
+Default dev server: `http://localhost:5173`.
 
-**Publish your changes**
+```bash
+npm run build    # production build → dist/
+npm run preview  # serve the production build locally
+```
 
-Open [Base44.com](http://Base44.com) and click on Publish.
+## Repo structure
 
-**Docs & Support**
+```
+src/
+  pages/         # React Router pages (public + some staff/admin — see migration note below)
+  components/
+    ui/          # shadcn/ui primitives
+    home/        # homepage sections
+    shared/      # legacy raw-HTML pages (e.g. manage-sponsors.html)
+  api/
+    railwayClient.js  # fetch wrapper for the Railway API; auto-logs-in
+                      # via VITE_AUTH_PASSWORD env var (transitional —
+                      # see SECURITY-DEBT.md SD-001)
+    base44Client.js   # compatibility shim used by ~18 pages; aliases
+                      # base44.* calls to railwayClient
+  lib/           # shared utilities + hooks
+```
 
-Documentation: [https://docs.base44.com/Integrations/Using-GitHub](https://docs.base44.com/Integrations/Using-GitHub)
+## Sibling repos
 
-Support: [https://app.base44.com/support](https://app.base44.com/support)
+- [`rodeo-fresh`](../rodeo-fresh) — backend API on Railway
+- [`holmdale-staff-portal`](../holmdale-staff-portal) — staff site at staff.holmdalerodeo.ca
+
+## Migration in progress
+
+This repo is being cleaned up after a Base44 → Railway platform migration. Outstanding work:
+
+- **~17 staff/admin React pages in `src/pages/` belong in `holmdale-staff-portal`** and are scheduled to be moved: RefundTickets, ManageEvents, GateScan, IDCheck, Bartender, BarSales, FoodAdmin, FoodKiosk, RFIDRegistry, RFIDTest, StaffList, StaffScheduling, AssignStaff, ImportStaff, TicketSalesReport, UpdatePrices, TestRailway.
+- **`src/api/base44Client.js` removal is blocked on adding public endpoints to `rodeo-fresh`** and refactoring four public pages (Shop, TrackOrder, ResendTicket, CheckoutSuccess) to use them. The shim is currently imported by ~18 pages.
+
+Known security debt is tracked in [SECURITY-DEBT.md](./SECURITY-DEBT.md).
