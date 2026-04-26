@@ -14,6 +14,33 @@
  *   const ticket  = await entities.TicketOrder.create({ ... });
  */
 
+/**
+ * ⚠️ TRANSITIONAL AUTO-LOGIN — KNOWN SECURITY DEBT
+ *
+ * AUTH_EMAIL / AUTH_PASSWORD below configure a silent auto-login as
+ * darren@holmgraphics.ca for any visitor that triggers an authenticated
+ * endpoint. This is how the public pages (Shop, TrackOrder, ResendTicket,
+ * CheckoutSuccess) currently work — they rely on this auto-login to call
+ * staff-authenticated backend endpoints.
+ *
+ * Problems:
+ *   - VITE_AUTH_PASSWORD is inlined into the deployed JS bundle. Anyone
+ *     with browser dev tools can read it.
+ *   - Every public visitor's session = your admin account.
+ *
+ * Tracked in /SECURITY-DEBT.md. Target removal: 2026-06-25.
+ *
+ * The fix (Path B) is to add public, rate-limited endpoints to rodeo-fresh
+ * for ticket lookup / shipment tracking / ticket-email resend, then refactor
+ * the four public pages to use those, then remove this auto-login entirely.
+ *
+ * Until that ships:
+ *   - Set VITE_AUTH_PASSWORD in Vercel env vars only — never commit.
+ *   - Rotate the password periodically.
+ *   - Ensure the darren@holmgraphics.ca account has the minimum permissions
+ *     required for these public flows (NOT a full admin role).
+ */
+
 const RAILWAY_API_URL = import.meta.env.VITE_RAILWAY_API_URL 
   || 'https://rodeo-fresh-production-7348.up.railway.app/api';
 
