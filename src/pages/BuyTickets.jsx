@@ -247,9 +247,9 @@ export default function BuyTickets() {
         }
     }
     
-    const adultPrice = tierData?.adultPrice || (currentTier === 1 ? 30 : currentTier === 2 ? 35 : 40);
+    const adultPrice = tierData?.adultPrice || 35;
     const childPrice = tierData?.childPrice || 10;
-    const familyPrice = tierData?.familyPrice || (currentTier === 1 ? 70 : currentTier === 2 ? 80 : 90);
+    const familyPrice = tierData?.familyPrice || 80;
     
     const generalSubtotal = quantities.general * adultPrice;
     const childSubtotal = quantities.child * childPrice;
@@ -499,18 +499,13 @@ export default function BuyTickets() {
                                     <div className="mt-4 bg-green-500/10 border border-green-500/30 rounded-lg p-4">
                                         <div className="flex items-center justify-between">
                                             <div>
-                                                <p className="text-white font-semibold">Tier {currentTier}: {ticketsRemaining} tickets remaining</p>
-                                                <p className="text-stone-300 text-sm">${tierData?.[`tier${currentTier}`]?.price || (currentTier === 1 ? '30' : currentTier === 2 ? '35' : '40')}/ticket</p>
+                                                <p className="text-white font-semibold">{ticketsRemaining} tickets remaining</p>
+                                                <p className="text-stone-300 text-sm">${adultPrice}/adult · ${familyPrice}/family</p>
                                             </div>
                                             <Badge className="bg-green-500 text-stone-900 text-lg px-4 py-1">
-                                                CURRENT
+                                                AVAILABLE
                                             </Badge>
                                         </div>
-                                        {nextTierPrice && (
-                                            <p className="text-stone-400 text-xs mt-3 pt-3 border-t border-green-500/20">
-                                                Next tier: {nextTierAvailable} tickets at ${nextTierPrice}/ticket
-                                            </p>
-                                        )}
                                     </div>
                                 </CardHeader>
                                 <CardContent className="space-y-4">
@@ -540,7 +535,7 @@ export default function BuyTickets() {
                                                                 variant="outline" 
                                                                 className={`mt-2 ${isAvailable ? 'border-green-500/50 text-green-400' : 'border-red-500/50 text-red-400'}`}
                                                             >
-                                                                {isAvailable ? `Tier ${currentTier} pricing` : 'Sold Out'}
+                                                                {isAvailable ? 'Standard pricing' : 'Sold Out'}
                                                             </Badge>
                                                         )}
                                                         {type.id === 'child' && isAvailable && (
