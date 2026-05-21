@@ -63,7 +63,6 @@ import GateScan from './pages/GateScan';
 import Home from './pages/Home';
 import IDCheck from './pages/IDCheck';
 import ImportStaff from './pages/ImportStaff';
-import ManageEvents from './pages/ManageEvents';
 import RFIDRegistry from './pages/RFIDRegistry';
 import RFIDTest from './pages/RFIDTest';
 import RefundTickets from './pages/RefundTickets';
@@ -95,7 +94,6 @@ export const PAGES = {
     "Home": Home,
     "IDCheck": IDCheck,
     "ImportStaff": ImportStaff,
-    "ManageEvents": ManageEvents,
     "RFIDRegistry": RFIDRegistry,
     "RFIDTest": RFIDTest,
     "RefundTickets": RefundTickets,
