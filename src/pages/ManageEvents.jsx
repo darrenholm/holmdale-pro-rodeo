@@ -13,10 +13,28 @@ import { ArrowLeft, Plus, Calendar, Edit, Loader2, CheckCircle } from 'lucide-re
 import { createPageUrl } from '@/utils';
 import { format } from 'date-fns';
 
+// Mirror the flat per-event price into the three tier columns the API stores,
+// so the customer site's /current-tier endpoint always returns the same value
+// regardless of how many tickets have been sold.
+function withTierMirror(eventData) {
+    const adult = Number(eventData.general_price) || 0;
+    const family = Number(eventData.family_price) || 0;
+    return {
+        ...eventData,
+        tier1_adult_price: adult,
+        tier1_family_price: family,
+        tier2_adult_price: adult,
+        tier2_family_price: family,
+        tier3_adult_price: adult,
+        tier3_family_price: family,
+    };
+}
+
 export default function ManageEvents() {
     const queryClient = useQueryClient();
     const [showForm, setShowForm] = useState(false);
     const [editingEvent, setEditingEvent] = useState(null);
+    const [saveStatus, setSaveStatus] = useState(null); // { kind: 'success'|'error', message: string }
     const [formData, setFormData] = useState({
         name: '',
         date: '',
@@ -24,9 +42,9 @@ export default function ManageEvents() {
         location: '',
         description: '',
         image_url: '',
-        general_price: 30,
+        general_price: 35,
         child_price: 10,
-        family_price: 70
+        family_price: 80
     });
 
     const { data: events, isLoading } = useQuery({
@@ -37,32 +55,38 @@ export default function ManageEvents() {
         }
     });
 
+    const blankForm = {
+        name: '',
+        date: '',
+        time: '',
+        location: '',
+        description: '',
+        image_url: '',
+        general_price: 35,
+        child_price: 10,
+        family_price: 80
+    };
+
     const createEvent = useMutation({
         mutationFn: async (eventData) => {
             const token = localStorage.getItem('railway_auth_token');
             const response = await base44.functions.invoke('createEventRailway', {
                 token,
-                ...eventData,
+                ...withTierMirror(eventData),
                 tickets_sold: 0
             });
             return response.data;
         },
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['events-manage'] });
+            setSaveStatus({ kind: 'success', message: 'Event created.' });
             setShowForm(false);
             setEditingEvent(null);
-            setFormData({
-                name: '',
-                date: '',
-                time: '',
-                location: '',
-                description: '',
-                image_url: '',
-                general_price: 30,
-                child_price: 10,
-                family_price: 70
-            });
-        }
+            setFormData(blankForm);
+        },
+        onError: (err) => {
+            setSaveStatus({ kind: 'error', message: `Failed to create event: ${err?.message ?? 'unknown error'}` });
+        },
     });
 
     const updateEvent = useMutation({
@@ -71,30 +95,25 @@ export default function ManageEvents() {
             const response = await base44.functions.invoke('updateEventRailway', {
                 token,
                 eventId,
-                ...eventData
+                ...withTierMirror(eventData),
             });
             return response.data;
         },
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['events-manage'] });
+            setSaveStatus({ kind: 'success', message: 'Event updated. Prices apply immediately on the customer site (clear browser cache if needed).' });
             setShowForm(false);
             setEditingEvent(null);
-            setFormData({
-                name: '',
-                date: '',
-                time: '',
-                location: '',
-                description: '',
-                image_url: '',
-                general_price: 30,
-                child_price: 10,
-                family_price: 70
-            });
-        }
+            setFormData(blankForm);
+        },
+        onError: (err) => {
+            setSaveStatus({ kind: 'error', message: `Failed to update event: ${err?.message ?? 'unknown error'}` });
+        },
     });
 
     const handleSubmit = (e) => {
         e.preventDefault();
+        setSaveStatus(null);
         if (editingEvent) {
             updateEvent.mutate({ eventId: editingEvent.id, eventData: formData });
         } else {
@@ -103,7 +122,10 @@ export default function ManageEvents() {
     };
 
     const handleEdit = (event) => {
+        setSaveStatus(null);
         setEditingEvent(event);
+        // Prefer the tier1 stored price (what the customer site actually reads),
+        // falling back to general_price for old rows.
         setFormData({
             name: event.name || event.title,
             date: event.date ? event.date.split('T')[0] : '',
@@ -111,9 +133,9 @@ export default function ManageEvents() {
             location: event.location || event.venue,
             description: event.description,
             image_url: event.image_url || '',
-            general_price: event.general_price || 30,
+            general_price: event.tier1_adult_price || event.general_price || 35,
             child_price: event.child_price || 10,
-            family_price: event.family_price || 70
+            family_price: event.tier1_family_price || event.family_price || 80,
         });
         setShowForm(true);
     };
@@ -121,17 +143,7 @@ export default function ManageEvents() {
     const handleCancel = () => {
         setShowForm(false);
         setEditingEvent(null);
-        setFormData({
-            name: '',
-            date: '',
-            time: '',
-            location: '',
-            description: '',
-            image_url: '',
-            general_price: 30,
-            child_price: 20,
-            family_price: 100
-        });
+        setFormData(blankForm);
     };
 
     return (
@@ -155,6 +167,18 @@ export default function ManageEvents() {
                         {showForm ? 'Cancel' : 'Create Event'}
                     </Button>
                 </div>
+
+                {saveStatus && (
+                    <div
+                        className={`mb-6 rounded-lg border p-4 text-sm ${
+                            saveStatus.kind === 'success'
+                                ? 'bg-green-500/10 border-green-500/30 text-green-200'
+                                : 'bg-red-500/10 border-red-500/30 text-red-200'
+                        }`}
+                    >
+                        {saveStatus.message}
+                    </div>
+                )}
 
                 {showForm && (
                     <Card className="bg-stone-900 border-stone-800 mb-8">
@@ -265,10 +289,10 @@ export default function ManageEvents() {
                                     </div>
                                 </div>
 
-                                <div className="bg-green-500/10 border border-green-500/30 rounded-lg p-4">
+                                <div className="bg-stone-800/40 border border-stone-700 rounded-lg p-4">
                                     <p className="text-stone-300 text-sm">
                                         <CheckCircle className="w-4 h-4 text-green-500 inline mr-2" />
-                                        Tiered pricing is automatic: Tier 1 starts at your base price, then increases by $5 per tier (1000 tickets each)
+                                        Flat pricing — all tickets sell at the same price regardless of how many have been sold.
                                     </p>
                                 </div>
 
@@ -303,8 +327,8 @@ export default function ManageEvents() {
                     <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
                         {events.map((event) => {
                             const ticketsSold = event.tickets_sold || 0;
-                            const currentTier = ticketsSold < 1000 ? 1 : ticketsSold < 2000 ? 2 : 3;
-                            const ticketsRemaining = ticketsSold < 3000 ? (currentTier === 1 ? 1000 - ticketsSold : currentTier === 2 ? 2000 - ticketsSold : 3000 - ticketsSold) : 0;
+                            const adultPrice = event.tier1_adult_price || event.general_price || 35;
+                            const familyPrice = event.tier1_family_price || event.family_price || 80;
 
                             return (
                                 <Card key={event.id} className="bg-stone-900 border-stone-800">
@@ -325,16 +349,8 @@ export default function ManageEvents() {
                                             </div>
                                             <p className="text-stone-500">{event.location}</p>
                                             <p className="text-green-400 font-semibold">
-                                                Starting at ${event.general_price || 30}
+                                                ${adultPrice} adult · ${familyPrice} family
                                             </p>
-                                        </div>
-                                        <div className="flex gap-2 mb-4">
-                                            <Badge className="bg-green-500/20 text-green-400">
-                                                Tier {currentTier}
-                                            </Badge>
-                                            <Badge variant="outline" className="border-stone-700 text-stone-400">
-                                                {ticketsRemaining} tickets left
-                                            </Badge>
                                         </div>
                                         <div className="flex justify-between items-center">
                                             <p className="text-stone-500 text-xs">
