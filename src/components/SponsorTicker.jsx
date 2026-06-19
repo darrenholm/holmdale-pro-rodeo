@@ -1,48 +1,79 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 
-const sponsors = [
-        { name: 'Matcrete', logo: 'https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/696b7ab40d412f960295a323/1f9b3b5e2_Matcretelogo.png' },
-        { name: 'John Ernewein Limited', logo: 'https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/696b7ab40d412f960295a323/f11da2363_ErneweinLogo2.jpg' },
-        { name: 'Gay Lea', logo: 'https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/696b7ab40d412f960295a323/e6c521061_GayLea.jpg' },
-        { name: 'Grand River Robotics', logo: 'https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/696b7ab40d412f960295a323/5314ab015_GrandRiverBlack.jpg' },
-        { name: 'Walkerton Timber Mart', logo: 'https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/696b7ab40d412f960295a323/1aea1ee55_TimberMartLogo.jpg' },
-        { name: 'Walkerton Home Hardware', logo: 'https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/696b7ab40d412f960295a323/ec54e1895_WalkertonHomeHardwareLogo.jpg' },
-        { name: 'Sunbelt Rentals', logo: 'https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/696b7ab40d412f960295a323/193c752c2_Sunbeltlogo.jpg' }
-      ];
+const API = 'https://rodeo-fresh-production-7348.up.railway.app/api';
+
+// Ensure a sponsor-entered website is an absolute URL so the link doesn't
+// resolve relative to holmdalerodeo.ca (e.g. "example.com" → "https://example.com").
+function normalizeUrl(url) {
+  if (!url) return null;
+  return /^https?:\/\//i.test(url) ? url : `https://${url}`;
+}
 
 export default function SponsorTicker() {
+  const [sponsors, setSponsors] = useState([]);
+
+  useEffect(() => {
+    let cancelled = false;
+    fetch(`${API}/sponsors/public`)
+      .then(r => (r.ok ? r.json() : []))
+      .then(data => { if (!cancelled && Array.isArray(data)) setSponsors(data); })
+      .catch(() => { /* leave ticker empty on failure */ });
+    return () => { cancelled = true; };
+  }, []);
+
+  if (sponsors.length === 0) return null;
+
+  // Repeat the list so the belt stays full even with only a few sponsors,
+  // then duplicate the whole belt so the scroll loops seamlessly.
+  const belt = [];
+  while (belt.length < 8) belt.push(...sponsors);
+  const loop = [...belt, ...belt];
+
   return (
     <div className="bg-white border-t border-stone-200 py-8 overflow-hidden">
-      
       <div className="relative">
         <div className="flex">
           <motion.div
             className="flex gap-12 items-center"
-            animate={{
-              x: [0, -100 * sponsors.length]
-            }}
+            animate={{ x: [0, -100 * belt.length] }}
             transition={{
               x: {
                 repeat: Infinity,
-                repeatType: "loop",
-                duration: 5,
-                ease: "linear"
+                repeatType: 'loop',
+                duration: belt.length * 2.5,
+                ease: 'linear'
               }
             }}
           >
-            {[...sponsors, ...sponsors].map((sponsor, index) => (
-              <div
-                key={index}
-                className="flex-shrink-0 w-30 h-7 bg-stone-50 rounded-lg flex items-center justify-center overflow-hidden transition-all"
-              >
+            {loop.map((sponsor, index) => {
+              const logo = (
                 <img
-                  src={sponsor.logo}
+                  src={sponsor.logo_url}
                   alt={sponsor.name}
-                  className="w-full h-full object-cover transition-opacity"
+                  title={sponsor.name}
+                  className="w-full h-full object-contain transition-opacity"
                 />
-              </div>
-            ))}
+              );
+              const href = normalizeUrl(sponsor.website);
+              return (
+                <div
+                  key={index}
+                  className="flex-shrink-0 w-30 h-7 bg-stone-50 rounded-lg flex items-center justify-center overflow-hidden transition-all"
+                >
+                  {href ? (
+                    <a
+                      href={href}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="w-full h-full flex items-center justify-center"
+                    >
+                      {logo}
+                    </a>
+                  ) : logo}
+                </div>
+              );
+            })}
           </motion.div>
         </div>
       </div>
