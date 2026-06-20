@@ -346,7 +346,8 @@ function buildForm(item) {
             <div class="fi"><label>Province</label><input id="f_province" value="${item.province||''}"></div>
             <div class="fi"><label>Product</label><input id="f_product" value="${item.product||''}"></div>
             <div class="fi"><label>Booth Size</label><input id="f_booth" value="${item.booth_size||''}"></div>
-            <div class="fi full"><label>Comment</label><textarea id="f_notes">${item.comment||''}"></textarea></div>`;
+            <div class="fi full"><label>Website</label><input id="f_website" value="${item.website||''}" placeholder="https://example.com"></div>
+            <div class="fi full"><label>Comment</label><textarea id="f_notes">${item.comment||''}</textarea></div>`;
     } else {
         f.innerHTML = `
             <div class="fi"><label>Location</label><input id="f_location" value="${item.location||''}"></div>
@@ -407,6 +408,7 @@ async function save() {
                 email: document.getElementById('f_email').value,
                 city: document.getElementById('f_city').value,
                 province: document.getElementById('f_province').value,
+                website: document.getElementById('f_website').value,
                 product: document.getElementById('f_product').value,
                 booth_size: document.getElementById('f_booth').value,
                 comment: document.getElementById('f_notes').value,
