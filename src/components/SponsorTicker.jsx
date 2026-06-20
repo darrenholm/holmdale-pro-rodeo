@@ -30,13 +30,18 @@ export default function SponsorTicker() {
   while (belt.length < 8) belt.push(...sponsors);
   const loop = [...belt, ...belt];
 
+  // Each logo box is a fixed size (w-40 = 160px) with a gap-12 (48px) between
+  // boxes, so one full belt is belt.length * 208px wide. Scrolling exactly that
+  // distance lines the second copy up over the first for a seamless loop.
+  const ITEM_STRIDE = 208;
+
   return (
     <div className="bg-white border-t border-stone-200 py-8 overflow-hidden">
       <div className="relative">
         <div className="flex">
           <motion.div
             className="flex gap-12 items-center"
-            animate={{ x: [0, -100 * belt.length] }}
+            animate={{ x: [0, -ITEM_STRIDE * belt.length] }}
             transition={{
               x: {
                 repeat: Infinity,
@@ -52,14 +57,14 @@ export default function SponsorTicker() {
                   src={sponsor.logo_url}
                   alt={sponsor.name}
                   title={sponsor.name}
-                  className="w-full h-full object-contain transition-opacity"
+                  className="max-w-full max-h-full object-contain transition-opacity"
                 />
               );
               const href = normalizeUrl(sponsor.website);
               return (
                 <div
                   key={index}
-                  className="flex-shrink-0 w-30 h-7 bg-stone-50 rounded-lg flex items-center justify-center overflow-hidden transition-all"
+                  className="flex-shrink-0 w-40 h-12 px-3 bg-stone-50 rounded-lg flex items-center justify-center overflow-hidden transition-all"
                 >
                   {href ? (
                     <a
