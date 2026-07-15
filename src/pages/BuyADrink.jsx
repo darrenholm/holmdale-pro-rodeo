@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useFeatureFlags } from '@/lib/useFeatureFlags';
 
-const API = 'https://rodeo-fresh-production-7348.up.railway.app/api';
+const API = 'https://api.holmdalerodeo.ca/api';
 const nfcSupported = typeof window !== 'undefined' && 'NDEFReader' in window;
 
 async function lookupWristband(uid) {

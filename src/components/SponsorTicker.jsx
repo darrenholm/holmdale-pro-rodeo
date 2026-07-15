@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 
-const API = 'https://rodeo-fresh-production-7348.up.railway.app/api';
+const API = 'https://api.holmdalerodeo.ca/api';
 
 // Ensure a sponsor-entered website is an absolute URL so the link doesn't
 // resolve relative to holmdalerodeo.ca (e.g. "example.com" → "https://example.com").
