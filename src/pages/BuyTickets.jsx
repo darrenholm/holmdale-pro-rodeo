@@ -56,6 +56,7 @@ export default function BuyTickets() {
         postal_code: ''
     });
     const [orderComplete, setOrderComplete] = useState(false);
+    const [paymentError, setPaymentError] = useState(null);
     const [confirmationCode, setConfirmationCode] = useState('');
     const [isInIframe, setIsInIframe] = useState(window.self !== window.top);
     const [showCheckout, setShowCheckout] = useState(false);
@@ -179,11 +180,20 @@ export default function BuyTickets() {
                         confirmation_code: confirmationCodeRef.current
                     });
                     console.log('Payment confirmed:', result);
+                    setOrderComplete(true);
                 } catch (error) {
                     console.error('Error processing payment:', error);
+                    // Backend refused the order (card declined, session expired, etc.)
+                    // — the customer must NOT see the confirmed screen.
+                    let message = 'Your payment could not be completed.';
+                    if (error.status === 402) {
+                        message = 'Your card was declined. You have not been charged.';
+                    } else if (error.status === 404) {
+                        message = 'Your checkout session expired before payment could be confirmed.';
+                    }
+                    setPaymentError(message);
                 }
                 monerisCheckoutRef.current = null;
-                setOrderComplete(true);
                 setShowCheckout(false);
             });
 
@@ -368,6 +378,41 @@ export default function BuyTickets() {
         );
     }
     
+    if (paymentError) {
+        return (
+            <div className="min-h-screen bg-stone-950 pt-24 pb-20 px-6 flex items-center justify-center">
+                <motion.div
+                    initial={{ opacity: 0, scale: 0.9 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    className="max-w-lg w-full"
+                >
+                    <Card className="bg-stone-900 border-stone-800 p-8 text-center">
+                        <div className="w-20 h-20 rounded-full bg-red-500/20 flex items-center justify-center mx-auto mb-6">
+                            <AlertTriangle className="w-10 h-10 text-red-500" />
+                        </div>
+                        <h2 className="text-3xl font-bold text-white mb-2">Payment Not Completed</h2>
+                        <p className="text-stone-400 mb-6">{paymentError}</p>
+                        <p className="text-stone-500 text-sm mb-6">
+                            No tickets have been reserved and no confirmation email will be sent.
+                            Please try again, or contact us if you believe you were charged.
+                        </p>
+                        <Button
+                            className="w-full bg-green-500 hover:bg-green-600 text-stone-900"
+                            onClick={() => {
+                                setPaymentError(null);
+                                setConfirmationCode('');
+                                confirmationCodeRef.current = '';
+                                setCheckoutTicket(null);
+                            }}
+                        >
+                            Try Again
+                        </Button>
+                    </Card>
+                </motion.div>
+            </div>
+        );
+    }
+
     if (orderComplete) {
         return (
             <div className="min-h-screen bg-stone-950 pt-24 pb-20 px-6 flex items-center justify-center">
