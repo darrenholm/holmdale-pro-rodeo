@@ -24,10 +24,15 @@ export default function SponsorTicker() {
 
   if (sponsors.length === 0) return null;
 
+  // Title sponsors get a large static card above the belt; the belt scrolls
+  // everyone else. Falls back to everyone-in-the-belt if none are Title.
+  const titleSponsors = sponsors.filter(s => s.level === 'Title');
+  const beltSponsors = titleSponsors.length > 0 ? sponsors.filter(s => s.level !== 'Title') : sponsors;
+
   // Repeat the list so the belt stays full even with only a few sponsors,
   // then duplicate the whole belt so the scroll loops seamlessly.
   const belt = [];
-  while (belt.length < 8) belt.push(...sponsors);
+  while (belt.length < 8 && beltSponsors.length > 0) belt.push(...beltSponsors);
   const loop = [...belt, ...belt];
 
   // Each logo box is a fixed size (w-40 = 160px) with a gap-12 (48px) between
@@ -37,6 +42,43 @@ export default function SponsorTicker() {
 
   return (
     <div className="bg-white border-t border-stone-200 py-8 overflow-hidden">
+      {titleSponsors.length > 0 && (
+        <div className="mb-8 px-4">
+          <div className="text-center text-stone-500 text-xs font-bold tracking-[0.3em] uppercase mb-4">
+            Title Sponsors
+          </div>
+          <div className="flex flex-wrap items-center justify-center gap-6">
+            {titleSponsors.map(sponsor => {
+              const logo = (
+                <img
+                  src={sponsor.logo_url}
+                  alt={sponsor.name}
+                  title={sponsor.name}
+                  className="max-w-full max-h-full object-contain"
+                />
+              );
+              const href = normalizeUrl(sponsor.website);
+              return (
+                <div
+                  key={sponsor.id}
+                  className="h-20 sm:h-24 w-full max-w-md px-6 py-3 bg-stone-50 border border-stone-200 rounded-xl flex items-center justify-center overflow-hidden shadow-sm"
+                >
+                  {href ? (
+                    <a
+                      href={href}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="w-full h-full flex items-center justify-center"
+                    >
+                      {logo}
+                    </a>
+                  ) : logo}
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
       <div className="relative">
         <div className="flex">
           <motion.div
