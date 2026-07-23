@@ -27,13 +27,19 @@ export default function ProductCard({ product, onAddToCart }) {
     >
       <Card className="bg-stone-900 border-stone-800 hover:border-green-500/30 transition-all duration-300 overflow-hidden h-full flex flex-col">
         <div className="relative overflow-hidden h-64 bg-stone-800">
-          <img
-            src={product.image_url}
-            alt={product.name}
-            className="w-full h-full object-cover hover:scale-110 transition-transform duration-300"
-          />
+          {product.image_url ? (
+            <img
+              src={product.image_url}
+              alt={product.name}
+              className="w-full h-full object-cover hover:scale-110 transition-transform duration-300"
+            />
+          ) : (
+            <div className="w-full h-full flex items-center justify-center">
+              <ShoppingCart className="w-16 h-16 text-stone-600" />
+            </div>
+          )}
           <div className="absolute top-4 right-4 bg-green-500 text-stone-900 px-3 py-1 rounded-full text-sm font-semibold">
-            ${product.price.toFixed(2)}
+            ${Number(product.price).toFixed(2)}
           </div>
         </div>
         

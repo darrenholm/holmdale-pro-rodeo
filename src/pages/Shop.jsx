@@ -33,6 +33,7 @@ export default function Shop() {
   });
   const checkoutRef = useRef(null);
   const monerisCheckoutRef = useRef(null);
+  const confirmationCodeRef = useRef(null);
 
   const { data: products, isLoading } = useQuery({
     queryKey: ['products'],
@@ -109,6 +110,15 @@ export default function Shop() {
 
       myCheckout.setCallback('payment_complete', async (data) => {
         console.log('Payment complete:', data);
+        try {
+          // Server verifies the Moneris receipt, records the order, and decrements stock
+          await base44.functions.invoke('confirmMerchandisePayment', {
+            confirmation_code: confirmationCodeRef.current
+          });
+        } catch (e) {
+          // The Moneris webhook is the backup path if this call fails
+          console.error('Order confirmation call failed:', e);
+        }
         setShowCheckout(false);
         setCartItems([]);
         window.location.href = '/checkout-success';
@@ -122,7 +132,7 @@ export default function Shop() {
     setCartItems([...cartItems, product]);
   };
 
-  const subtotal = cartItems.reduce((sum, item) => sum + item.price, 0);
+  const subtotal = cartItems.reduce((sum, item) => sum + Number(item.price), 0);
   const hst = (subtotal + shippingCost) * 0.13;
   const cartTotal = subtotal + shippingCost + hst;
 
@@ -141,10 +151,12 @@ export default function Shop() {
   const handleApproveOrder = async () => {
     setShowOrderReview(false);
     try {
-      const response = await base44.functions.invoke('createMonarisCheckout', {
+      const response = await base44.functions.invoke('createMerchandiseCheckout', {
         items: cartItems.map(item => ({
           product_id: item.id,
-          quantity: 1
+          quantity: 1,
+          size: item.selectedSize || null,
+          color: item.selectedColor || null
         })),
         customer_info: customerInfo,
         shipping_address: shippingAddress,
@@ -153,6 +165,7 @@ export default function Shop() {
       });
 
       if (response.data?.ticket) {
+        confirmationCodeRef.current = response.data.confirmation_code;
         setCheckoutTicket(response.data.ticket);
         setShowCheckout(true);
         setShowAddressModal(false);

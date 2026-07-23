@@ -321,6 +321,7 @@ const functions = {
       'lookupTicketOrder':             () => api.publicPost('/ticket-orders/lookup', params),
       'createBarTokenCheckout':        () => api.publicPost('/moneris/bar-checkout', params),
       'createMerchandiseCheckout':     () => api.publicPost('/moneris/merch-checkout', params),
+      'confirmMerchandisePayment':     () => api.publicPost('/moneris/merch-confirm', params),
       'getShippingRates':              () => api.publicPost('/shipping/rates', params),
 
       // AUTHENTICATED endpoints (staff/admin only)
