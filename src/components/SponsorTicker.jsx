@@ -44,8 +44,13 @@ export default function SponsorTicker() {
     <div className="bg-white border-t border-stone-200 py-8 overflow-hidden">
       {titleSponsors.length > 0 && (
         <div className="mb-8 px-4">
-          <div className="text-center text-stone-500 text-xs font-bold tracking-[0.3em] uppercase mb-4">
-            Title Sponsors
+          <div className="text-center mb-4">
+            <div className="text-stone-800 text-sm sm:text-base font-extrabold tracking-[0.2em] uppercase">
+              Holmdale Pro Rodeo
+            </div>
+            <div className="text-stone-500 text-xs font-bold tracking-[0.3em] uppercase mt-1">
+              Brought to you by
+            </div>
           </div>
           <div className="flex flex-wrap items-center justify-center gap-6">
             {titleSponsors.map(sponsor => {
