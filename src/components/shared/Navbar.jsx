@@ -7,6 +7,7 @@ import { createPageUrl } from '@/utils';
 import { LOGO_URL } from '@/lib/constants';
 const navLinks = [
   { name: 'Home', page: 'Home' },
+  { name: 'Schedule', page: 'Schedule' },
   { name: 'Events', page: 'Events' },
   { name: 'About', page: 'About' },
   { name: 'Contact', page: 'Contact' }

@@ -67,6 +67,7 @@ import RFIDRegistry from './pages/RFIDRegistry';
 import RFIDTest from './pages/RFIDTest';
 import RefundTickets from './pages/RefundTickets';
 import ResendTicket from './pages/ResendTicket';
+import Schedule from './pages/Schedule';
 import Shop from './pages/Shop';
 import StaffList from './pages/StaffList';
 import StaffScheduling from './pages/StaffScheduling';
@@ -98,6 +99,7 @@ export const PAGES = {
     "RFIDTest": RFIDTest,
     "RefundTickets": RefundTickets,
     "ResendTicket": ResendTicket,
+    "Schedule": Schedule,
     "Shop": Shop,
     "StaffList": StaffList,
     "StaffScheduling": StaffScheduling,
