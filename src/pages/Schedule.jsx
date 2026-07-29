@@ -178,7 +178,8 @@ export default function Schedule() {
                             Don't Miss the Action
                         </h2>
                         <p className="text-stone-900/80 mb-6">
-                            This event is expected to sell out. Grab your tickets online and skip the line at the gate.
+                            This event is expected to sell out. Adult tickets are $35 online — $40 at the gate.
+                            Buy online, save $5 and skip the line!
                         </p>
                         <Link to={createPageUrl('Events')}>
                             <Button className="bg-stone-950 hover:bg-stone-800 text-white font-semibold gap-2 text-lg px-8 py-3">
