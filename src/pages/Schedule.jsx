@@ -178,7 +178,8 @@ export default function Schedule() {
                             Don't Miss the Action
                         </h2>
                         <p className="text-stone-900/80 mb-6">
-                            This event is expected to sell out. Adult tickets are $35 +HST online or $40 at the gate.
+                            This event is expected to sell out. Online: $35 adult / $80 family +HST.
+                            At the gate: $40 adult / $90 family, HST included.
                             Buy online to lock in your spot before it sells out — and skip the gate lineup!
                         </p>
                         <Link to={createPageUrl('Events')}>
