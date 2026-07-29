@@ -44,7 +44,7 @@ const runningOrder = [
 { name: 'Breakaway Roping', note: null },
 { name: 'Trick Riding', note: 'Specialty act' },
 { name: 'Pole Bending & Jr. Pole Bending', note: null },
-{ name: 'Kids Activity & Intermission', note: 'Fun in the arena for the young fans' },
+{ name: 'Frisbees for Hospice & Intermission', note: 'Everyone can play — 1 for $5 or 3 for $10. Take your shot at a $500 STIHL prize pack, up for grabs both days! All proceeds to Saugeen Hospice.' },
 { name: 'Barrel Racing & Jr. Barrel Racing', note: null },
 { name: 'Tie-Down Roping', note: null },
 { name: 'Drill Team', note: null },
