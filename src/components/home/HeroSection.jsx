@@ -10,7 +10,7 @@ export default function HeroSection({ featuredEvent }) {
   const [countdown, setCountdown] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 });
 
   useEffect(() => {
-    const eventDate = new Date('2026-07-31T12:00:00');
+    const eventDate = new Date('2027-07-30T12:00:00');
     
     const updateCountdown = () => {
       const now = new Date();
@@ -67,7 +67,7 @@ export default function HeroSection({ featuredEvent }) {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }} className="flex justify-end md:justify-center">
 
-                    <span className="bg-green-600/20 text-green-400 mt-48 mb-1 pt-1 pr-16 pl-20 text-sm font-medium text-center uppercase tracking-wider rounded-full inline-block border border-green-500/30 -mb-4">EXPERIENCE THE THRILL
+                    <span className="bg-green-600/20 text-green-400 mt-48 mb-1 pt-1 pr-16 pl-20 text-sm font-medium text-center uppercase tracking-wider rounded-full inline-block border border-green-500/30 -mb-4">COMING SOON — SAVE THE DATE
 
           </span>
                 </motion.div>
@@ -78,7 +78,8 @@ export default function HeroSection({ featuredEvent }) {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.1 }}>
 
-                    <span className="mt-16 block">Holmdale</span>
+                    <span className="mt-16 block text-2xl md:text-3xl lg:text-4xl font-semibold tracking-wide text-green-400">4th Annual</span>
+                    <span className="block">Holmdale</span>
                     <span className="text-green-500 mx-auto my-5">Pro Rodeo
 
           </span>
@@ -103,7 +104,7 @@ export default function HeroSection({ featuredEvent }) {
                       transition={{ duration: 0.8, delay: 0.3 }}>
                       <div className="flex items-center gap-2">
                         <Calendar className="w-5 h-5 text-green-500" />
-                        <span className="bg-slate-950 text-[#ffffff] mx-3 px-3 py-1 font-bold opacity-100 rounded-[10px]">July 31 - August 2, 2026</span>
+                        <span className="bg-slate-950 text-[#ffffff] mx-3 px-3 py-1 font-bold opacity-100 rounded-[10px]">July 30 - August 1, 2027</span>
                       </div>
                       <span className="hidden sm:inline">•</span>
                       <div className="flex items-center gap-2">
