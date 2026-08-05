@@ -10,6 +10,7 @@ const navLinks = [
   { name: 'Home', page: 'Home' },
   { name: 'Schedule', page: 'Schedule' },
   { name: 'Events', page: 'Events' },
+  { name: 'Photos', page: 'Photos' },
   { name: 'About', page: 'About' },
   { name: 'Contact', page: 'Contact' }
 ];
