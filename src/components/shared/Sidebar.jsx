@@ -9,6 +9,7 @@ import { useTicketsOnSale } from '@/lib/useTicketsOnSale';
 const navLinks = [
   { name: 'Home', page: 'Home' },
   { name: 'Events', page: 'Events' },
+  { name: 'Photos', page: 'Photos' },
   { name: 'About', page: 'About' },
   { name: 'Contact', page: 'Contact' },
 ];
