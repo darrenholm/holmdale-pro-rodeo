@@ -5,14 +5,16 @@ import { createPageUrl } from '@/utils';
 import { Ticket } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { LOGO_URL } from '@/lib/constants';
+import { useTicketsOnSale } from '@/lib/useTicketsOnSale';
 const navLinks = [
   { name: 'Home', page: 'Home' },
-  { name: 'Tickets', page: 'Events' },
+  { name: 'Events', page: 'Events' },
   { name: 'About', page: 'About' },
   { name: 'Contact', page: 'Contact' },
 ];
 export default function Sidebar() {
   const location = useLocation();
+  const ticketsOnSale = useTicketsOnSale();
   const isActivePage = (pageName) => {
     const currentPath = location.pathname;
     const pagePath = createPageUrl(pageName);
@@ -39,19 +41,22 @@ export default function Sidebar() {
                 ? 'bg-green-600 text-white'
                 : 'text-white hover:bg-green-600 hover:text-white'
             }`}>
-            {link.name}
+            {/* "Events" doubles as the ticket link when sales are open. */}
+            {link.page === 'Events' && ticketsOnSale ? 'Tickets' : link.name}
           </Link>
         ))}
       </nav>
 
-      <div className="mb-6">
-        <Link to={createPageUrl('Events')}>
-          <Button className="w-full bg-stone-900 hover:bg-stone-800 text-white font-semibold gap-2 py-3">
-            <Ticket className="w-4 h-4" />
-            Buy Tickets
-          </Button>
-        </Link>
-      </div>
+      {ticketsOnSale && (
+        <div className="mb-6">
+          <Link to={createPageUrl('Events')}>
+            <Button className="w-full bg-stone-900 hover:bg-stone-800 text-white font-semibold gap-2 py-3">
+              <Ticket className="w-4 h-4" />
+              Buy Tickets
+            </Button>
+          </Link>
+        </div>
+      )}
     </motion.div>
   );
 }

@@ -10,8 +10,10 @@ import { Calendar, Clock, MapPin, ArrowRight, Ticket } from 'lucide-react';
 import { format } from 'date-fns';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
+import { useTicketsOnSale } from '@/lib/useTicketsOnSale';
 
 export default function Events() {
+    const ticketsOnSale = useTicketsOnSale();
     const { data: events = [], isLoading, error } = useQuery({
         queryKey: ['events'],
         queryFn: async () => {
@@ -131,6 +133,11 @@ export default function Events() {
                                                     </div>
                                                 </div>
 
+                                                {/* Price, seat availability and the buy
+                                                    button are all sales surfaces. With
+                                                    tickets off, the card is schedule
+                                                    information only. */}
+                                                {ticketsOnSale && (
                                                 <div className="lg:text-right">
                                                     <div className="mb-4">
                                                         <span className="text-stone-500 text-sm block mb-1">{event.id === '696b7bdc81676e7ff80617a1' ? 'Entry Fee' : 'Starting at'}</span>
@@ -166,6 +173,7 @@ export default function Events() {
                                                         </Link>
                                                     )}
                                                 </div>
+                                                )}
                                             </div>
                                         </div>
                                     </div>

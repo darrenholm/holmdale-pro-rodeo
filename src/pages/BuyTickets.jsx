@@ -12,6 +12,7 @@ import { Calendar, Clock, MapPin, Ticket, Users, CheckCircle, ArrowLeft, Minus, 
 import { format } from 'date-fns';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
+import { useTicketsOnSale } from '@/lib/useTicketsOnSale';
 
 const ticketTypes = [
     {
@@ -41,6 +42,7 @@ const ticketTypes = [
 ];
 
 export default function BuyTickets() {
+    const ticketsOnSale = useTicketsOnSale();
     const urlParams = new URLSearchParams(window.location.search);
     const eventId = urlParams.get('eventId');
     const queryClient = useQueryClient();
@@ -310,6 +312,37 @@ export default function BuyTickets() {
         }
     };
     
+    // Hiding the buy buttons elsewhere doesn't close the sale — this page is
+    // still reachable from a bookmark, an old email, or a search result. This is
+    // the check that actually stops someone buying a ticket for an event that
+    // isn't selling yet.
+    if (!ticketsOnSale) {
+        return (
+            <div className="min-h-screen bg-stone-950 pt-32 pb-20 px-6">
+                <div className="max-w-lg mx-auto text-center">
+                    <Ticket className="w-14 h-14 text-stone-700 mx-auto mb-5" />
+                    <h1 className="text-3xl font-bold text-white mb-3">Tickets aren&apos;t on sale yet</h1>
+                    <p className="text-stone-400 mb-8">
+                        Tickets for the 4th Annual Holmdale Pro Rodeo, July 30 &ndash; August 1
+                        2027, go on sale closer to the event. Check back soon.
+                    </p>
+                    <div className="flex flex-col sm:flex-row gap-3 justify-center">
+                        <Link to={createPageUrl('Events')}>
+                            <Button className="bg-green-500 hover:bg-green-600 text-stone-900 font-semibold">
+                                See the Events
+                            </Button>
+                        </Link>
+                        <Link to={createPageUrl('Home')}>
+                            <Button variant="outline" className="border-stone-700 text-stone-300 hover:bg-stone-800 hover:text-white">
+                                Back to Home
+                            </Button>
+                        </Link>
+                    </div>
+                </div>
+            </div>
+        );
+    }
+
     if (!eventId) {
         return (
             <div className="min-h-screen bg-stone-950 pt-24 pb-20 px-6 flex items-center justify-center">

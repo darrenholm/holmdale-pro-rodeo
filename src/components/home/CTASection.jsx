@@ -4,8 +4,11 @@ import { Button } from "@/components/ui/button";
 import { ArrowRight, Ticket } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
+import { useTicketsOnSale } from '@/lib/useTicketsOnSale';
 
 export default function CTASection() {
+    const ticketsOnSale = useTicketsOnSale();
+
     return (
         <section className="relative py-32 px-6 overflow-hidden">
             {/* Background */}
@@ -29,10 +32,12 @@ export default function CTASection() {
                     viewport={{ once: true }}
                     transition={{ duration: 0.6 }}
                 >
-                    <div className="inline-flex items-center gap-2 px-4 py-2 bg-green-500/20 border border-green-500/30 rounded-full text-green-400 text-sm font-medium mb-6">
-                        <Ticket className="w-4 h-4" />
-                        Limited Seats Available
-                    </div>
+                    {ticketsOnSale && (
+                        <div className="inline-flex items-center gap-2 px-4 py-2 bg-green-500/20 border border-green-500/30 rounded-full text-green-400 text-sm font-medium mb-6">
+                            <Ticket className="w-4 h-4" />
+                            Limited Seats Available
+                        </div>
+                    )}
                     
                     <h2 className="text-4xl md:text-6xl font-bold text-white mb-6">
                          Don't Miss the

@@ -5,6 +5,7 @@ import { Menu, X, Ticket } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { LOGO_URL } from '@/lib/constants';
+import { useTicketsOnSale } from '@/lib/useTicketsOnSale';
 const navLinks = [
   { name: 'Home', page: 'Home' },
   { name: 'Schedule', page: 'Schedule' },
@@ -16,6 +17,7 @@ export default function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const location = useLocation();
+  const ticketsOnSale = useTicketsOnSale();
   useEffect(() => {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 50);
@@ -54,12 +56,14 @@ export default function Navbar() {
                   {link.name}
                 </Link>
               ))}
-              <Link to={createPageUrl('Events')}>
-                <Button className="bg-green-500 hover:bg-green-600 text-stone-900 font-semibold gap-2">
-                  <Ticket className="w-4 h-4" />
-                  Buy Tickets
-                </Button>
-              </Link>
+              {ticketsOnSale && (
+                <Link to={createPageUrl('Events')}>
+                  <Button className="bg-green-500 hover:bg-green-600 text-stone-900 font-semibold gap-2">
+                    <Ticket className="w-4 h-4" />
+                    Buy Tickets
+                  </Button>
+                </Link>
+              )}
             </div>
             <button className="text-green-500 p-2 md:hidden"
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}>
@@ -89,12 +93,14 @@ export default function Navbar() {
                   {link.name}
                 </Link>
               ))}
-              <Link to={createPageUrl('Events')} onClick={() => setIsMobileMenuOpen(false)}>
-                <Button className="bg-green-500 hover:bg-green-600 text-stone-900 font-semibold gap-2 mt-4 text-lg px-8 py-3">
-                  <Ticket className="w-5 h-5" />
-                  Buy Tickets
-                </Button>
-              </Link>
+              {ticketsOnSale && (
+                <Link to={createPageUrl('Events')} onClick={() => setIsMobileMenuOpen(false)}>
+                  <Button className="bg-green-500 hover:bg-green-600 text-stone-900 font-semibold gap-2 mt-4 text-lg px-8 py-3">
+                    <Ticket className="w-5 h-5" />
+                    Buy Tickets
+                  </Button>
+                </Link>
+              )}
             </div>
           </motion.div>
         )}
