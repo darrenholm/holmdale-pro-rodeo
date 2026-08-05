@@ -6,8 +6,9 @@ import FeaturedEvents from '../components/home/FeaturedEvents';
 import FeaturesSection from '../components/home/FeaturesSection';
 import GallerySection from '../components/home/GallerySection';
 import CTASection from '../components/home/CTASection';
+import { isFutureEvent } from '@/lib/useTicketsOnSale';
 export default function Home() {
-    const { data: events = [], isLoading } = useQuery({
+    const { data: allEvents = [], isLoading } = useQuery({
         queryKey: ['events'],
         queryFn: async () => {
             try {
@@ -23,11 +24,14 @@ export default function Home() {
         refetchOnWindowFocus: false
     });
     
-    const featuredEvent = events.find(e => e.is_featured) || events[0];
-    
+    // "Upcoming Events" must mean upcoming. Events stay in the database forever —
+    // deleting one cascades away its ticket orders and staff shifts — so the
+    // website filters by date instead of relying on anyone tidying the records.
+    const events = allEvents.filter(isFutureEvent);
+
     return (
         <div className="min-h-screen bg-stone-950">
-            <HeroSection featuredEvent={featuredEvent} />
+            <HeroSection />
             <FeaturedEvents events={events} isLoading={isLoading} />
             <FeaturesSection />
             <GallerySection />

@@ -10,11 +10,11 @@ import { Calendar, Clock, MapPin, ArrowRight, Ticket } from 'lucide-react';
 import { format } from 'date-fns';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
-import { useTicketsOnSale } from '@/lib/useTicketsOnSale';
+import { useTicketsOnSale, isFutureEvent } from '@/lib/useTicketsOnSale';
 
 export default function Events() {
     const ticketsOnSale = useTicketsOnSale();
-    const { data: events = [], isLoading, error } = useQuery({
+    const { data: allEvents = [], isLoading, error } = useQuery({
         queryKey: ['events'],
         queryFn: async () => {
             try {
@@ -30,6 +30,11 @@ export default function Events() {
         staleTime: 5 * 60 * 1000,
         refetchOnWindowFocus: false
     });
+
+    // Past events are filtered out here rather than deleted in the admin portal:
+    // events cascade-delete their ticket orders and staff shifts, so last year's
+    // rodeo has to stay in the database for the sales history to survive.
+    const events = allEvents.filter(isFutureEvent);
 
     return (
         <div className="min-h-screen bg-stone-950 pt-24 pb-20 px-6">
@@ -55,7 +60,9 @@ export default function Events() {
                         animate={{ opacity: 1 }}
                         transition={{ delay: 0.2 }}
                     >
-                        Choose your event and secure your seats for an unforgettable rodeo experience
+                        {ticketsOnSale
+                            ? 'Choose your event and secure your seats for an unforgettable rodeo experience'
+                            : 'Everything happening at the Holmdale Pro Rodeo'}
                     </motion.p>
                 </div>
 

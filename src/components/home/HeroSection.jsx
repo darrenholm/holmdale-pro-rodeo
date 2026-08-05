@@ -2,12 +2,11 @@ import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Button } from "@/components/ui/button";
 import { ChevronDown, Calendar, MapPin, Ticket } from 'lucide-react';
-import { format } from 'date-fns';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { useTicketsOnSale } from '@/lib/useTicketsOnSale';
 
-export default function HeroSection({ featuredEvent }) {
+export default function HeroSection() {
   const [countdown, setCountdown] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 });
   const ticketsOnSale = useTicketsOnSale();
 
@@ -97,8 +96,12 @@ export default function HeroSection({ featuredEvent }) {
 
         </motion.p>
                 
-                {featuredEvent && (
-                  <>
+                {/* The date, venue and countdown below are the 2027 save-the-date
+                    and don't read from event data at all. They used to sit behind
+                    a `featuredEvent &&` gate, which meant the headline act of the
+                    page vanished the moment the events list was empty — exactly
+                    what happens between one rodeo and the next year's schedule
+                    being entered. */}
                     <motion.div
                       className="flex flex-wrap items-center justify-center gap-4 text-stone-400 mb-8"
                       initial={{ opacity: 0 }}
@@ -137,9 +140,7 @@ export default function HeroSection({ featuredEvent }) {
                         <div className="text-xs text-stone-400 uppercase mt-1">Seconds</div>
                       </div>
                     </motion.div>
-                  </>
-                )}
-                
+
                 <motion.div
           className="flex flex-col sm:flex-row gap-4 justify-center"
           initial={{ opacity: 0, y: 40 }}
