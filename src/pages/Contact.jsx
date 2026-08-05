@@ -85,7 +85,7 @@ export default function Contact() {
                         animate={{ opacity: 1 }}
                         transition={{ delay: 0.2 }}
                     >
-                        Have questions about events, tickets, or sponsorship opportunities? 
+                        Have questions about the rodeo, vendor spots, or sponsorship opportunities?
                         We'd love to hear from you.
                     </motion.p>
                 </div>

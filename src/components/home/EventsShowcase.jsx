@@ -7,10 +7,15 @@ import { Calendar, Clock, MapPin, ArrowRight } from 'lucide-react';
 import { format } from 'date-fns';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
+import { useTicketsOnSale } from '@/lib/useTicketsOnSale';
 
 export default function EventsShowcase({ events }) {
+    // Must run before the early return below — a hook after a conditional return
+    // breaks the rules of hooks.
+    const ticketsOnSale = useTicketsOnSale();
+
     if (!events || events.length === 0) return null;
-    
+
     return (
         <section className="py-24 px-6 bg-stone-950">
             <div className="max-w-7xl mx-auto">
@@ -88,22 +93,27 @@ export default function EventsShowcase({ events }) {
                                         </div>
                                     </div>
                                     
-                                    <div className="flex items-center justify-between pt-4 border-t border-stone-800">
-                                        <div>
-                                            <span className="text-stone-500 text-sm">{event.id === '696b7bdc81676e7ff80617a1' ? 'Entry Fee' : 'Starting at'}</span>
-                                            <p className="text-green-400 font-bold text-xl">
-                                                ${event.id === '696b7bdc81676e7ff80617a1' ? '0' : (event.general_price || 30)}
-                                            </p>
+                                    {/* Prices and the buy button are both sales
+                                        surfaces — when tickets aren't on sale the
+                                        card is schedule information only. */}
+                                    {ticketsOnSale && (
+                                        <div className="flex items-center justify-between pt-4 border-t border-stone-800">
+                                            <div>
+                                                <span className="text-stone-500 text-sm">{event.id === '696b7bdc81676e7ff80617a1' ? 'Entry Fee' : 'Starting at'}</span>
+                                                <p className="text-green-400 font-bold text-xl">
+                                                    ${event.id === '696b7bdc81676e7ff80617a1' ? '0' : (event.general_price || 30)}
+                                                </p>
+                                            </div>
+                                            {event.id !== '696b7bdc81676e7ff80617a1' && (
+                                                <Link to={`${createPageUrl('BuyTickets')}?eventId=${event.id}`}>
+                                                    <Button className="bg-green-500 hover:bg-green-600 text-stone-900 font-semibold group/btn">
+                                                        Buy Tickets
+                                                        <ArrowRight className="w-4 h-4 ml-2 transition-transform group-hover/btn:translate-x-1" />
+                                                    </Button>
+                                                </Link>
+                                            )}
                                         </div>
-                                        {event.id !== '696b7bdc81676e7ff80617a1' && (
-                                            <Link to={`${createPageUrl('BuyTickets')}?eventId=${event.id}`}>
-                                                <Button className="bg-green-500 hover:bg-green-600 text-stone-900 font-semibold group/btn">
-                                                    Buy Tickets
-                                                    <ArrowRight className="w-4 h-4 ml-2 transition-transform group-hover/btn:translate-x-1" />
-                                                </Button>
-                                            </Link>
-                                        )}
-                                    </div>
+                                    )}
                                 </div>
                             </Card>
                         </motion.div>

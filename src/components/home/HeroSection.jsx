@@ -5,9 +5,11 @@ import { ChevronDown, Calendar, MapPin, Ticket } from 'lucide-react';
 import { format } from 'date-fns';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
+import { useTicketsOnSale } from '@/lib/useTicketsOnSale';
 
 export default function HeroSection({ featuredEvent }) {
   const [countdown, setCountdown] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 });
+  const ticketsOnSale = useTicketsOnSale();
 
   useEffect(() => {
     const eventDate = new Date('2027-07-30T12:00:00');
@@ -144,19 +146,23 @@ export default function HeroSection({ featuredEvent }) {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.4 }}>
 
-                    <Link to={createPageUrl('Events')}>
-                        <Button
-              size="lg"
-              className="bg-green-500 hover:bg-green-600 text-stone-900 px-8 py-6 text-lg font-semibold transition-all duration-300 gap-2">
-                            <Ticket className="w-5 h-5" />
-                            Buy Tickets
-                        </Button>
-                    </Link>
+                    {ticketsOnSale && (
+                        <Link to={createPageUrl('Events')}>
+                            <Button
+                size="lg"
+                className="bg-green-500 hover:bg-green-600 text-stone-900 px-8 py-6 text-lg font-semibold transition-all duration-300 gap-2">
+                                <Ticket className="w-5 h-5" />
+                                Buy Tickets
+                            </Button>
+                        </Link>
+                    )}
                     <Link to={createPageUrl('About')}>
                         <Button
               size="lg"
-              variant="outline"
-              className="border-stone-600 text-stone-300 hover:bg-stone-800 hover:text-white px-8 py-6 text-lg font-semibold transition-all duration-300">
+              variant={ticketsOnSale ? 'outline' : 'default'}
+              className={ticketsOnSale
+                ? 'border-stone-600 text-stone-300 hover:bg-stone-800 hover:text-white px-8 py-6 text-lg font-semibold transition-all duration-300'
+                : 'bg-green-500 hover:bg-green-600 text-stone-900 px-8 py-6 text-lg font-semibold transition-all duration-300'}>
 
                             Learn More
                         </Button>

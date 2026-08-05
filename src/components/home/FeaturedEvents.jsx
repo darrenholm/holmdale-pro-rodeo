@@ -5,11 +5,15 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Calendar, Clock, MapPin, ArrowRight, Ticket } from 'lucide-react';
+import { useTicketsOnSale } from '@/lib/useTicketsOnSale';
 import { format } from 'date-fns';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 
 export default function FeaturedEvents({ events = [], isLoading }) {
+    // Before the isLoading early return — hooks can't sit behind a conditional.
+    const ticketsOnSale = useTicketsOnSale();
+
     if (isLoading) {
         return (
             <section className="py-20 px-6 bg-stone-950">
@@ -99,31 +103,33 @@ export default function FeaturedEvents({ events = [], isLoading }) {
                                         </div>
                                     </div>
 
-                                    <div className="mt-auto">
-                                        {event.id !== '696b7bdc81676e7ff80617a1' ? (
-                                            <div className="flex items-center justify-between">
-                                                <div>
-                                                    <span className="text-stone-500 text-xs block">Starting at</span>
-                                                    <span className="text-2xl font-bold text-green-400">
-                                                        ${event.general_price || 30}
-                                                    </span>
+                                    {ticketsOnSale && (
+                                        <div className="mt-auto">
+                                            {event.id !== '696b7bdc81676e7ff80617a1' ? (
+                                                <div className="flex items-center justify-between">
+                                                    <div>
+                                                        <span className="text-stone-500 text-xs block">Starting at</span>
+                                                        <span className="text-2xl font-bold text-green-400">
+                                                            ${event.general_price || 30}
+                                                        </span>
+                                                    </div>
+                                                    <Link to={`${createPageUrl('BuyTickets')}?eventId=${event.id}`}>
+                                                        <Button className="bg-green-500 hover:bg-green-600 text-stone-900 font-semibold gap-2">
+                                                            <Ticket className="w-4 h-4" />
+                                                            Buy Tickets
+                                                        </Button>
+                                                    </Link>
                                                 </div>
-                                                <Link to={`${createPageUrl('BuyTickets')}?eventId=${event.id}`}>
-                                                    <Button className="bg-green-500 hover:bg-green-600 text-stone-900 font-semibold gap-2">
-                                                        <Ticket className="w-4 h-4" />
-                                                        Buy Tickets
-                                                    </Button>
-                                                </Link>
-                                            </div>
-                                        ) : (
-                                            <div className="flex items-center justify-between">
-                                                <span className="text-xl font-bold text-green-400">Free Entry</span>
-                                                <Badge variant="outline" className="border-green-500/50 text-green-400">
-                                                    Open Event
-                                                </Badge>
-                                            </div>
-                                        )}
-                                    </div>
+                                            ) : (
+                                                <div className="flex items-center justify-between">
+                                                    <span className="text-xl font-bold text-green-400">Free Entry</span>
+                                                    <Badge variant="outline" className="border-green-500/50 text-green-400">
+                                                        Open Event
+                                                    </Badge>
+                                                </div>
+                                            )}
+                                        </div>
+                                    )}
                                 </div>
                             </Card>
                         </motion.div>

@@ -1,8 +1,9 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Shield, Trophy, Users, Ticket } from 'lucide-react';
+import { useTicketsOnSale } from '@/lib/useTicketsOnSale';
 
-const features = [
+const allFeatures = [
     {
         icon: Trophy,
         title: "World-Class Competition",
@@ -21,11 +22,16 @@ const features = [
     {
         icon: Ticket,
         title: "Easy Ticketing",
+        // Promises online booking, so it only holds true while sales are open.
+        ticketing: true,
         description: "Simple online booking with instant confirmation. Choose your seats and get ready for the ride."
     }
 ];
 
 export default function FeaturesSection() {
+    const ticketsOnSale = useTicketsOnSale();
+    const features = allFeatures.filter(f => !f.ticketing || ticketsOnSale);
+
     return (
         <section className="py-24 px-6 bg-gradient-to-b from-stone-950 to-stone-900 relative overflow-hidden">
             {/* Background Pattern */}

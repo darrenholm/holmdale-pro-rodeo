@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Ticket, Clock, Flag, Music, Beer, Star } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
+import { useTicketsOnSale } from '@/lib/useTicketsOnSale';
 
 const days = [
 {
@@ -53,6 +54,7 @@ const runningOrder = [
 
 
 export default function Schedule() {
+    const ticketsOnSale = useTicketsOnSale();
   return (
     <div className="min-h-screen bg-stone-950">
             {/* Hero */}
@@ -169,7 +171,9 @@ export default function Schedule() {
                 </div>
             </section>
 
-            {/* CTA */}
+            {/* CTA — the whole card is a sales pitch, prices and all, so it goes
+                away entirely rather than being trimmed while tickets are off. */}
+            {ticketsOnSale && (
             <section className="pb-20 px-6">
                 <div className="max-w-3xl mx-auto text-center">
                     <Card className="bg-gradient-to-br from-green-600 to-green-700 border-0 p-10">
@@ -191,5 +195,6 @@ export default function Schedule() {
                     </Card>
                 </div>
             </section>
+            )}
         </div>);
 }
