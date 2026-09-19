@@ -10,7 +10,7 @@ import { useTicketsOnSale } from '@/lib/useTicketsOnSale';
 const days = [
 {
   day: 'Friday',
-  date: 'July 31',
+  date: 'July 30',
   accent: 'FREE EVENT',
   items: [
   { time: '1:00 PM', what: 'Team Penning', detail: 'Western Ontario Team Penning Association sanctioned event — free to watch!' },
@@ -18,7 +18,7 @@ const days = [
 },
 {
   day: 'Saturday',
-  date: 'August 1',
+  date: 'July 31',
   accent: 'PRO RODEO',
   items: [
   { time: '11:00 AM', what: 'Gates Open', detail: 'Bar, food booth & food trucks all day.' },
@@ -27,7 +27,7 @@ const days = [
 },
 {
   day: 'Sunday',
-  date: 'August 2',
+  date: 'August 1',
   accent: 'PRO RODEO',
   items: [
   { time: '11:00 AM', what: 'Gates Open', detail: 'Bar, food booth & food trucks all day.' },
@@ -72,7 +72,7 @@ export default function Schedule() {
             className="inline-block text-green-500 text-sm font-semibold tracking-wider uppercase mb-4"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}>
-                        July 31 – August 2, 2026
+                        July 30 – August 1, 2027
                     </motion.span>
                     <motion.h1
             className="text-4xl md:text-6xl font-bold text-white mb-6"

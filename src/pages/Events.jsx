@@ -84,8 +84,11 @@ export default function Events() {
                 ) : events.length === 0 ? (
                     <Card className="bg-stone-900 border-stone-800 p-12 text-center">
                         <Ticket className="w-16 h-16 text-stone-600 mx-auto mb-4" />
-                        <h3 className="text-xl font-semibold text-white mb-2">No Events Scheduled</h3>
-                        <p className="text-stone-400">Check back soon for upcoming rodeo events!</p>
+                        <h3 className="text-xl font-semibold text-white mb-2">4th Annual Holmdale Pro Rodeo</h3>
+                        <p className="text-green-400 font-semibold mb-2">July 30 &ndash; August 1, 2027</p>
+                        <p className="text-stone-400">
+                            Save the date! The full weekend schedule and ticket sales open in the spring.
+                        </p>
                     </Card>
                 ) : (
                     <div className="grid gap-6">
