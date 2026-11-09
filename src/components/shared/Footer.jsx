@@ -83,9 +83,9 @@ export default function Footer() {
                         © 2024 Holmdale Pro Rodeo. All rights reserved.
                     </p>
                     <div className="flex gap-6 text-sm">
-                        <a href="#" className="text-stone-500 hover:text-green-400 transition-colors">
+                        <Link to="/privacy" className="text-stone-500 hover:text-green-400 transition-colors">
                             Privacy Policy
-                        </a>
+                        </Link>
                         <a href="#" className="text-stone-500 hover:text-green-400 transition-colors">
                             Terms of Service
                         </a>
