@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { base44 } from '@/api/base44Client';
+import { rodeo } from '@/api/client';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -22,7 +22,7 @@ export default function RefundTickets() {
     queryKey: ['ticketSearch', searchValue, searchType],
     queryFn: async () => {
       if (!searchValue) return [];
-      const response = await base44.functions.invoke('searchRefundableTickets', {
+      const response = await rodeo.functions.invoke('searchRefundableTickets', {
         searchType: searchType,
         searchValue: searchValue
       });
@@ -33,7 +33,7 @@ export default function RefundTickets() {
 
   const processRefund = useMutation({
     mutationFn: async (data) => {
-      const response = await base44.functions.invoke('refundTicket', data);
+      const response = await rodeo.functions.invoke('refundTicket', data);
       return response.data;
     },
     onSuccess: () => {

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { base44 } from '@/api/base44Client';
+import { rodeo } from '@/api/client';
 import { createPageUrl } from '@/utils';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -19,14 +19,14 @@ export default function ImportStaff() {
   React.useEffect(() => {
     const checkAuth = async () => {
       try {
-        const currentUser = await base44.auth.me();
+        const currentUser = await rodeo.auth.me();
         if (!currentUser || currentUser.role !== 'admin') {
-          base44.auth.redirectToLogin();
+          rodeo.auth.redirectToLogin();
           return;
         }
         setUser(currentUser);
       } catch (err) {
-        base44.auth.redirectToLogin();
+        rodeo.auth.redirectToLogin();
       } finally {
         setLoading(false);
       }
@@ -153,14 +153,14 @@ export default function ImportStaff() {
       for (let i = 0; i < csvData.records.length; i += batchSize) {
         const batch = csvData.records.slice(i, i + batchSize);
         console.log(`Importing batch ${Math.floor(i / batchSize) + 1}...`);
-        await base44.entities.Staff.bulkCreate(batch);
+        await rodeo.entities.Staff.bulkCreate(batch);
         totalImported += batch.length;
       }
 
       console.log('Import completed:', totalImported, 'records');
 
       // Get a sample of imported data
-      const sample = await base44.entities.Staff.list('-created_date', 1);
+      const sample = await rodeo.entities.Staff.list('-created_date', 1);
 
       setResult({
         success: true,

@@ -1,6 +1,6 @@
 /**
  * railwayClient.js — Direct Railway API Client
- * Replaces @base44/sdk and railwayAuth.jsx
+ * Client for the rodeo API on Railway.
  * 
  * Usage:
  *   import { api, entities } from '@/api/railwayClient';
@@ -9,7 +9,7 @@
  *   const events = await api.get('/events');
  *   const result = await api.post('/ticket-orders', { ... });
  *   
- *   // Entity helpers (same patterns as base44.entities.*)
+ *   // Entity helpers
  *   const tickets = await entities.TicketOrder.list();
  *   const ticket  = await entities.TicketOrder.create({ ... });
  */
@@ -183,7 +183,7 @@ class RailwayClient {
 }
 
 // ─── Entity Helpers ─────────────────────────────────────────
-// These replicate the base44.entities.* API so page changes are minimal
+// Table helpers: list / filter / get / create / update / delete
 
 function createEntityHelper(client, basePath) {
   return {
@@ -295,7 +295,7 @@ const entities = {
 };
 
 // ─── Legacy Compatibility ───────────────────────────────────
-// Mimics base44.functions.invoke() for gradual migration
+// Named server actions: functions.invoke(name, params)
 // This lets pages that use railwayAuth.callWithAuth() keep working
 
 const functions = {
@@ -412,5 +412,5 @@ const functions = {
 
 export { api, entities, functions };
 
-// Default export mimics the old base44 client shape for minimal page changes
+// Default export
 export default { api, entities, functions };

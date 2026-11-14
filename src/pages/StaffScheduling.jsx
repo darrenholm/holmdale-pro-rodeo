@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { base44 } from '@/api/base44Client';
+import { rodeo } from '@/api/client';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -27,7 +27,7 @@ export default function StaffScheduling() {
   const { data: shifts = [], isLoading, error } = useQuery({
     queryKey: ['shifts'],
     queryFn: async () => {
-      const result = await base44.functions.invoke('getShiftsFromRailway', {});
+      const result = await rodeo.functions.invoke('getShiftsFromRailway', {});
       console.log('=== SHIFTS DEBUG ===');
       console.log('Full API Response:', result);
       console.log('result.data:', result.data);
@@ -43,13 +43,13 @@ export default function StaffScheduling() {
   const { data: events = [] } = useQuery({
     queryKey: ['events'],
     queryFn: async () => {
-      const result = await base44.functions.invoke('getEventsFromRailway', {});
+      const result = await rodeo.functions.invoke('getEventsFromRailway', {});
       return result.data?.data || [];
     }
   });
 
   const createMutation = useMutation({
-    mutationFn: (data) => base44.entities.Shift.create(data),
+    mutationFn: (data) => rodeo.entities.Shift.create(data),
     onSuccess: () => {
       queryClient.invalidateQueries(['shifts']);
       resetForm();
@@ -57,7 +57,7 @@ export default function StaffScheduling() {
   });
 
   const updateMutation = useMutation({
-    mutationFn: ({ id, data }) => base44.entities.Shift.update(id, data),
+    mutationFn: ({ id, data }) => rodeo.entities.Shift.update(id, data),
     onSuccess: () => {
       queryClient.invalidateQueries(['shifts']);
       resetForm();
@@ -65,7 +65,7 @@ export default function StaffScheduling() {
   });
 
   const deleteMutation = useMutation({
-    mutationFn: (id) => base44.entities.Shift.delete(id),
+    mutationFn: (id) => rodeo.entities.Shift.delete(id),
     onSuccess: () => {
       queryClient.invalidateQueries(['shifts']);
     }

@@ -1,5 +1,5 @@
 import React from 'react';
-import { base44 } from '@/api/base44Client';
+import { rodeo } from '@/api/client';
 import { useQuery } from '@tanstack/react-query';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
@@ -9,7 +9,7 @@ export default function RFIDRegistry() {
   const { data: tickets, isLoading } = useQuery({
     queryKey: ['tickets-with-rfid'],
     queryFn: async () => {
-      const allTickets = await base44.entities.TicketOrder.list();
+      const allTickets = await rodeo.entities.TicketOrder.list();
       return allTickets.filter(ticket => ticket.rfid_tag_id);
     },
     initialData: [],

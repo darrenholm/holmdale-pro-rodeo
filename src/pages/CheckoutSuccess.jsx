@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { CheckCircle, Mail, Loader2 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
-import { base44 } from '@/api/base44Client';
+import { rodeo } from '@/api/client';
 
 export default function CheckoutSuccess() {
     const [sessionId, setSessionId] = useState(null);
@@ -28,7 +28,7 @@ export default function CheckoutSuccess() {
                     setOrderType('ticket');
                     
                     // Find the ticket order
-                    const orders = await base44.entities.TicketOrder.filter({
+                    const orders = await rodeo.entities.TicketOrder.filter({
                         confirmation_code: code
                     });
 
@@ -38,12 +38,12 @@ export default function CheckoutSuccess() {
                         // Only process if not already confirmed
                         if (order.status !== 'confirmed') {
                             // Update status to confirmed
-                            await base44.entities.TicketOrder.update(order.id, {
+                            await rodeo.entities.TicketOrder.update(order.id, {
                                 status: 'confirmed'
                             });
 
                             // Send confirmation email with QR code
-                            await base44.functions.invoke('sendTicketConfirmation', {
+                            await rodeo.functions.invoke('sendTicketConfirmation', {
                                 ticket_order_id: order.id
                             });
                         }

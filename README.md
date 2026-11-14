@@ -43,8 +43,8 @@ src/
     railwayClient.js  # fetch wrapper for the Railway API; auto-logs-in
                       # via VITE_AUTH_PASSWORD env var (transitional —
                       # see SECURITY-DEBT.md SD-001)
-    base44Client.js   # compatibility shim used by ~18 pages; aliases
-                      # base44.* calls to railwayClient
+    client.js         # `rodeo` object (functions / entities / auth) used
+                      # by the older pages; wraps railwayClient
   lib/           # shared utilities + hooks
 ```
 
@@ -53,11 +53,9 @@ src/
 - [`rodeo-fresh`](../rodeo-fresh) — backend API on Railway
 - [`holmdale-staff-portal`](../holmdale-staff-portal) — staff site at staff.holmdalerodeo.ca
 
-## Migration in progress
-
-This repo is being cleaned up after a Base44 → Railway platform migration. Outstanding work:
+## Outstanding cleanup
 
 - **~17 staff/admin React pages in `src/pages/` belong in `holmdale-staff-portal`** and are scheduled to be moved: RefundTickets, ManageEvents, GateScan, IDCheck, Bartender, BarSales, FoodAdmin, FoodKiosk, RFIDRegistry, RFIDTest, StaffList, StaffScheduling, AssignStaff, ImportStaff, TicketSalesReport, UpdatePrices, TestRailway.
-- **`src/api/base44Client.js` removal is blocked on adding public endpoints to `rodeo-fresh`** and refactoring four public pages (Shop, TrackOrder, ResendTicket, CheckoutSuccess) to use them. The shim is currently imported by ~18 pages.
+
 
 Known security debt is tracked in [SECURITY-DEBT.md](./SECURITY-DEBT.md).

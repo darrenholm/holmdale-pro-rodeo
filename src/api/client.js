@@ -1,10 +1,10 @@
 /**
- * base44Client.js — Compatibility shim
- * Re-exports Railway client with the old base44 interface
+ * client.js — one object for pages that call the rodeo API (Railway).
+ * functions.invoke(name, params) and entities.<Table> come from railwayClient.
  */
 import { api, entities, functions } from './railwayClient';
 
-export const base44 = {
+export const rodeo = {
   functions,
   entities,
   auth: {
@@ -19,12 +19,6 @@ export const base44 = {
     },
     redirectToLogin: () => {
       window.location.href = '/Staff';
-    }
-  },
-  appLogs: { logUserInApp: async () => {} },
-  asServiceRole: {
-    functions: {
-      invoke: (name, params) => functions.invoke(name, params)
     }
   }
 };

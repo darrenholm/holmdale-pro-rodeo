@@ -1,6 +1,6 @@
 import React from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { base44 } from '@/api/base44Client';
+import { rodeo } from '@/api/client';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -11,7 +11,7 @@ export default function TicketSalesReport() {
   const { data, isLoading, error, refetch } = useQuery({
     queryKey: ['todayTicketSales'],
     queryFn: async () => {
-      const response = await base44.functions.invoke('getTodayTicketSales', {});
+      const response = await rodeo.functions.invoke('getTodayTicketSales', {});
       return response.data;
     },
     refetchInterval: 60000 // Refresh every minute

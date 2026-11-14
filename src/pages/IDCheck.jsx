@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { base44 } from '@/api/base44Client';
+import { rodeo } from '@/api/client';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -52,7 +52,7 @@ export default function IDCheck() {
   const verifyAndUpdate = async (tagId) => {
     setLoading(true);
     try {
-      const allTickets = await base44.entities.TicketOrder.list();
+      const allTickets = await rodeo.entities.TicketOrder.list();
       const ticket = allTickets.find(t => 
         t.rfid_wristbands && t.rfid_wristbands.some(w => w.tag_id === tagId)
       );
@@ -84,7 +84,7 @@ export default function IDCheck() {
         w.tag_id === tagId ? { ...w, is_19_plus: true } : w
       );
 
-      await base44.entities.TicketOrder.update(ticket.id, {
+      await rodeo.entities.TicketOrder.update(ticket.id, {
         rfid_wristbands: updatedWristbands
       });
 

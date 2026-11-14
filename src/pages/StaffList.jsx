@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { base44 } from '@/api/base44Client';
+import { rodeo } from '@/api/client';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Users, Search } from 'lucide-react';
@@ -10,7 +10,7 @@ export default function StaffList() {
 
   const { data: staff = [], isLoading } = useQuery({
     queryKey: ['staff'],
-    queryFn: () => base44.entities.Staff.list('-created_date', 500)
+    queryFn: () => rodeo.entities.Staff.list('-created_date', 500)
   });
 
   const filteredStaff = staff.filter(person => {

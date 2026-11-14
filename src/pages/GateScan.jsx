@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import jsQR from 'jsqr';
-import { base44 } from '@/api/base44Client';
+import { rodeo } from '@/api/client';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -189,7 +189,7 @@ export default function GateScan() {
 
     try {
       // Query Railway for ticket
-      const response = await base44.functions.invoke('getTicketFromRailway', {
+      const response = await rodeo.functions.invoke('getTicketFromRailway', {
         identifier
       });
 
@@ -346,7 +346,7 @@ export default function GateScan() {
 
     try {
       // Get Railway token
-      const loginResponse = await base44.functions.invoke('loginRailway', {});
+      const loginResponse = await rodeo.functions.invoke('loginRailway', {});
       const railwayToken = loginResponse.data.token;
 
       console.log('Saving RFID tag to Railway:', scannedRfidTag);
@@ -355,7 +355,7 @@ export default function GateScan() {
       const barCreditsPerWristband = ticket.bar_credits ? Math.floor(ticket.bar_credits / totalWristbandsNeeded) : 0;
 
       // Save this wristband immediately to Railway using new endpoint
-      await base44.functions.invoke('scanTicketRailway', {
+      await rodeo.functions.invoke('scanTicketRailway', {
         id: ticket.id,
         token: railwayToken,
         scanData: {

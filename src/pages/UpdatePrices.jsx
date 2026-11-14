@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { base44 } from '@/api/base44Client';
+import { rodeo } from '@/api/client';
 import { railwayAuth } from '@/components/railwayAuth';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -20,7 +20,7 @@ export default function UpdatePrices() {
                 throw new Error('No authentication token found. Please refresh the page.');
             }
             
-            const result = await base44.functions.invoke('fixEventPrices', { token });
+            const result = await rodeo.functions.invoke('fixEventPrices', { token });
             console.log('Update result:', result);
             
             if (result.data?.success) {

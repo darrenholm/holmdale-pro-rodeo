@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
-import { base44 } from '@/api/base44Client';
+import { rodeo } from '@/api/client';
 import { useQuery } from '@tanstack/react-query';
 import ProductCard from '../components/ProductCard';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -37,7 +37,7 @@ export default function Shop() {
 
   const { data: products, isLoading } = useQuery({
     queryKey: ['products'],
-    queryFn: () => base44.entities.Product.list(),
+    queryFn: () => rodeo.entities.Product.list(),
     initialData: [],
   });
 
@@ -64,7 +64,7 @@ export default function Shop() {
 
   const calculateShipping = async (postalCode, country) => {
     try {
-      const response = await base44.functions.invoke('getShippingRates', {
+      const response = await rodeo.functions.invoke('getShippingRates', {
         destination: { postal_code: postalCode, country },
         packages: cartItems.map(item => ({
           weight: item.weight || 0.5,
@@ -112,7 +112,7 @@ export default function Shop() {
         console.log('Payment complete:', data);
         try {
           // Server verifies the Moneris receipt, records the order, and decrements stock
-          await base44.functions.invoke('confirmMerchandisePayment', {
+          await rodeo.functions.invoke('confirmMerchandisePayment', {
             confirmation_code: confirmationCodeRef.current
           });
         } catch (e) {
@@ -151,7 +151,7 @@ export default function Shop() {
   const handleApproveOrder = async () => {
     setShowOrderReview(false);
     try {
-      const response = await base44.functions.invoke('createMerchandiseCheckout', {
+      const response = await rodeo.functions.invoke('createMerchandiseCheckout', {
         items: cartItems.map(item => ({
           product_id: item.id,
           quantity: 1,

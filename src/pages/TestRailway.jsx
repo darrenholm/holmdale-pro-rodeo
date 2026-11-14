@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { base44 } from '@/api/base44Client';
+import { rodeo } from '@/api/client';
 import { railwayAuth } from '@/components/railwayAuth';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -19,7 +19,7 @@ export default function TestRailway() {
         console.log(`Testing ${name} with auth...`);
         data = await railwayAuth.callWithAuth(functionName);
       } else {
-        const response = await base44.functions.invoke(functionName);
+        const response = await rodeo.functions.invoke(functionName);
         data = response.data;
       }
       console.log(`${name} from Railway:`, data);

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { base44 } from '@/api/base44Client';
+import { rodeo } from '@/api/client';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -20,7 +20,7 @@ export default function ResendTicket() {
         
         setIsSearching(true);
         try {
-            const response = await base44.functions.invoke('searchTickets', {
+            const response = await rodeo.functions.invoke('searchTickets', {
                 searchValue: searchName,
                 searchType: 'name'
             });
@@ -38,7 +38,7 @@ export default function ResendTicket() {
         setSuccessId(null);
         
         try {
-            await base44.functions.invoke('resendTicketEmail', {
+            await rodeo.functions.invoke('resendTicketEmail', {
                 confirmation_code: ticket.confirmation_code
             });
             setSuccessId(ticket.id);

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { base44 } from '@/api/base44Client';
+import { rodeo } from '@/api/client';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -22,7 +22,7 @@ export default function TrackOrder() {
     setTracking(null);
 
     try {
-      const response = await base44.functions.invoke('trackShipment', {
+      const response = await rodeo.functions.invoke('trackShipment', {
         tracking_number: trackingNumber.trim()
       });
 
