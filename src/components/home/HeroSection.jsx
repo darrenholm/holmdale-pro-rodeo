@@ -38,7 +38,7 @@ export default function HeroSection() {
             <div
         className="absolute inset-0 bg-cover bg-center bg-no-repeat"
         style={{
-          backgroundImage: `url('https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/696b7ab40d412f960295a323/ed30acab0__92A6935-AlvinstonRodeo2023-Sunday-2.jpg')`
+          backgroundImage: `url('/images/92a6935-alvinstonrodeo2023-sunday-2.jpg')`
         }}>
 
                 <div className="absolute inset-0 bg-black/60" />
@@ -51,7 +51,7 @@ export default function HeroSection() {
         transition={{ duration: 0.8 }} className="mb-12 px-24 py-6 absolute top-8 left-10z-20">
 
                 <img
-          src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/696b7ab40d412f960295a323/a90833e02_LogoBevel.png"
+          src="/images/LogoBevel.png"
           alt="Holmdale Pro Rodeo" className="pt-1 pb-1 max-w-[100px] md:max-w-[150px]" />
 
 

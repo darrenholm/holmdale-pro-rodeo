@@ -57,7 +57,7 @@ export default function Contact() {
                 transition={{ duration: 0.8 }}
                 className="absolute top-8 left-8 z-20">
                 <img 
-                    src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/696b7ab40d412f960295a323/a90833e02_LogoBevel.png"
+                    src="/images/LogoBevel.png"
                     alt="Holmdale Pro Rodeo"
                     className="max-w-[200px]"
                 />

@@ -3,27 +3,27 @@ import { motion } from 'framer-motion';
 
 const images = [
     {
-        url: 'https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/696b7ab40d412f960295a323/fcc1ac4b1__92A9412-AlvinstonRodeo2023-Sunday.jpg',
+        url: '/images/92a9412-alvinstonrodeo2023-sunday.jpg',
         title: 'Bull Riding'
     },
     {
-        url: 'https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/696b7ab40d412f960295a323/e5c6e9d19_PXL_20250802_230419309.jpg',
+        url: '/images/pxl-20250802-230419309.jpg',
         title: 'Arena Action'
     },
     {
-        url: 'https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/696b7ab40d412f960295a323/d4e9e3158_PXL_20250803_012047586.jpg',
+        url: '/images/pxl-20250803-012047586.jpg',
         title: 'The Shark Tank'
     },
     {
-        url: 'https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/696b7ab40d412f960295a323/13e0ef12b_PXL_20250801_214130202.jpg',
+        url: '/images/pxl-20250801-214130202.jpg',
         title: 'Western Spirit'
     },
     {
-        url: 'https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/696b7ab40d412f960295a323/3739bc545_PXL_20250803_012117808LONG_EXPOSURE-01COVER.jpg',
+        url: '/images/pxl-20250803-012117808-long-exposure.jpg',
         title: 'Fun for all ages'
     },
     {
-        url: 'https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/696b7ab40d412f960295a323/d3ea8e108_PXL_20250804_010943127.jpg',
+        url: '/images/pxl-20250804-010943127.jpg',
         title: 'The Saloon'
     }
 ];
