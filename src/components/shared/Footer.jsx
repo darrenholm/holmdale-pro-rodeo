@@ -51,6 +51,16 @@ export default function Footer() {
                                     Contact
                                 </Link>
                             </li>
+                            <li>
+                                <a href="https://staff.holmdalerodeo.ca/vendor-register.html" className="text-stone-400 hover:text-green-400 transition-colors">
+                                    Become a Vendor
+                                </a>
+                            </li>
+                            <li>
+                                <a href="https://staff.holmdalerodeo.ca/vendor-login.html" className="text-stone-400 hover:text-green-400 transition-colors">
+                                    Vendor Sign In
+                                </a>
+                            </li>
                         </ul>
                     </div>
                     
