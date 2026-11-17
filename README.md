@@ -38,7 +38,7 @@ src/
   components/
     ui/          # shadcn/ui primitives
     home/        # homepage sections
-    shared/      # legacy raw-HTML pages (e.g. manage-sponsors.html)
+    shared/      # Navbar, Footer, Sidebar (staff admin pages live in holmdale-staff-portal)
   api/
     railwayClient.js  # fetch wrapper for the Railway API; auto-logs-in
                       # via VITE_AUTH_PASSWORD env var (transitional —
