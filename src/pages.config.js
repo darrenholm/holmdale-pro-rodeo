@@ -29,6 +29,7 @@ import StaffList from './pages/StaffList';
 import StaffScheduling from './pages/StaffScheduling';
 import TestRailway from './pages/TestRailway';
 import TicketSalesReport from './pages/TicketSalesReport';
+import Tickets2027 from './pages/Tickets2027';
 import TrackOrder from './pages/TrackOrder';
 import UpdatePrices from './pages/UpdatePrices';
 import __Layout from './Layout.jsx';
@@ -62,6 +63,7 @@ export const PAGES = {
     "StaffScheduling": StaffScheduling,
     "TestRailway": TestRailway,
     "TicketSalesReport": TicketSalesReport,
+    "Tickets2027": Tickets2027,
     "TrackOrder": TrackOrder,
     "UpdatePrices": UpdatePrices,
 }
