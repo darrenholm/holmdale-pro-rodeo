@@ -6,6 +6,8 @@ import { pagesConfig } from './pages.config'
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import PageNotFound from './lib/PageNotFound';
 import { AuthProvider } from '@/lib/AuthContext';
+import ManageTickets from './pages/ManageTickets';
+import TicketPass from './pages/TicketPass';
 
 const { Pages, Layout, mainPage } = pagesConfig;
 const mainPageKey = mainPage ?? Object.keys(Pages)[0];
@@ -37,6 +39,13 @@ function App() {
                 }
               />
             ))}
+            {/* 2027 named tickets: private links from the order email / QR */}
+            <Route path="/tickets/manage/:token" element={
+              <LayoutWrapper currentPageName="ManageTickets"><ManageTickets /></LayoutWrapper>
+            } />
+            <Route path="/t/:token" element={
+              <LayoutWrapper currentPageName="TicketPass"><TicketPass /></LayoutWrapper>
+            } />
             <Route path="*" element={<PageNotFound />} />
           </Routes>
         </Router>

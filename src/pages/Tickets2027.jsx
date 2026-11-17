@@ -65,7 +65,26 @@ export default function Tickets2027() {
   const hasHoodies = units.some(u => (byCode[u.code]?.hoodies || 0) > 0);
 
   const ticketsTotal = units.reduce((s, u) => s + (unitPrice(byCode[u.code], u.day) || 0), 0);
-  const shipCents = hasHoodies && shipping.method === 'ship' ? (catalog?.shipFlatCents || 0) : 0;
+
+  // Live ShipTime price once the address is complete (server re-quotes at checkout).
+  const [shipQuote, setShipQuote] = useState(null); // { cents, label } | 'loading' | null
+  const addr = shipping.address;
+  const addrReady = hasHoodies && shipping.method === 'ship'
+    && addr.street.trim() && addr.city.trim() && addr.province.trim() && addr.postal_code.trim().length >= 6;
+  useEffect(() => {
+    if (!addrReady) { setShipQuote(null); return; }
+    setShipQuote('loading');
+    const t = setTimeout(() => {
+      api.publicPost('/tickets-2027/shipping-quote', {
+        buyer, shipping: { method: 'ship', address: { ...addr, name: buyer.name } },
+        items: units.map(u => ({ code: u.code, day: u.day, attendees: u.attendees, hoodies: u.hoodies }))
+      }).then(r => setShipQuote({ cents: r.shipping_cents, label: r.label }))
+        .catch(() => setShipQuote({ cents: catalog?.shipFlatCents || 0, label: 'Shipping' }));
+    }, 600);
+    return () => clearTimeout(t);
+  }, [addrReady, addr.street, addr.city, addr.province, addr.postal_code, units.length]);
+
+  const shipCents = hasHoodies && shipping.method === 'ship' && shipQuote && shipQuote !== 'loading' ? shipQuote.cents : 0;
   const total = ticketsTotal + shipCents;
 
   // ── Moneris ──
@@ -130,6 +149,7 @@ export default function Tickets2027() {
     if (shipping.method === 'ship') {
       const a = shipping.address;
       if (!a.street.trim() || !a.city.trim() || !a.province.trim() || !a.postal_code.trim()) return 'Enter the full shipping address';
+      if (!shipQuote || shipQuote === 'loading') return 'One moment, still getting the shipping price';
     }
     return null;
   }
@@ -244,7 +264,7 @@ export default function Tickets2027() {
         <div>
           <h3 className="text-white font-semibold">{type.label}</h3>
           {type.description && <p className="text-stone-400 text-sm">{type.description}</p>}
-          {!type.description && (type.adults + type.children > 1) && <p className="text-stone-400 text-sm">{type.adults} adults + {type.children} kids</p>}
+          {!type.description && (type.adults + type.children > 1) && <p className="text-stone-400 text-sm">{type.adults} adults + {type.children} youth</p>}
         </div>
       </div>
       <div className="grid sm:grid-cols-3 gap-2">
@@ -274,7 +294,7 @@ export default function Tickets2027() {
   </>);
 
   // Step 2: names + hoodies
-  let guestNo = 0;
+  const blankNo = { adult: 0, youth: 0 };
   if (step === 2) return shell(<>
     {header}
     {errorBox}
@@ -303,14 +323,14 @@ export default function Tickets2027() {
                 <button aria-label="Remove" onClick={() => setUnits(us => us.filter(x => x.uid !== u.uid))} className="text-stone-500 hover:text-red-400"><Trash2 className="w-4 h-4" /></button>
               </div>
               {u.attendees.map((a, i) => {
-                guestNo += 1;
                 const isChild = i >= t.adults;
+                const n = ++blankNo[isChild ? 'youth' : 'adult'];
                 return (
                   <div key={i} className="flex items-center gap-3 py-1.5">
-                    <Input placeholder={`${isChild ? 'Child' : 'Adult'} name (or leave as Guest ${guestNo})`} value={a.name}
+                    <Input placeholder={`${isChild ? 'Youth' : 'Adult'} name (or leave as ${isChild ? 'Youth' : 'Adult'} ${n})`} value={a.name}
                       onChange={e => setAttendee(u.uid, i, { name: e.target.value })} className="bg-stone-950 border-stone-700 text-white" />
                     {isChild
-                      ? <span className="text-stone-500 text-xs w-14 shrink-0">Child</span>
+                      ? <span className="text-stone-500 text-xs w-14 shrink-0">Youth</span>
                       : <label className="flex items-center gap-1.5 text-stone-300 text-sm w-14 shrink-0 cursor-pointer">
                           <Checkbox checked={a.is19} onCheckedChange={v => setAttendee(u.uid, i, { is19: v === true })} />19+
                         </label>}
@@ -346,7 +366,7 @@ export default function Tickets2027() {
     {hasHoodies && <section className="rounded-xl border border-stone-800 bg-stone-900 p-4 mb-6">
       <h2 className="text-white font-semibold mb-3">Hoodie delivery</h2>
       <div className="grid sm:grid-cols-2 gap-3 mb-3">
-        {[['ship', `Ship it to me · ${money(catalog.shipFlatCents)}`], ['pickup', 'Pick up · free']].map(([m, label]) => (
+        {[['ship', 'Ship it to me'], ['pickup', 'Pick up · free']].map(([m, label]) => (
           <button key={m} onClick={() => { setShipping({ ...shipping, method: m }); setFormError(null); }}
             className={`rounded-lg border px-3 py-3 text-left ${shipping.method === m ? 'border-amber-400 bg-amber-950/30 text-white' : 'border-stone-700 text-stone-300'}`}>{label}</button>
         ))}
@@ -357,6 +377,11 @@ export default function Tickets2027() {
           <Input key={k} placeholder={ph} value={shipping.address[k]} className="bg-stone-950 border-stone-700 text-white"
             onChange={e => setShipping({ ...shipping, address: { ...shipping.address, [k]: e.target.value } })} />
         ))}
+        <p className="text-stone-400 text-sm sm:col-span-2">
+          {shipQuote === 'loading' ? 'Getting shipping price…'
+            : shipQuote ? <>Shipping: <span className="text-white font-semibold">{money(shipQuote.cents)}</span> {shipQuote.label !== 'Shipping' && <span>· {shipQuote.label.replace(/^Shipping \(|\)$/g, '')}</span>}</>
+            : 'Enter your address to see the shipping price.'}
+        </p>
       </div>}
     </section>}
 
